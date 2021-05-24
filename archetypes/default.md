@@ -11,6 +11,7 @@ birthLocation: ""
 location: []
 industry: []
 influencedBy: []
+twitter: ""
 draft: true
 ---
 

@@ -4,3 +4,12 @@ title = "AsianAmericans.wiki"
 theme = "ananke"
 enableGitInfo = true
 googleAnalytics = "G-DNWC1SD6ZZ"
+enableRobotsTXT = true
+Paginate = 50
+
+[params]
+  favicon = ""
+  description = "The open source database of Asian Americans"
+  twitter = "https://twitter.com/aapiwiki"
+  github = "https://github.com/raymonstah/asianamericanswiki"
+
