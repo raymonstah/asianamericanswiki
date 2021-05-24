@@ -1,14 +1,14 @@
 ---
 name: "Jimmy Chin"
 aliases: []
-date: 2021-05-23T17:30:00
-dob: 1973-10-12
-dod: 0001-01-01
+date: "2021-05-23T18:07:00"
+dob: "1973-10-12"
+dod: ""
 tags: []
-website: https://jimmychin.com/
-ethnicity: [American Taiwan-Chinese]
-birthLocation: Mankato, Minnesota
-industry: [Film]
+website: "https://jimmychin.com/"
+ethnicity: ["American Taiwan-Chinese"]
+birthLocation: "Mankato, Minnesota"
+industry: ["Film"]
 influencedBy: []
 draft: false
 ---

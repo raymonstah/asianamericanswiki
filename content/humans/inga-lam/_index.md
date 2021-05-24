@@ -1,15 +1,15 @@
 ---
 name: "Inga Lam"
 aliases: []
-date: 2021-05-23T17:30:00
-dob: 0001-01-01
-dod: 0001-01-01
+date: "2021-05-23T18:07:00"
+dob: ""
+dod: ""
 tags: []
-website: 
-ethnicity: [Chinese]
-birthLocation: Oakland
-industry: [Film]
-influencedBy: [Early Youtubers]
+website: ""
+ethnicity: ["Chinese"]
+birthLocation: "Oakland"
+industry: ["Film"]
+influencedBy: ["Early Youtubers"]
 draft: false
 ---
 

@@ -1,14 +1,14 @@
 ---
 name: "Joanne Lee Molinaro"
 aliases: []
-date: 2021-05-23T17:30:00
-dob: 1979-04-24
-dod: 0001-01-01
+date: "2021-05-23T18:07:00"
+dob: "1979-04-24"
+dod: ""
 tags: []
-website: https://thekoreanvegan.com/
-ethnicity: [Korean]
-birthLocation: Chicago, Illinois
-industry: [Culinary]
+website: "https://thekoreanvegan.com/"
+ethnicity: ["Korean"]
+birthLocation: "Chicago, Illinois"
+industry: ["Culinary"]
 influencedBy: []
 draft: false
 ---

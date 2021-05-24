@@ -1,14 +1,14 @@
 ---
 name: "Garry Tan"
 aliases: []
-date: 2021-05-23T17:30:00
-dob: 1981-03-21
-dod: 0001-01-01
+date: "2021-05-23T18:07:00"
+dob: "1981-03-21"
+dod: ""
 tags: []
-website: https://twitter.com/garrytan
-ethnicity: [Chinese]
-birthLocation: Manitoba, Canada
-industry: [Technology]
+website: "https://twitter.com/garrytan"
+ethnicity: ["Chinese"]
+birthLocation: "Manitoba, Canada"
+industry: ["Technology"]
 influencedBy: []
 draft: false
 ---

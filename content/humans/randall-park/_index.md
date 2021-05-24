@@ -1,14 +1,14 @@
 ---
 name: "Randall Park"
 aliases: []
-date: 2021-05-23T17:30:00
-dob: 1974-03-23
-dod: 0001-01-01
+date: "2021-05-23T18:07:00"
+dob: "1974-03-23"
+dod: ""
 tags: []
-website: https://en.wikipedia.org/wiki/Randall_Park
-ethnicity: [Korean]
-birthLocation: Lost Angeles, California
-industry: [Actor]
+website: "https://en.wikipedia.org/wiki/Randall_Park"
+ethnicity: ["Korean"]
+birthLocation: "Lost Angeles, California"
+industry: ["Actor"]
 influencedBy: []
 draft: false
 ---

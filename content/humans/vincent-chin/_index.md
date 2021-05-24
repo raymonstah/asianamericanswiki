@@ -1,14 +1,14 @@
 ---
 name: "Vincent Chin"
 aliases: []
-date: 2021-05-23T17:30:00
-dob: 1955-05-18
-dod: 1982-06-23
+date: "2021-05-23T18:07:00"
+dob: "1955-05-18"
+dod: "1982-06-23"
 tags: []
-website: https://en.wikipedia.org/wiki/Murder_of_Vincent_Chin
-ethnicity: [Chinese]
-birthLocation: China
-industry: [Automotive]
+website: "https://en.wikipedia.org/wiki/Murder_of_Vincent_Chin"
+ethnicity: ["Chinese"]
+birthLocation: "China"
+industry: ["Automotive"]
 influencedBy: []
 draft: false
 ---

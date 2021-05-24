@@ -1,14 +1,14 @@
 ---
 name: "Steven Yeun"
 aliases: []
-date: 2021-05-23T17:30:00
-dob: 1983-12-21
-dod: 0001-01-01
+date: "2021-05-23T18:07:00"
+dob: "1983-12-21"
+dod: ""
 tags: []
-website: https://en.wikipedia.org/wiki/Steven_Yeun
-ethnicity: [Korean]
-birthLocation: Korea
-industry: [Actor]
+website: "https://en.wikipedia.org/wiki/Steven_Yeun"
+ethnicity: ["Korean"]
+birthLocation: "Korea"
+industry: ["Actor"]
 influencedBy: []
 draft: false
 ---
