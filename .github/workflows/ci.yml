@@ -6,8 +6,23 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          submodules: true
-          fetch-depth: 0
-      - uses: pulimento/github-action-hugo-deploy-to-firebase@master
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
         with:
-          firebase-token: ${{ secrets.FIREBASE_TOKEN }}
+          hugo-version: 'latest'
+          # extended: true
+
+      - name: Build
+        run: hugo --minify
+
+      - name: Deploy
+        if: github.ref == 'refs/heads/main'
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_PATH: public
