@@ -1,5 +1,5 @@
 ---
-name: "{{ replace .Name "-" " " | title }}"
+title: "{{ replace .Name "-" " " | title }}"
 aka: []
 date: {{ .Date }}
 dob: YYYY-MM-DD
