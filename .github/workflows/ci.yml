@@ -4,9 +4,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           submodules: true
+          fetch-depth: 0
       - uses: pulimento/github-action-hugo-deploy-to-firebase@master
         with:
           firebase-token: ${{ secrets.FIREBASE_TOKEN }}
