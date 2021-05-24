@@ -1,6 +1,6 @@
 ---
 name: "{{ replace .Name "-" " " | title }}"
-aliases: []
+aka: []
 date: {{ .Date }}
 dob: YYYY-MM-DD
 dod: YYYY-MM-DD
