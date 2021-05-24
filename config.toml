@@ -6,6 +6,7 @@ enableGitInfo = true
 googleAnalytics = "G-DNWC1SD6ZZ"
 enableRobotsTXT = true
 Paginate = 50
+SectionPagesMenu = "main"
 
 [params]
   favicon = ""
