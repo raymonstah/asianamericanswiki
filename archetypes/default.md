@@ -7,8 +7,10 @@ dod: YYYY-MM-DD
 tags: []
 website: ""
 ethnicity: []
+birthLocation: ""
 location: []
 industry: []
+influencedBy: []
 draft: true
 ---
 
