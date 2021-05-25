@@ -2,7 +2,7 @@
 
 ## About
 
-AsianAmericans.wiki is generated from a website creator, [Hugo](https://gohugo.io/).
+AsianAmericans.wiki is generated from a website generator, [Hugo](https://gohugo.io/).
 
 ## Contributing
 
