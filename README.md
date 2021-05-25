@@ -26,7 +26,7 @@ and then navigate to http://localhost:1313 to verify your changes.
 Once you're satisfied with your changes, you can submit a pull request. As soon as your pull request gets merged, your
 changes will go live in production.
 
-> :warning: At the time, I'm not accepting pull requests related to the website itself. Content only please!
+> :warning: I'm not accepting pull requests related to the website itself. Content only please!
 
 
 
