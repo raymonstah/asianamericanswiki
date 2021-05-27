@@ -1,6 +1,6 @@
 ---
 title: "Jonathan Park"
-aka: []
+aka: ["Dumbfoundead"]
 date: "2021-05-24T00:25:29"
 dob: "1986-02-18"
 dod: ""

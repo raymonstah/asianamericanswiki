@@ -1,6 +1,6 @@
 ---
 title: "Nora Lum"
-aka: []
+aka: ["Awkwafina"]
 date: "2021-05-24T00:25:29"
 dob: "1988-06-02"
 dod: ""
