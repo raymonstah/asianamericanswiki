@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1983-07-16"
 dod: ""
-tags: []
 website: ""
 ethnicity: []
 birthLocation: ""
-industry: ["Technology"]
+tags: ["Technology"]
 influencedBy: []
 draft: false
 ---

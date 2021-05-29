@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1973-10-12"
 dod: ""
-tags: []
 website: "https://jimmychin.com/"
 ethnicity: ["American Taiwan-Chinese"]
 birthLocation: "Mankato, Minnesota"
-industry: ["Film"]
+tags: ["Film"]
 influencedBy: []
 draft: false
 ---

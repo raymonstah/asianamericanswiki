@@ -4,12 +4,11 @@ aka: []
 date: 2021-05-26T21:25:18-07:00
 dob: 1969-04-19
 dod: YYYY-MM-DD
-tags: []
 website: "https://brucelee.com/"
 ethnicity: ["Chinese", "German", "Swedish"]
 birthLocation: "Santa Monica, California"
 location: ["LA"]
-industry: ["Martial Arts", "Film", "Podcast", "Author"]
+tags: ["Martial Arts", "Film", "Podcast", "Author"]
 influencedBy: ["Bruce Lee"]
 twitter: "https://twitter.com/brucelee"
 draft: false

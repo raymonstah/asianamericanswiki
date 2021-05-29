@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1979-04-24"
 dod: ""
-tags: []
 website: "https://thekoreanvegan.com/"
 ethnicity: ["Korean"]
 birthLocation: "Chicago, Illinois"
-industry: ["Culinary"]
+tags: ["Culinary"]
 influencedBy: []
 draft: false
 ---

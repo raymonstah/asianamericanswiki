@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1981-03-21"
 dod: ""
-tags: []
 website: "https://twitter.com/garrytan"
 ethnicity: ["Chinese"]
 birthLocation: "Manitoba, Canada"
-industry: ["Technology"]
+tags: ["Technology"]
 influencedBy: []
 draft: false
 ---

@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1975-01-13"
 dod: ""
-tags: []
 website: "https://en.wikipedia.org/wiki/Andrew_Yang"
 ethnicity: ["Chinese"]
 birthLocation: "Schenectady, New York"
-industry: ["Entrepreneurship", "Politics"]
+tags: ["Entrepreneurship", "Politics"]
 influencedBy: []
 draft: false
 ---

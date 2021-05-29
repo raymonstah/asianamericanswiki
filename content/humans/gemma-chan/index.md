@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1982-11-29"
 dod: ""
-tags: []
 website: "https://en.wikipedia.org/wiki/Gemma_Chan"
 ethnicity: ["Chinese"]
 birthLocation: "London, England"
-industry: ["Actress"]
+tags: ["Actress"]
 influencedBy: []
 draft: false
 ---

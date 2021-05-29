@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1988-03-27"
 dod: ""
-tags: []
 website: ""
 ethnicity: ["Hmong", "Thai"]
 birthLocation: "Carmichael, California"
-industry: ["Film"]
+tags: ["Film"]
 influencedBy: []
 draft: false
 ---

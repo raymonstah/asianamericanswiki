@@ -4,11 +4,10 @@ aka: ["Awkwafina"]
 date: "2021-05-24T00:25:29"
 dob: "1988-06-02"
 dod: ""
-tags: []
 website: "https://awkwafina.com/"
 ethnicity: ["Chinese", "Korean"]
 birthLocation: "Stony Brook, New York"
-industry: ["Entertainment"]
+tags: ["Entertainment"]
 influencedBy: ["Lucy Liu"]
 draft: false
 ---

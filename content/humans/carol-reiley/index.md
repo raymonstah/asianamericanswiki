@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1982-08-20"
 dod: ""
-tags: []
 website: "http://www.creiley.com/"
 ethnicity: ["Chinese"]
 birthLocation: "Michigan, US"
-industry: ["Technology"]
+tags: ["Technology"]
 influencedBy: []
 draft: false
 ---

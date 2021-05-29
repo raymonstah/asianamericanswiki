@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1976-08-07"
 dod: ""
-tags: []
 website: "http://www.cathyparkhong.com/"
 ethnicity: ["Korean"]
 birthLocation: "LA, California"
-industry: ["Author"]
+tags: ["Author"]
 influencedBy: []
 draft: false
 ---

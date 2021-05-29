@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1921-05-19"
 dod: "2014-06-01"
-tags: []
 website: "https://en.wikipedia.org/wiki/Yuri_Kochiyama"
 ethnicity: ["Japanese"]
 birthLocation: "San Pedro, California"
-industry: ["Activist"]
+tags: ["Activist"]
 influencedBy: []
 draft: false
 ---

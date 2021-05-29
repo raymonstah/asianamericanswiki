@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1987-04-25"
 dod: ""
-tags: []
 website: "http://jaypark.com/"
 ethnicity: ["Korean"]
 birthLocation: "Edmonds, Washington"
-industry: ["Music"]
+tags: ["Music"]
 influencedBy: []
 draft: false
 ---

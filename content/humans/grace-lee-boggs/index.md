@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1915-06-27"
 dod: "2015-10-05"
-tags: []
 website: "https://en.wikipedia.org/wiki/Grace_Lee_Boggs"
 ethnicity: []
 birthLocation: "Providence, Rhode Island"
-industry: ["Activist"]
+tags: ["Activist"]
 influencedBy: ["Kant and Hegel"]
 draft: false
 ---

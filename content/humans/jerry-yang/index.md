@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1968-11-06"
 dod: ""
-tags: []
 website: "https://en.wikipedia.org/wiki/Jerry_Yang"
 ethnicity: ["Tawianese"]
 birthLocation: "Taiwan"
-industry: ["Technology"]
+tags: ["Technology"]
 influencedBy: []
 draft: false
 ---

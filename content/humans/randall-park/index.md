@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1974-03-23"
 dod: ""
-tags: []
 website: "https://en.wikipedia.org/wiki/Randall_Park"
 ethnicity: ["Korean"]
 birthLocation: "Lost Angeles, California"
-industry: ["Actor"]
+tags: ["Actor"]
 influencedBy: []
 draft: false
 ---

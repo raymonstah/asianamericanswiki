@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1977-08-05"
 dod: ""
-tags: []
 website: "https://en.wikipedia.org/wiki/David_Chang"
 ethnicity: ["Korean"]
 birthLocation: "Vienna, Virginia"
-industry: ["Culinary"]
+tags: ["Culinary"]
 influencedBy: []
 draft: false
 ---

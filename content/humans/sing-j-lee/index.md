@@ -4,12 +4,11 @@ aka: []
 date: 2021-05-26T21:07:11-07:00
 dob: "" 
 dod: ""
-tags: []
 website: "http://singjlee.com/"
 ethnicity: ["Hong Kong", "Chinese"]
 birthLocation: "Manchester, England"
 location: []
-industry: ["entertainment"]
+tags: ["entertainment"]
 influencedBy: []
 twitter: ""
 draft: false

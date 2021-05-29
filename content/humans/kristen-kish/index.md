@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1983-12-01"
 dod: ""
-tags: []
 website: "https://www.instagram.com/kristenlkish/?hl=en"
 ethnicity: ["Korean"]
 birthLocation: "Seoul, South Korea"
-industry: ["Culinary"]
+tags: ["Culinary"]
 influencedBy: []
 draft: false
 ---

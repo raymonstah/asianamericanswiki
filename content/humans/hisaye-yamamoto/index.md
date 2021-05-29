@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1921-08-23"
 dod: "2011-01-30"
-tags: []
 website: ""
 ethnicity: ["Japanese"]
 birthLocation: "Redondo Beach, California"
-industry: ["Author"]
+tags: ["Author"]
 influencedBy: []
 draft: false
 ---

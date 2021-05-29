@@ -4,11 +4,10 @@ aka: []
 date: "2021-05-24T00:25:29"
 dob: "1987-06-11"
 dod: ""
-tags: []
 website: "https://en.wikipedia.org/wiki/Jimmy_O._Yang"
 ethnicity: ["Hong Kong"]
 birthLocation: "Hong Kong"
-industry: ["Entertainment"]
+tags: ["Entertainment"]
 influencedBy: ["Stephen Chow / Ng Man Tat"]
 draft: false
 ---
