@@ -9,7 +9,6 @@ website: ""
 ethnicity: []
 birthLocation: ""
 location: []
-industry: []
 influencedBy: []
 twitter: ""
 draft: true
