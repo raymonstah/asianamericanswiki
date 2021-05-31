@@ -2,7 +2,7 @@
 title: "Angela Duckworth"
 aka: []
 date: 2021-05-29T13:25:26-07:00
-dob: 1970-MM-DD
+dob: 1970-01-01
 dod: YYYY-MM-DD
 tags: ["author", "entrepreneur", "academic", "psychology"]
 website: "https://angeladuckworth.com/"

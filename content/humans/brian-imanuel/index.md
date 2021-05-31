@@ -1,6 +1,6 @@
 ---
 title: "Brian Imanuel"
-aka: []
+aka: ["Rich Brian"]
 date: "2021-05-24T00:25:29"
 dob: "1999-09-03"
 dod: ""
@@ -9,6 +9,7 @@ ethnicity: ["Indonesian"]
 birthLocation: "Jakarta, Indonesia"
 tags: ["Music"]
 influencedBy: []
+twitter: "https://twitter.com/richbrian"
 draft: false
 ---
 

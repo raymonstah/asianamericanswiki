@@ -34,13 +34,42 @@
         {{- .Date.Format "January 2, 2006" -}}
         </time>
 
-        {{ with .Params.website }}
-        <p class="tracked">
-            Website <strong>
-            {{ . | markdownify }}
-        </strong>
+        {{ with .Params.aka }}
+        <p>
+            Also known as: {{ delimit . ", " }}
         </p>
         {{ end }}
+
+        {{ with .Params.dob }}
+          {{ if ne . "YYYY-MM-DD" }}
+          <p>
+              Born: {{ dateFormat "Jan 2, 2006" . }}
+          </p>
+          {{ end }}
+        {{ end }}
+
+        {{ with .Params.birthLocation }}
+        <p>
+            Born in: {{ . }}
+        </p>
+        {{ end }}
+
+        {{ with .Params.ethnicity }}
+        <p>Ethnicity: {{ delimit . ", " }}</p>
+        {{ end }}
+
+        {{ with .Params.location }}
+        <p>Location: {{ delimit . ", " }}</p>
+        {{ end }}
+
+        {{ with .Params.twitter }}
+        <a rel="noopener" href={{ . }}>Twitter</a>
+        {{ end }}
+
+        {{ with .Params.website }}
+        <a rel="noopener" href={{ . }}>Website</a>
+        {{ end }}
+
         {{/*
         Show "reading time" and "word count" but only if one of the following are true:
         1) A global config `params` value is set `show_reading_time = true`
