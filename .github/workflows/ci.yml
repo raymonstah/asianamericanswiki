@@ -16,7 +16,7 @@ jobs:
           # extended: true
 
       - name: Build
-        run: HUGO_ENV=production hugo --minify
+        run: HUGO_ENV=production hugo
 
       - name: Deploy
         if: github.ref == 'refs/heads/main'
