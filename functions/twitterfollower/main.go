@@ -120,18 +120,25 @@ func handleDiffs(existingHandles, updatedHandles []string) (toFollow, toUnfollow
 
 func (app app) getExistingFollowingHandles() ([]string, error) {
 	var existingFriends []string
-	friends, _, err := app.client.Friends.List(&twitter.FriendListParams{
-		ScreenName: "aapiwiki",
-		Cursor:     -1,
-		Count:      200,
-		SkipStatus: twitter.Bool(true),
-	})
-	if err != nil {
-		return nil, err
-	}
+	var cursor int64 = -1
+	for {
+		friends, _, err := app.client.Friends.List(&twitter.FriendListParams{
+			ScreenName: "aapiwiki",
+			Cursor:     cursor,
+			Count:      200,
+			SkipStatus: twitter.Bool(true),
+		})
+		if err != nil {
+			return nil, err
+		}
 
-	for _, friend := range friends.Users {
-		existingFriends = append(existingFriends, friend.ScreenName)
+		cursor = friends.NextCursor
+		for _, friend := range friends.Users {
+			existingFriends = append(existingFriends, friend.ScreenName)
+		}
+		if cursor <= 0 {
+			break
+		}
 	}
 
 	return existingFriends, nil
