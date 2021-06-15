@@ -20,10 +20,10 @@ var humansDirectory = filepath.Join("content", "humans")
 
 func main() {
 	flags := flag.NewFlagSet("user-auth", flag.ExitOnError)
-	consumerKey := flags.String("consumer-key", "", "Twitter Consumer Key")
-	consumerSecret := flags.String("consumer-secret", "", "Twitter Consumer Secret")
-	accessToken := flags.String("access-token", "", "Twitter Access Token")
-	accessSecret := flags.String("access-secret", "", "Twitter Access Secret")
+	consumerKey := flags.String("consumer-key", os.Getenv("TWITTER_CONSUMER_KEY"), "Twitter Consumer Key")
+	consumerSecret := flags.String("consumer-secret", os.Getenv("TWITTER_CONSUMER_SECRET"), "Twitter Consumer Secret")
+	accessToken := flags.String("access-token", os.Getenv("TWITTER_ACCESS_TOKEN"), "Twitter Access Token")
+	accessSecret := flags.String("access-secret", os.Getenv("TWITTER_ACCESS_SECRET"), "Twitter Access Secret")
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		log.Fatalf("error parsing flags: %v", err)
 	}
