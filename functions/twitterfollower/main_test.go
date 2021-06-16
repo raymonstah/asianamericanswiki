@@ -23,6 +23,10 @@ func TestDiff(t *testing.T) {
 			updated:            []string{"@user-1"},
 			expectedToUnfollow: []string{"remove-me", "remove-me-too"},
 		},
+		"ignore-case": {
+			existing:           []string{"brendasong"},
+			updated:            []string{"BrendaSong"},
+		},
 	}
 	for name, tc := range testcases {
 		t.Run(name, func(t *testing.T) {

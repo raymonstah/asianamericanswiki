@@ -181,15 +181,15 @@ func (app app) getTwitterHandlesFromDir(dir string) ([]string, error) {
 	return usernames, nil
 }
 
-// setDiff computes a - b
+// setDiff computes a - b, ignoring case.
 func setDiff(a, b []string) (diff []string) {
 	m := make(map[string]struct{})
 	for _, item := range b {
-		m[item] = struct{}{}
+		m[strings.ToLower(item)] = struct{}{}
 	}
 
 	for _, item := range a {
-		if _, ok := m[item]; !ok {
+		if _, ok := m[strings.ToLower(item)]; !ok {
 			diff = append(diff, item)
 		}
 	}
