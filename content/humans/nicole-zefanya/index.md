@@ -9,6 +9,7 @@ ethnicity: ["Indonesian"]
 birthLocation: "Jakarta, Indonesia"
 tags: ["Music"]
 influencedBy: []
+twitter: "https://twitter.com/nikizefanya"
 draft: false
 ---
 
