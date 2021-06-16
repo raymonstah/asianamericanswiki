@@ -185,11 +185,13 @@ func (app app) getTwitterHandlesFromDir(dir string) ([]string, error) {
 func setDiff(a, b []string) (diff []string) {
 	m := make(map[string]struct{})
 	for _, item := range b {
-		m[strings.ToLower(item)] = struct{}{}
+		item = strings.ToLower(item)
+		m[item] = struct{}{}
 	}
 
 	for _, item := range a {
-		if _, ok := m[strings.ToLower(item)]; !ok {
+		item := strings.ToLower(item)
+		if _, ok := m[item]; !ok {
 			diff = append(diff, item)
 		}
 	}
