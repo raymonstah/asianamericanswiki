@@ -9,7 +9,8 @@ ethnicity: []
 birthLocation: ""
 tags: ["Technology"]
 influencedBy: []
+twitter: "https://twitter.com/justinkan"
 draft: false
 ---
 
-Justin Kan is known for being the co-founder of Twitch.
+Justin Kan is the co-founder of Twitch. He is a start-up investor, and now a YouTuber.
