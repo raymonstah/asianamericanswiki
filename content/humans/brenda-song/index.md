@@ -9,6 +9,7 @@ ethnicity: ["Hmong", "Thai"]
 birthLocation: "Carmichael, California"
 tags: ["Film"]
 influencedBy: []
+twitter: "https://twitter.com/brendasong"
 draft: false
 ---
 

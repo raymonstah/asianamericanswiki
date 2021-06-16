@@ -9,6 +9,7 @@ ethnicity: ["Chinese"]
 birthLocation: "Manitoba, Canada"
 tags: ["Technology"]
 influencedBy: []
+twitter: "https://twitter.com/garrytan"
 draft: false
 ---
 

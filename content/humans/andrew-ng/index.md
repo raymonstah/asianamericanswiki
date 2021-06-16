@@ -9,6 +9,7 @@ ethnicity: ["Chinese"]
 birthLocation: "UK"
 tags: ["Technology, Education"]
 influencedBy: []
+twitter: "https://twitter.com/AndrewYNg"
 draft: false
 ---
 

@@ -9,6 +9,7 @@ ethnicity: ["Korean"]
 birthLocation: "Vienna, Virginia"
 tags: ["Culinary"]
 influencedBy: []
+twitter: "https://twitter.com/davidchang"
 draft: false
 ---
 
