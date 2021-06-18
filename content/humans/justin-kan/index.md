@@ -7,7 +7,7 @@ dod: ""
 website: ""
 ethnicity: []
 birthLocation: ""
-tags: ["Technology"]
+tags: ["Technology", "Entrepreneur"]
 influencedBy: []
 twitter: "https://twitter.com/justinkan"
 draft: false

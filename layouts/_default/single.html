@@ -63,11 +63,15 @@
         {{ end }}
 
         {{ with .Params.twitter }}
-        <a rel="noopener" href={{ . }}>Twitter</a>
+        <p>
+            <a rel="noopener" href={{ . }}>Twitter</a>
+        </p>
         {{ end }}
 
         {{ with .Params.website }}
-        <a rel="noopener" href={{ . }}>Website</a>
+        <p>
+            <a rel="noopener" href={{ . }}>Website</a>
+        </p>
         {{ end }}
 
         {{/*
