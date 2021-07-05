@@ -2,7 +2,7 @@
 title: "Tyrus Wong"
 aka: []
 date: 2021-05-29T13:07:20-07:00
-dob: 2021-10-25
+dob: 1910-10-25
 dod: 2016-12-30
 tags: ["art", "animation"]
 website: "https://www.asiansneverdie.com"
