@@ -2,7 +2,7 @@
 title: "Alice Chen"
 aka: []
 date: 2021-06-23T12:50:22-07:00
-dob: YYY-MM-DD
+dob: YYYY-MM-DD
 dod: YYYY-MM-DD
 tags: ["writer", "journalist", "consultant"]
 website: "https://www.happyasianwoman.com/"
