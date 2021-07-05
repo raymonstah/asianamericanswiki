@@ -5,7 +5,7 @@ date: 2021-05-29T13:30:32-07:00
 dob: YYYY-MM-DD
 dod: YYYY-MM-DD
 tags: ["Music", "Reggae"]
-website: "http://peterashlee.com/"
+website: ""
 ethnicity: ["Chinese"]
 birthLocation: ""
 location: ["Queens, New York"]
