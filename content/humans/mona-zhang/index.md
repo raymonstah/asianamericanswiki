@@ -8,7 +8,7 @@ website: "http://www.mona-zhang.com/"
 ethnicity: [""]
 birthLocation: ""
 location: ["Washington, DC", "New York, NY"]
-tags: ["Journalist", "Founder"]
+tags: ["Journalist", "Founder", "Cannabis"]
 influencedBy: []
 Twitter: "https://twitter.com/zhangmona"
 draft: false
