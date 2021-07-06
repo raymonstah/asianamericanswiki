@@ -10,7 +10,7 @@ birthLocation: ""
 location: ["Washington, DC", "New York, NY"]
 tags: ["Journalist", "Founder", "Cannabis"]
 influencedBy: []
-Twitter: "https://twitter.com/zhangmona"
+twitter: "https://twitter.com/zhangmona"
 draft: false
 ---
 
