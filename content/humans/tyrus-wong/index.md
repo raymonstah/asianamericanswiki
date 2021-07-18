@@ -5,7 +5,7 @@ date: 2021-05-29T13:07:20-07:00
 dob: 1910-10-25
 dod: 2016-12-30
 tags: ["art", "animation"]
-website: "https://www.asiansneverdie.com"
+website: ""
 ethnicity: ["Chinese"]
 birthLocation: "Taishan, China"
 location: ["Sunland-Tujunga, California"]
