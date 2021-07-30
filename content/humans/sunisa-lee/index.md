@@ -1,6 +1,6 @@
 ---
 title: "Sunisa Lee"
-aka: []
+aka: ["Suni Lee"]
 date: "2021-05-24T00:25:29"
 dob: 2003-03-09
 dod: YYYY-MM-DD
