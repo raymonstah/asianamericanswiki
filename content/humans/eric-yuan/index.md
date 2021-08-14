@@ -6,7 +6,7 @@ dob: 1970-02-20
 dod: YYYY-MM-DD
 tags: ["entrepreneur", "technology"]
 website: ""
-ethnicity: ["Chinese]
+ethnicity: ["Chinese"]
 birthLocation: "Tai'an, Sahndong, China"
 location: ["Bay Area"]
 influencedBy: ["Bill Gates"]
