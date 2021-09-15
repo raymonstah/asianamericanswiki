@@ -13,3 +13,4 @@ draft: false
 ---
 
 Cathy Park Hong is a Korean American poet and author of the memoir "Minor Feelings", where she talks about being an Asian American woman.
+She was included in [Time magazine’s 100 Most Influential People of 2021](https://time.com/collection/100-most-influential-people-2021/).
