@@ -100,7 +100,8 @@ func (app app) followHandles(toFollows []string) error {
 			ScreenName: toFollow,
 		})
 		if err != nil {
-			if !strings.Contains(err.Error(), "twitter: 160 You've already requested to follow") {
+			if !strings.Contains(err.Error(), "twitter: 160 You've already requested to follow") &&
+				!strings.Contains(err.Error(), "twitter: 108 Cannot find specified user.") {
 				return err
 			}
 		}
