@@ -100,7 +100,9 @@ func (app app) followHandles(toFollows []string) error {
 			ScreenName: toFollow,
 		})
 		if err != nil {
-			return err
+			if !strings.Contains(err.Error(), "twitter: 160 You've already requested to follow") {
+				return err
+			}
 		}
 		if resp.StatusCode > 300 {
 			body, _ := ioutil.ReadAll(resp.Body)
