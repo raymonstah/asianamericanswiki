@@ -9,7 +9,7 @@ Paginate = 50
 SectionPagesMenu = "main"
 
 [params]
-  favicon = ""
+  favicon = "/favicon.ico"
   description = "The open source database of Asian Americans"
   twitter = "https://twitter.com/aapiwiki"
   github = "https://github.com/raymonstah/asianamericanswiki"
