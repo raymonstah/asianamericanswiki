@@ -10,7 +10,22 @@ SectionPagesMenu = "main"
 
 [params]
   favicon = "/favicon.ico"
+  site_logo = "/logo64.png"
   description = "The open source database of Asian Americans"
   twitter = "https://twitter.com/aapiwiki"
   github = "https://github.com/raymonstah/asianamericanswiki"
+
+[related]
+  includeNewer = true
+  threshold = 70
+  toLower = true
+[[related.indices]]
+  name = 'tags'
+  weight = 50
+[[related.indices]]
+  name = 'influencedBy'
+  weight = 50
+[[related.indices]]
+  name = 'ethnicity'
+  weight = 10
 
