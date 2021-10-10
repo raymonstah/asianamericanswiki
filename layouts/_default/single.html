@@ -31,6 +31,7 @@
         {{ end }}
         {{/* Hugo uses Go's date formatting is set by example. Here are two formats */}}
         <time class="f6 mv4 dib tracked" {{ printf `datetime="%s"` (.Date.Format "2006-01-02T15:04:05Z07:00") | safeHTMLAttr }}>
+        <span>Published: </span>
         {{- .Date.Format "January 2, 2006" -}}
         </time>
 
@@ -46,6 +47,15 @@
               Born: {{ dateFormat "Jan 2, 2006" . }}
           </p>
           {{ end }}
+        {{ end }}
+
+        {{ with .Params.dod }}
+        {{ if ne . "YYYY-MM-DD" }}
+        <p>
+            Died: {{ dateFormat "Jan 2, 2006" . }}
+        </p>
+        {{ end }}
+
         {{ end }}
 
         {{ with .Params.birthLocation }}

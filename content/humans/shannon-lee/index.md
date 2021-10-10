@@ -8,7 +8,7 @@ website: "https://brucelee.com/"
 ethnicity: ["Chinese", "German", "Swedish"]
 birthLocation: "Santa Monica, California"
 location: ["LA"]
-tags: ["Martial Arts", "Film", "Podcast", "Author"]
+tags: ["Martial artist", "Film", "Podcast", "Author"]
 influencedBy: ["Bruce Lee"]
 twitter: "https://twitter.com/brucelee"
 draft: false
