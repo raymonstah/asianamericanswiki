@@ -106,9 +106,8 @@ func (app app) followHandles(toFollows []string) error {
 			}
 		}
 		if resp.StatusCode > 300 {
-			body, _ := ioutil.ReadAll(resp.Body)
-			bodyString := string(body)
-			fmt.Println(resp.StatusCode, bodyString, resp.Header)
+			err := fmt.Errorf("received %v when attempting to follow %v", resp.StatusCode, toFollow)
+			fmt.Println(err)
 		}
 	}
 
