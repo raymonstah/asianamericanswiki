@@ -11,6 +11,7 @@ birthLocation: ""
 location: []
 influencedBy: []
 twitter: ""
+featured_image: ""
 draft: false
 ---
 
