@@ -10,7 +10,7 @@ ethnicity: ["Vietnamese"]
 birthLocation: "Vietnam"
 location: ["California"]
 influencedBy: []
-twitter: "https://twitter.com/viet_t_nguyen"
+twitter: ""
 draft: false
 ---
 

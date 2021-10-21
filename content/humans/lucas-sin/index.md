@@ -10,7 +10,7 @@ ethnicity: ["Chinese"]
 birthLocation: "Hong Kong"
 location: ["New York"]
 influencedBy: []
-twitter: "https://twitter.com/chinesechipotle"
+twitter: ""
 draft: false
 ---
 
