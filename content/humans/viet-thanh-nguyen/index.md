@@ -2,6 +2,7 @@
 title: "Viet Thanh Nguyen"
 aka: []
 date: 2021-05-29T13:40:50-07:00
+lastmod: 2021-05-29T13:40:50-07:00
 dob: 1971-03-13
 dod: YYYY-MM-DD
 tags: ["author", "academic"]

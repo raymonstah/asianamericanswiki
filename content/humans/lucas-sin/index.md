@@ -2,6 +2,7 @@
 title: "Lucas Sin"
 aka: []
 date: 2021-08-31T09:36:12-07:00
+lastmod: 2021-08-31T09:36:12-07:00
 dob: YYYY-MM-DD
 dod: YYYY-MM-DD
 tags: ["chef", "restaurateur"]

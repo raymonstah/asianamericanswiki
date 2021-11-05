@@ -6,6 +6,12 @@ AsianAmericans.wiki is generated from a website generator, [Hugo](https://gohugo
 
 ## Contributing
 
+When pulling this repo for the first time, you have to also pull the submodules. You can do that using this command.
+
+```shell
+git submodule update --init --recursive
+```
+
 If you want to contribute to the list of Asian Americans, you can fork this repo and add a new human to `content/humans`
 . Please follow the same conventions as the existing humans.
 
