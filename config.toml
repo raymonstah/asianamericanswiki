@@ -8,6 +8,9 @@ enableRobotsTXT = true
 Paginate = 50
 SectionPagesMenu = "main"
 
+[frontmatter]
+  lastmod = ['lastmod', ':git', 'date', 'publishDate']
+  
 [params]
   favicon = "/favicon.ico"
   site_logo = "/logo64.png"

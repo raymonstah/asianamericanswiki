@@ -24,8 +24,8 @@ func TestDiff(t *testing.T) {
 			expectedToUnfollow: []string{"remove-me", "remove-me-too"},
 		},
 		"ignore-case": {
-			existing:           []string{"brendasong"},
-			updated:            []string{"BrendaSong"},
+			existing: []string{"brendasong"},
+			updated:  []string{"BrendaSong"},
 		},
 	}
 	for name, tc := range testcases {
