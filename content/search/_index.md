@@ -1,3 +1,4 @@
 ---
+type: page
 title: Search
 ---

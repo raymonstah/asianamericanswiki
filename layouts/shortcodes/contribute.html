@@ -1,0 +1,35 @@
+{{ $.Scratch.Add "labelClasses" "f6 b db mb1 mt3 sans-serif mid-gray" }}
+{{ $.Scratch.Add "inputClasses" "w-100 f5 pv3 ph3 bg-light-gray bn" }}
+
+<form class="black-80 sans-serif" accept-charset="UTF-8" action="{{ .Get "action" }}" method="POST" role="form">
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}"  for="name">Name</label>
+    <input type="text" id="name" name="name" class="{{ $.Scratch.Get "inputClasses" }}"  required placeholder="Bruce Lee"  aria-labelledby="name"/>
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}"  for="aliases">Aliases</label>
+    <input type="text" id="aliases" name="aliases" class="{{ $.Scratch.Get "inputClasses" }}" placeholder="comma,separated,values" aria-labelledby="aliases"/>
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}"  for="dob">Birthdate</label>
+    <input type="date" id="dob" name="dob" class="{{ $.Scratch.Get "inputClasses" }}" placeholder="" aria-labelledby="dob"/>
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}"  for="ethnicity">Ethnicity</label>
+    <input type="text" id="ethnicity" name="ethnicity" class="{{ $.Scratch.Get "inputClasses" }}" placeholder="comma,separated,values" aria-labelledby="ethnicity"/>
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}"  for="location">Location</label>
+    <input type="text" id="location" name="location" class="{{ $.Scratch.Get "inputClasses" }}" placeholder="comma,separated,values" aria-labelledby="location"/>
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}" for="website">Website</label>
+    <input type="text" id="website" name="website" class="{{ $.Scratch.Get "inputClasses" }}" placeholder="https://brucelee.com"  aria-labelledby="website"/>
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}" for="twitter">Twitter</label>
+    <input type="text" id="twitter" name="twitter" class="{{ $.Scratch.Get "inputClasses" }}" placeholder="@brucelee"  aria-labelledby="twitter"/>
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}" for="description">Description</label>
+    <textarea id="description" name="description" class="{{ $.Scratch.Get "inputClasses" }} h4" aria-labelledby="description"></textarea>
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}"  for="tags">Tags</label>
+    <input type="text" id="tags" name="tags" class="{{ $.Scratch.Get "inputClasses" }}" placeholder="comma,separated,values" aria-labelledby="tags"/>
+    
+    <input class="db w-100 mv2 white pa3 bn hover-shadow hover-bg-black bg-animate bg-black" id="contributeButton" type="submit" value="Submit request" />
+
+</form>
