@@ -2,13 +2,14 @@
 title: "Bruce Lee"
 aka: []
 date: "2021-05-24T00:25:29"
+lastmod: "2021-05-24T00:25:29"
 dob: "1940-11-27"
 dod: "1973-07-20"
 website: "https://brucelee.com/"
 ethnicity: ["Chinese"]
 birthLocation: "San Francisco"
 influencedBy: ["Yip Man"]
-tags: ["martial artist", actor", "philosophy"]
+tags: ["martial artist", "actor", "philosophy"]
 featured_image: "/humans/bruce-lee/img.png"
 draft: false
 ---
