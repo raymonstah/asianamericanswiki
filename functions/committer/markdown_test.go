@@ -23,7 +23,7 @@ func TestGenerate(t *testing.T) {
 
 	description := "Bruce Lee was a Chinese Martial Artist who was born in San Francisco, but returned to Hong Kong as a baby to live out his childhood years. In 1959, Bruce Lee returned to the states due to his juvenile troubles in Hong Kong. After studying philosophy and drama in college, he moved to Oakland to continue his Martial Arts practice professionally. Shortly after, he entered Hollywood and introduced Kung Fu to the rest of the world."
 
-	asBytes, err := generate(input, description)
+	asBytes, err := generateMarkdown(input, description)
 	if err != nil {
 		t.Fatalf("error generating markdown: %s", err)
 	}

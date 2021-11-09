@@ -7,8 +7,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// generate generates a markdown byte string.
-func generate(fm frontMatterInput, description string) ([]byte, error) {
+// generateMarkdown generates a markdown byte string.
+func generateMarkdown(fm frontMatterInput, description string) ([]byte, error) {
 	var stream bytes.Buffer
 	humanYaml, err := yaml.Marshal(fm.yaml())
 	if err != nil {
@@ -70,10 +70,12 @@ func (frontMatter frontMatterInput) yaml() frontMatterOutput {
 	return output
 }
 
+const birthdateLayout = "2006-01-02"
+
 func birthdate(date time.Time) string {
 	if date.IsZero() {
 		return "YYYY-MM-DD"
 	}
 
-	return date.Format("2006-01-02")
+	return date.Format(birthdateLayout)
 }
