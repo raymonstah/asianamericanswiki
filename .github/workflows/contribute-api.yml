@@ -25,6 +25,5 @@ jobs:
           entry_point: Handle
           source_dir: ./functions/contributer
           description: An API that creates pull requests for the contribute page.
-          event_trigger_type: http
           max_instances: 1
           # have to set unauthenticated requests via GCP console
