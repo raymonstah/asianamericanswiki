@@ -8,7 +8,7 @@ jobs:
 
       - name: Test
         run: go test ./...
-        working-directory: ./functions/comitter
+        working-directory: ./functions/contributer
 
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@master
