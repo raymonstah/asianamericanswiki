@@ -1,3 +1,4 @@
+// this is a text file because GCP cloud functions looks in main.go for some reason.
 package main
 
 import (
@@ -7,11 +8,10 @@ import (
 	"net/http"
 )
 
-
 func main() {
 	ctx := context.Background()
 	if err := run(ctx); err != nil {
-		log.Fatalf("error running committer: %s", err)
+		log.Fatalf("error running contributer: %s", err)
 	}
 
 }
