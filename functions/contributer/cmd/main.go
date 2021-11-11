@@ -1,4 +1,3 @@
-// this is a text file because GCP cloud functions looks in main.go for some reason.
 package main
 
 import (
@@ -6,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/raymonstah/asianamericanswiki/functions/contributer"
 )
 
 func main() {
@@ -20,7 +21,7 @@ func run(ctx context.Context) error {
 	port := 6969
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%v", port),
-		Handler: http.HandlerFunc(Handle),
+		Handler: http.HandlerFunc(contributer.Handle),
 	}
 
 	log.Printf("starting server on port %v", port)
