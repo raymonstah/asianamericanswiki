@@ -9,6 +9,9 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	// gcp requires this when vendoring.
+	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 )
 
 const (
