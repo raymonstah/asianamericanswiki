@@ -31,6 +31,11 @@ var mockPrServiceKey struct{}
 
 // Handle is the signature required for GCP Cloud function.
 func Handle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
 	ctx := r.Context()
 	token := os.Getenv("GITHUB_AUTH_TOKEN")
 

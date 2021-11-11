@@ -29,3 +29,6 @@ jobs:
           timeout: 10
           # have to set unauthenticated requests via GCP console
           # todo: secrets https://github.com/google-github-actions/deploy-cloud-functions/pull/188
+      
+      - name: log url
+          run: echo "${{ steps.deploy.outputs.url }}"
