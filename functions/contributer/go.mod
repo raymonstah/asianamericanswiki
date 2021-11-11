@@ -1,4 +1,5 @@
 module github.com/raymonstah/asianamericanswiki/functions/contributer
+
 go 1.17
 
 require (

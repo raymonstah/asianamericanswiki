@@ -26,4 +26,6 @@ jobs:
           source_dir: ./functions/contributer
           description: An API that creates pull requests for the contribute page.
           max_instances: 1
+          timeout: 10
           # have to set unauthenticated requests via GCP console
+          # todo: secrets https://github.com/google-github-actions/deploy-cloud-functions/pull/188
