@@ -1,5 +1,4 @@
-module github.com/raymonstah/asianamericanswiki/functions/committer
-
+module github.com/raymonstah/asianamericanswiki/functions/contributer
 go 1.17
 
 require (

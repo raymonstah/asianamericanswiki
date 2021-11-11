@@ -1,0 +1,30 @@
+on: [push]
+name: Deploy contribute api
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Test
+        run: go test ./...
+        working-directory: ./functions/comitter
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - name: Deploy
+        if: github.ref == 'refs/heads/contribute-page' # todo: change this to main later.
+        uses: google-github-actions/deploy-cloud-functions@main
+        with:
+          name: contribute-api
+          runtime: go116
+          entry_point: Handle
+          source_dir: ./functions/contributer
+          description: An API that creates pull requests for the contribute page.
+          event_trigger_type: http
+          max_instances: 1
+          # have to set unauthenticated requests via GCP console
