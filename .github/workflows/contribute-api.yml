@@ -31,4 +31,4 @@ jobs:
           # todo: secrets https://github.com/google-github-actions/deploy-cloud-functions/pull/188
       
       - name: log url
-          run: echo "${{ steps.deploy.outputs.url }}"
+        run: echo "${{ steps.deploy.outputs.url }}"
