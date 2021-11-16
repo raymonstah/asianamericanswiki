@@ -33,3 +33,57 @@
     <input class="db w-100 mv2 white pa3 bn hover-shadow hover-bg-black bg-animate bg-black" id="contributeButton" type="submit" value="Submit request" />
 
 </form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        let form = document.querySelector("form");
+        
+        form.onsubmit = () => {
+            let formData = new FormData(form);
+
+            // form is submitted, no longer a draft
+            formData.append("draft", false);
+
+            // certain inputs should be parsed as an array
+            let object = {};
+            formData.forEach((value, key) => {
+                if (key === "aliases" || key === "ethnicity" || key === "location" || key === "tags") {
+                    object[key] = value.split(",");
+                } else {
+                    object[key] = value;
+                }
+            });
+            // console.log(object);
+
+            // trim values
+            trimAll(object);
+
+            // turn form object into JSON format
+            let jsonFormData = JSON.stringify(object);
+            console.log(jsonFormData);
+
+
+            // TODO:
+            //  send the POST request directly, without converting to JSON?
+            // let request = new XMLHttpRequest();
+            // request.open("POST", "/apiendpoint");
+            // request.send(formData);
+
+
+            // submitting should not redirect
+            return false;
+        }
+
+    });
+
+    // https://gist.github.com/UziTech/3b926e732e3a6391b2ab
+    function trimAll(obj) {
+        for (var prop in obj) {
+            if (typeof obj[prop] === "string") {
+                obj[prop] = obj[prop].trim();
+            } else {
+                trimAll(obj[prop]);
+            }
+        }
+    }
+</script>
