@@ -1,6 +1,25 @@
 {{ $.Scratch.Add "labelClasses" "f6 b db mb1 mt3 sans-serif mid-gray" }}
 {{ $.Scratch.Add "inputClasses" "w-100 f5 pv3 ph3 bg-light-gray bn" }}
+<!-- TODO: FIND OUT IF HEADER IS BEING ATTACHED VIA GATSBY -->
+<head>
+    <style>
+        #contributeButton {
+            cursor: pointer;
+        }
 
+        #formResultsWrapper {
+            display: none;
+            text-align: center;
+            padding: 12px;
+            margin-top: 12px;
+            background: #FF4136;
+            color: white;
+            transition: 0.4s ease-in-out;
+            font-size: clamp(.8em, 1vw + .8em, 1em);
+            width: 100%;
+        }
+    </style>
+</head>
 <form class="black-80 sans-serif" accept-charset="UTF-8" action="{{ .Get "action" }}" method="POST" role="form">
 
     <label class="{{ $.Scratch.Get "labelClasses" }}"  for="name">Name</label>
@@ -32,11 +51,16 @@
     
     <input class="db w-100 mv2 white pa3 bn hover-shadow hover-bg-black bg-animate bg-black" id="contributeButton" type="submit" value="Submit request" />
 
+    <div id="formResultsWrapper">
+        <em id="formResults"></em>
+    </div>
 </form>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         let form = document.querySelector("form");
+        let formResultsWrapper = document.querySelector("#formResultsWrapper");
+        let formResults = document.querySelector("#formResults");
         
         form.onsubmit = () => {
             let formData = new FormData(form);
@@ -50,28 +74,39 @@
                     object[key] = value;
                 }
             });
-            // console.log(object);
+            // FIXME: console.log(object);
 
             // trim values
             trimAll(object);
 
             // turn form object into JSON format
             let jsonFormData = JSON.stringify(object);
-            console.log(jsonFormData);
+            // FIXME: console.log(jsonFormData);
 
-
-            // FIXME: remove mode: "no-cors"
             // send JSON data as a POST request using fetch API
             const ENDPOINT = "https://us-central1-asianamericans-wiki.cloudfunctions.net/contribute-api";
             fetch(ENDPOINT, {
                 method: "POST",
                 body: jsonFormData,
-                mode: "no-cors"
             })
-            .catch((error) => {
-                // catch any errors with fetching API
-                console.log("Error: ", error);
-            });
+                .then((response) => {
+                    console.log("status: " + response.status);
+                    if (response.status === 201) {
+                        formResultsWrapper.style.background = "#2ECC40";
+                    }
+                    return response.text();
+                })
+                .then((result) => {
+                    console.log("result: " + result);
+                    formResults.textContent = result;
+                })
+                .catch((error) => {
+                    // catch any errors with fetching API
+                    console.log("Error: ", error);
+                });
+            
+            // displays the form results
+            formResultsWrapper.style.display = "inline-block";
 
             // submitting should not redirect
             return false;
