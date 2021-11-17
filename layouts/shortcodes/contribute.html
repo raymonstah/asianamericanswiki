@@ -41,9 +41,6 @@
         form.onsubmit = () => {
             let formData = new FormData(form);
 
-            // form is submitted, no longer a draft
-            formData.append("draft", false);
-
             // certain inputs should be parsed as an array
             let object = {};
             formData.forEach((value, key) => {
@@ -63,12 +60,18 @@
             console.log(jsonFormData);
 
 
-            // TODO:
-            //  send the POST request directly, without converting to JSON?
-            // let request = new XMLHttpRequest();
-            // request.open("POST", "/apiendpoint");
-            // request.send(formData);
-
+            // FIXME: remove mode: "no-cors"
+            // send JSON data as a POST request using fetch API
+            const ENDPOINT = "https://us-central1-asianamericans-wiki.cloudfunctions.net/contribute-api";
+            fetch(ENDPOINT, {
+                method: "POST",
+                body: jsonFormData,
+                mode: "no-cors"
+            })
+            .catch((error) => {
+                // catch any errors with fetching API
+                console.log("Error: ", error);
+            });
 
             // submitting should not redirect
             return false;
