@@ -129,7 +129,11 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	fmt.Fprintf(w, "pull request created: %s", url)
+	w.Header().Set("Content-Type", "application/json")
+	resp := response{Link: url}
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		fmt.Fprintf(w, "error encoding response")
+	}
 }
 
 // toBirthdate converts a date formatted as "YYYY-MM-DD" to a time.Time.
@@ -139,4 +143,8 @@ func toBirthdate(date string) (time.Time, error) {
 	}
 
 	return time.Parse(birthdateLayout, date)
+}
+
+type response struct {
+	Link string `json:"link,omitempty"`
 }

@@ -37,7 +37,7 @@ func TestHandler(t *testing.T) {
 		}	
 		`)
 		req := httptest.NewRequest(http.MethodPost, "/", requestBody)
-		prService := mockPrService{url: "https://github.com/raymonstah/asianamericanswiki/pull/1"}
+		prService := mockPrService{url: "foo.com"}
 		contextWithMockService := context.WithValue(req.Context(), mockPrServiceKey, prService)
 		req = req.WithContext(contextWithMockService)
 
@@ -48,7 +48,8 @@ func TestHandler(t *testing.T) {
 		is.NoErr(err)
 
 		is.Equal(http.StatusCreated, result.StatusCode)
-		is.Equal("pull request created: https://github.com/raymonstah/asianamericanswiki/pull/1", string(responseBody))
+		trimmedResponse := strings.TrimSpace(string(responseBody))
+		is.Equal(`{"link":"foo.com"}`, trimmedResponse)
 	})
 }
 
