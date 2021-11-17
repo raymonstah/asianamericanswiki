@@ -17,6 +17,7 @@ jobs:
           export_default_credentials: true
 
       - name: Deploy
+        id: deploy
         if: github.ref == 'refs/heads/contribute-page' # todo: change this to main later.
         uses: google-github-actions/deploy-cloud-functions@main
         with:
