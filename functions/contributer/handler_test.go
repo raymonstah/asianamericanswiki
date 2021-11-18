@@ -37,6 +37,7 @@ func TestHandler(t *testing.T) {
 		}	
 		`)
 		req := httptest.NewRequest(http.MethodPost, "/", requestBody)
+		req.Host = "https://asianamericans.wiki"
 		prService := mockPrService{url: "foo.com"}
 		contextWithMockService := context.WithValue(req.Context(), mockPrServiceKey, prService)
 		req = req.WithContext(contextWithMockService)
@@ -51,12 +52,4 @@ func TestHandler(t *testing.T) {
 		trimmedResponse := strings.TrimSpace(string(responseBody))
 		is.Equal(`{"link":"foo.com"}`, trimmedResponse)
 	})
-}
-
-type mockPrService struct {
-	url string
-}
-
-func (m mockPrService) createPRWithContent(ctx context.Context, input createPRWithContentInput) (string, error) {
-	return m.url, nil
 }

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -26,11 +27,21 @@ type PullRequester interface {
 	createPRWithContent(ctx context.Context, input createPRWithContentInput) (string, error)
 }
 
+type mockPrService struct {
+	url string
+}
+
+func (m mockPrService) createPRWithContent(ctx context.Context, input createPRWithContentInput) (string, error) {
+	return m.url, nil
+}
+
 // used for testing
 var mockPrServiceKey struct{}
 
 // Handle is the signature required for GCP Cloud function.
 func Handle(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
@@ -45,6 +56,11 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		token = "blah"
 	} else {
 		pullRequester = NewPullRequestService(ctx, token)
+	}
+
+	log.Printf("Host: %v, RemoteAddr: %v, RequestURI: %v\n", r.Host, r.RemoteAddr, r.RequestURI)
+	if r.Host != "https://asianamericans.wiki" {
+		pullRequester = mockPrService{url: "https://example.com"}
 	}
 
 	if token == "" {
