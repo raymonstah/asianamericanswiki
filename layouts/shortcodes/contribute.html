@@ -18,7 +18,7 @@
             width: 100%;
         }
 
-        #formResultsIntro {
+        #formResultsIntroValid {
             display: none;
         }
 
@@ -60,7 +60,7 @@
     <input class="db w-100 mv2 white pa3 bn hover-shadow hover-bg-black bg-animate bg-black" id="contributeButton" type="submit" value="Submit request" />
 
     <div id="formResultsWrapper">
-        <em id="formResultsIntro">Pull request created:</em>
+        <em id="formResultsIntroValid">Pull request created:</em>
         <em id="formResults"></em>
     </div>
 </form>
@@ -69,17 +69,18 @@
     document.addEventListener("DOMContentLoaded", () => {
         let form = document.querySelector("form");
         let formResultsWrapper = document.querySelector("#formResultsWrapper");
-        let formResultsIntro = document.querySelector("#formResultsIntro");
+        let formResultsIntroValid = document.querySelector("#formResultsIntroValid");
         let formResults = document.querySelector("#formResults");
         
         form.onsubmit = () => {
             let formData = new FormData(form);
             let formResultsLink = document.createElement("a");
 
-            // to delete it later from DOM
+            // id to delete later from DOM
             formResultsLink.setAttribute("id", "formResultsLink");
             
             // certain inputs should be parsed as an array
+            // store form data in an object as key-value pairs
             let object = {};
             formData.forEach((value, key) => {
                 if (key === "aliases" || key === "ethnicity" || key === "location" || key === "tags") {
@@ -89,13 +90,13 @@
                 }
             });
 
-            // trim values
+            // trim values in the object
             trimAll(object);
 
-            // turn form object into JSON format
+            // JSON format the object
             let jsonFormData = JSON.stringify(object);
 
-            // send JSON data as a POST request using fetch API
+            // send JSON data as POST request in body using fetch API
             const ENDPOINT = "https://us-central1-asianamericans-wiki.cloudfunctions.net/contribute-api";
             let requestStatus = false;
             fetch(ENDPOINT, {
@@ -106,6 +107,7 @@
                     // console.log("status: " + response.status);
                     if (response.status === 201) {
                         requestStatus = true;
+
                         // accepted => green
                         formResultsWrapper.style.background = "#2ECC40";
                     } else {
@@ -113,7 +115,7 @@
                         formResultsWrapper.style.background = "#FF4136";
                     }
 
-                    // return JSON if request valid, otherwise return text
+                    // return response formatted for result
                     if (requestStatus) {
                         return response.json();
                     } else {
@@ -123,15 +125,13 @@
                 .then((result) => {
                     // display JSON if request valid, otherwise display text
                     if (requestStatus) {
-                        // console.log(result.link);
-
                         // display "pull request created" 
-                        formResultsIntro.style.display = "inline-block";
+                        formResultsIntroValid.style.display = "inline-block";
                         
-                        // display result
+                        // assign result
                         formResults.textContent = result.link;
 
-                        // assign link to <a> href 
+                        // assign href from response result
                         formResultsLink.href = result.link;
                         // if <a> not already on formResult, append it
                         if (!formResultsLink.hasChildNodes()) {
@@ -139,9 +139,7 @@
                             formResultsLink.appendChild(formResults);
                         }
                     } else {
-                        // console.log(result);
-
-                        // remove the formResultsLink if it exists
+                        // remove the <a> link if it exists
                         if (document.querySelector("#formResultsLink")) {
                             formResultsWrapper.removeChild(document.querySelector("#formResultsLink"));
 
@@ -151,9 +149,9 @@
                         }
 
                         // hide "pull request created" 
-                        formResultsIntro.style.display = "none";
+                        formResultsIntroValid.style.display = "none";
 
-                        // display result
+                        // assign result
                         formResults.textContent = result;
                     }
                 })
@@ -162,7 +160,7 @@
                     console.log("Error: ", error);
                 });
             
-            // displays the form results
+            // display form results
             formResultsWrapper.style.display = "inline-block";
 
             // clear the form
