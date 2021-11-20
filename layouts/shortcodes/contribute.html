@@ -81,7 +81,7 @@
             
             // certain inputs should be parsed as an array
             // store form data in an object as key-value pairs
-            let contributionObject = formToContribute(formData);
+            let contributionObject = convertFormToObject(formData);
 
             // trim values in the object
             trimAll(contributionObject);
@@ -89,9 +89,12 @@
             // JSON format the object
             let jsonFormData = JSON.stringify(contributionObject);
 
-            // send JSON data as POST request in body using fetch API
             const ENDPOINT = "https://us-central1-asianamericans-wiki.cloudfunctions.net/contribute-api";
             let requestSuccess = false;
+            const COLOR_VALID = "#2ECC40";
+            const COLOR_INVALID = "#FF4136";
+            
+            // send JSON data as POST request in body using fetch API
             fetch(ENDPOINT, {
                 method: "POST",
                 body: jsonFormData
@@ -101,11 +104,9 @@
                     if (response.status === 201) {
                         requestSuccess = true;
 
-                        // accepted => green
-                        formResultsWrapper.style.background = "#2ECC40";
+                        formResultsWrapper.style.background = COLOR_VALID;
                     } else {
-                        // rejected => red
-                        formResultsWrapper.style.background = "#FF4136";
+                        formResultsWrapper.style.background = COLOR_INVALID;
                     }
 
                     // return response formatted for result
@@ -183,7 +184,7 @@
         }
     }
 
-    function formToContribute(formData) {
+    function convertFormToObject(formData) {
         let object = {};
         formData.forEach((value, key) => {
             if (key === "aliases" || key === "ethnicity" || key === "location" || key === "tags") {
