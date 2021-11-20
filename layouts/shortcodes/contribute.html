@@ -91,7 +91,7 @@
 
             // send JSON data as POST request in body using fetch API
             const ENDPOINT = "https://us-central1-asianamericans-wiki.cloudfunctions.net/contribute-api";
-            let requestStatus = false;
+            let requestSuccess = false;
             fetch(ENDPOINT, {
                 method: "POST",
                 body: jsonFormData
@@ -99,7 +99,7 @@
                 .then((response) => {
                     // console.log("status: " + response.status);
                     if (response.status === 201) {
-                        requestStatus = true;
+                        requestSuccess = true;
 
                         // accepted => green
                         formResultsWrapper.style.background = "#2ECC40";
@@ -109,15 +109,18 @@
                     }
 
                     // return response formatted for result
-                    if (requestStatus) {
-                        return response.json();
+                    if (requestSuccess) {
+                        let responseJSON = response.json();
+                        console.log(responseJSON);
+                        return responseJSON;
                     } else {
+                        console.log(response);
                         return response.text();
                     }
                 })
                 .then((result) => {
                     // display JSON if request valid, otherwise display text
-                    if (requestStatus) {
+                    if (requestSuccess) {
                         // display "pull request created" 
                         formResultsIntroValid.style.display = "inline-block";
                         
@@ -131,6 +134,7 @@
                             formResultsWrapper.appendChild(formResultsLink);
                             formResultsLink.appendChild(formResults);
                         }
+                        console.log(result);
                     } else {
                         // remove the <a> link if it exists
                         if (document.querySelector("#formResultsLink")) {
@@ -146,6 +150,7 @@
 
                         // assign result
                         formResults.textContent = result;
+                        console.log(result);
                     }
                 })
                 .catch((error) => {
@@ -157,7 +162,9 @@
             formResultsWrapper.style.display = "inline-block";
 
             // clear the form
-            form.reset();
+            if (requestSuccess) {
+                form.reset();
+            }
 
             // submitting should not redirect
             return false;
