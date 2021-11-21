@@ -6,8 +6,8 @@
     <label class="{{ $.Scratch.Get "labelClasses" }}"  for="name">Name</label>
     <input type="text" id="name" name="name" class="{{ $.Scratch.Get "inputClasses" }}"  required placeholder="Bruce Lee"  aria-labelledby="name"/>
 
-    <label class="{{ $.Scratch.Get "labelClasses" }}"  for="aliases">Aliases</label>
-    <input type="text" id="aliases" name="aliases" class="{{ $.Scratch.Get "inputClasses" }}" placeholder="Little Dragon,Lee Jun-fan" aria-labelledby="aliases"/>
+    <label class="{{ $.Scratch.Get "labelClasses" }}"  for="aka">Aliases</label>
+    <input type="text" id="aka" name="aka" class="{{ $.Scratch.Get "inputClasses" }}" placeholder="Little Dragon,Lee Jun-fan" aria-labelledby="aliases"/>
 
     <label class="{{ $.Scratch.Get "labelClasses" }}"  for="dob">Birthdate</label>
     <input type="date" id="dob" name="dob" class="{{ $.Scratch.Get "inputClasses" }}" placeholder="" aria-labelledby="dob"/>
@@ -149,7 +149,7 @@
     function convertFormToObject(formData) {
         let object = {};
         formData.forEach((value, key) => {
-            if (key === "aliases" || key === "ethnicity" || key === "location" || key === "tags") {
+            if (key === "aka" || key === "ethnicity" || key === "location" || key === "tags") {
                 object[key] = value.split(",");
             } else {
                 object[key] = value;
