@@ -58,8 +58,9 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		pullRequester = NewPullRequestService(ctx, token)
 	}
 
-	log.Printf("Host: %v, RemoteAddr: %v, RequestURI: %v\n", r.Host, r.RemoteAddr, r.RequestURI)
-	if r.Host != "https://asianamericans.wiki" {
+	origin := r.Header.Get("Origin")
+	log.Printf("Origin: %v\n", origin)
+	if origin != "https://asianamericans.wiki" {
 		pullRequester = mockPrService{url: "https://example.com"}
 	}
 
