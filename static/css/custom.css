@@ -1,0 +1,29 @@
+
+/* For /contribute */
+input[type=date] {
+    box-sizing: border-box;
+}
+
+#contributeButton {
+    margin-top: 2rem;
+    cursor: pointer;
+}
+
+#formResultsWrapper {
+    display: none;
+    text-align: center;
+    padding: 12px;
+    margin-top: 12px;
+    color: white;
+    transition: 0.4s ease-in-out;
+    font-size: clamp(.8em, 1.5vw + .8em, 1em);
+    width: 100%;
+}
+
+#formResultsIntroValid {
+    display: none;
+}
+
+#formResults {
+    overflow-wrap: break-word;
+}
