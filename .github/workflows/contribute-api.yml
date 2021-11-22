@@ -18,7 +18,7 @@ jobs:
 
       - name: Deploy
         id: deploy
-        if: github.ref == 'refs/heads/contribute-page' # todo: change this to main later.
+        if: github.ref == 'refs/heads/main'
         uses: google-github-actions/deploy-cloud-functions@main
         with:
           name: contribute-api
