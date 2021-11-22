@@ -1,0 +1,159 @@
+{{ $.Scratch.Add "labelClasses" "f6 b db mb1 mt3 sans-serif mid-gray" }}
+{{ $.Scratch.Add "inputClasses" "w-100 f5 pv3 ph3 bg-light-gray bn" }}
+
+<form class="black-80 sans-serif" accept-charset="UTF-8" action="{{ .Get "action" }}" method="POST" role="form">
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}"  for="name">Name</label>
+    <input type="text" id="name" name="name" class="{{ $.Scratch.Get "inputClasses" }}"  required placeholder="Bruce Lee"  aria-labelledby="name"/>
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}"  for="aka">Aliases</label>
+    <input type="text" id="aka" name="aka" class="{{ $.Scratch.Get "inputClasses" }}" placeholder="Little Dragon,Lee Jun-fan" aria-labelledby="aliases"/>
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}"  for="dob">Birthdate</label>
+    <input type="date" id="dob" name="dob" class="{{ $.Scratch.Get "inputClasses" }}" placeholder="" aria-labelledby="dob"/>
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}"  for="ethnicity">Ethnicity</label>
+    <input type="text" id="ethnicity" name="ethnicity" class="{{ $.Scratch.Get "inputClasses" }}" placeholder="Chinese" aria-labelledby="ethnicity"/>
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}"  for="location">Location</label>
+    <input type="text" id="location" name="location" class="{{ $.Scratch.Get "inputClasses" }}" placeholder="Hong Kong, Seattle, California" aria-labelledby="location"/>
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}" for="website">Website</label>
+    <input type="text" id="website" name="website" class="{{ $.Scratch.Get "inputClasses" }}" placeholder="https://brucelee.com"  aria-labelledby="website"/>
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}" for="twitter">Twitter</label>
+    <input type="text" id="twitter" name="twitter" class="{{ $.Scratch.Get "inputClasses" }}" placeholder="@brucelee"  aria-labelledby="twitter"/>
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}" for="description">Description</label>
+    <textarea id="description" name="description" class="{{ $.Scratch.Get "inputClasses" }} h4" aria-labelledby="description"></textarea>
+
+    <label class="{{ $.Scratch.Get "labelClasses" }}"  for="tags">Tags</label>
+    <input type="text" id="tags" name="tags" class="{{ $.Scratch.Get "inputClasses" }}" placeholder="comma,separated,values" aria-labelledby="tags"/>
+    
+    <input class="db w-100 mv2 white pa3 bn hover-shadow hover-bg-black bg-animate bg-black" id="contributeButton" type="submit" value="Submit request" />
+
+    <div id="formResultsWrapper">
+        <em id="formResultsIntroValid">Pull request created:</em>
+        <em id="formResults"></em>
+    </div>
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        let form = document.querySelector("form");
+        let formResultsWrapper = document.querySelector("#formResultsWrapper");
+        let formResultsIntroValid = document.querySelector("#formResultsIntroValid");
+        let formResults = document.querySelector("#formResults");
+        
+        form.onsubmit = () => {
+            let formData = new FormData(form);
+            let formResultsLink = document.createElement("a");
+
+            // id to delete later from DOM
+            formResultsLink.setAttribute("id", "formResultsLink");
+            
+            // certain inputs should be parsed as an array
+            // store form data in an object as key-value pairs
+            let contributionObject = convertFormToObject(formData);
+
+            // trim values in the object
+            trimAll(contributionObject);
+
+            // JSON format the object
+            let jsonFormData = JSON.stringify(contributionObject);
+
+            const ENDPOINT = "https://us-central1-asianamericans-wiki.cloudfunctions.net/contribute-api";
+            const COLOR_VALID = "#2ECC40";
+            const COLOR_INVALID = "#FF4136";
+            
+            // send JSON data as POST request in body using fetch API
+            fetch(ENDPOINT, {
+                method: "POST",
+                body: jsonFormData
+            })
+                .then((response) => {
+                    if (response.status === 201) {
+                        return response.json();   
+                    }
+                    
+                    return response.text();
+                })
+                .then((result) => {
+                    // display JSON if request valid, otherwise display text
+                    if (result.link) {
+                        formResultsWrapper.style.background = COLOR_VALID;
+                        
+                        // display "pull request created" 
+                        formResultsIntroValid.style.display = "inline-block";
+                        
+                        // assign result
+                        formResults.textContent = result.link;
+
+                        // assign href from response result
+                        formResultsLink.href = result.link;
+
+                        // if <a> not already on formResult, append it
+                        if (!formResultsLink.hasChildNodes()) {
+                            formResultsWrapper.appendChild(formResultsLink);
+                            formResultsLink.appendChild(formResults);
+                        }
+
+                        // clear the form
+                        form.reset();
+                    } else {
+                            formResultsWrapper.style.background = COLOR_INVALID;
+
+                            // remove the <a> link if it exists
+                            if (document.querySelector("#formResultsLink")) { 
+                                formResultsWrapper.removeChild(document.querySelector("#formResultsLink"));
+
+                                // removing formResultsLink also removed its child,
+                                // so we have to append formResults back
+                                formResultsWrapper.appendChild(formResults);
+                            }
+
+                        // hide "pull request created" 
+                        formResultsIntroValid.style.display = "none";
+
+                        // assign result
+                        formResults.textContent = result;
+                    }
+
+                    // finally, display form results
+                    formResultsWrapper.style.display = "inline-block";
+                })
+                .catch((error) => {
+                    // catch any errors with fetching API
+                    console.log("Error: ", error);
+                });
+
+
+            // submitting should not redirect
+            return false;
+        }
+
+    });
+
+    // https://gist.github.com/UziTech/3b926e732e3a6391b2ab
+    function trimAll(obj) {
+        for (var prop in obj) {
+            if (typeof obj[prop] === "string") {
+                obj[prop] = obj[prop].trim();
+            } else {
+                trimAll(obj[prop]);
+            }
+        }
+    }
+
+    function convertFormToObject(formData) {
+        let object = {};
+        formData.forEach((value, key) => {
+            if (key === "aka" || key === "ethnicity" || key === "location" || key === "tags") {
+                object[key] = value.split(",");
+            } else {
+                object[key] = value;
+            }
+        });
+        return object;
+    }
+</script>

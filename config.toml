@@ -17,6 +17,7 @@ SectionPagesMenu = "main"
   description = "The open source database of Asian Americans"
   twitter = "https://twitter.com/aapiwiki"
   github = "https://github.com/raymonstah/asianamericanswiki"
+  custom_css = ["css/custom.css"]
 
 [related]
   includeNewer = true
