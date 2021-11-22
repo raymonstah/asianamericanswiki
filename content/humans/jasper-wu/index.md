@@ -1,7 +1,7 @@
 ---
 title: Jasper Wu
 date: 2021-11-22T07:11:56
-aka: [""]
+aka: []
 dob: YYYY-MM-DD
 tags: [violence]
 website: https://www.gofundme.com/f/in-memory-of-jasper-wu
