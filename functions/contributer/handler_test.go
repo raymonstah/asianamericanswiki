@@ -37,7 +37,7 @@ func TestHandler(t *testing.T) {
 		}	
 		`)
 		req := httptest.NewRequest(http.MethodPost, "/", requestBody)
-		req.Host = "https://asianamericans.wiki"
+		req.Header.Add("Origin", "https://asianamericans.wiki")
 		prService := mockPrService{url: "foo.com"}
 		contextWithMockService := context.WithValue(req.Context(), mockPrServiceKey, prService)
 		req = req.WithContext(contextWithMockService)
