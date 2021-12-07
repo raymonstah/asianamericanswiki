@@ -1,5 +1,5 @@
 ---
-title: Naval Rakikant
+title: Naval Ravikant
 date: 2021-12-07T08:27:23
 aka: []
 dob: YYYY-MM-DD
