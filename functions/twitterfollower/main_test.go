@@ -42,6 +42,27 @@ func TestDiff(t *testing.T) {
 	}
 }
 
+func TestParseHandles(t *testing.T) {
+	testcases := map[string]struct {
+		Raw            string
+		ExpectedHandle string
+	}{
+		"basic-handle":  {Raw: `"@raymond"`, ExpectedHandle: "raymond"},
+		"single-quotes": {Raw: `'https://twitter.com/raymond'`, ExpectedHandle: "raymond"},
+		"double-quotes": {Raw: `"https://twitter.com/raymond"`, ExpectedHandle: "raymond"},
+		"no-quotes":     {Raw: `https://twitter.com/raymond`, ExpectedHandle: "raymond"},
+	}
+
+	for name, testcase := range testcases {
+		t.Run(name, func(t *testing.T) {
+			got := parseHandle(testcase.Raw)
+			if got != testcase.ExpectedHandle {
+				t.Fatalf("expected %v, got %v", testcase.ExpectedHandle, got)
+			}
+		})
+	}
+}
+
 func equalSlices(a, b []string) bool {
 	if len(a) != len(b) {
 		return false
