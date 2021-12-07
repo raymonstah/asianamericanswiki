@@ -1,13 +1,13 @@
 ---
 title: Naval Rakikant
 date: 2021-12-07T08:27:23
-aka: [""]
+aka: []
 dob: YYYY-MM-DD
 tags: [entrepreneur, investor, ceo]
 website: https://nav.al/
 ethnicity: [Indian]
 birthLocation: ""
-location: [""]
+location: []
 twitter: '@naval'
 draft: false
 ---
