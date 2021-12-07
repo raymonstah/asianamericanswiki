@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
 	"io/fs"
 	"io/ioutil"
 	"log"
@@ -107,8 +106,7 @@ func (app app) followHandles(toFollows []string) error {
 			}
 		}
 		if resp.StatusCode > 300 {
-			body, _ := io.ReadAll(resp.Body)
-			err := fmt.Errorf("received %v when attempting to follow %v: %v", resp.StatusCode, toFollow, string(body))
+			err := fmt.Errorf("received %v when attempting to follow %v", resp.StatusCode, toFollow)
 			fmt.Println(err)
 		}
 	}
@@ -171,18 +169,24 @@ func (app app) getTwitterHandlesFromDir(dir string) ([]string, error) {
 		if len(subgroup) < 2 {
 			return nil
 		}
-		twitterUsername := strings.ReplaceAll(subgroup[1], `"`, "")
-		twitterUsername = strings.TrimPrefix(twitterUsername, "https://twitter.com/")
-		if twitterUsername == "" {
-			return nil
+		twitterUsername := parseHandle(subgroup[1])
+		if twitterUsername != "" {
+			usernames = append(usernames, twitterUsername)
 		}
-		usernames = append(usernames, twitterUsername)
 		return nil
 	})
 	if err != nil {
 		return nil, fmt.Errorf("unable to walk humans directory: %v: %w", humansDir, err)
 	}
 	return usernames, nil
+}
+
+func parseHandle(raw string) string {
+	handle := strings.ReplaceAll(raw, `"`, "")
+	handle = strings.ReplaceAll(handle, `'`, "")
+	handle = strings.TrimPrefix(handle, "https://twitter.com/")
+	handle = strings.TrimPrefix(handle, "@")
+	return handle
 }
 
 // setDiff computes a - b, ignoring case.
