@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"io/fs"
 	"io/ioutil"
 	"log"
@@ -106,7 +107,8 @@ func (app app) followHandles(toFollows []string) error {
 			}
 		}
 		if resp.StatusCode > 300 {
-			err := fmt.Errorf("received %v when attempting to follow %v", resp.StatusCode, toFollow)
+			body, _ := io.ReadAll(resp.Body)
+			err := fmt.Errorf("received %v when attempting to follow %v: %v", resp.StatusCode, toFollow, string(body))
 			fmt.Println(err)
 		}
 	}
