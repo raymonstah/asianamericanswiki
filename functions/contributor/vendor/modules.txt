@@ -14,6 +14,7 @@ cloud.google.com/go/pubsub/internal/distribution
 # github.com/GoogleCloudPlatform/functions-framework-go v1.5.0
 ## explicit; go 1.11
 github.com/GoogleCloudPlatform/functions-framework-go/funcframework
+github.com/GoogleCloudPlatform/functions-framework-go/functions
 github.com/GoogleCloudPlatform/functions-framework-go/internal/events/pubsub
 github.com/GoogleCloudPlatform/functions-framework-go/internal/fftypes
 github.com/GoogleCloudPlatform/functions-framework-go/internal/registry

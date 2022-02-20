@@ -1,4 +1,4 @@
-package contributer
+package contributor
 
 import (
 	"context"
@@ -16,15 +16,19 @@ var (
 	ErrFileAlreadyExists   = errors.New("file already exists")
 )
 
-type PullRequestService struct {
+type PullRequestService interface {
+	createPRWithContent(ctx context.Context, input createPRWithContentInput) (string, error)
+}
+
+type DefaultPullRequestService struct {
 	client *github.Client
 }
 
-func NewPullRequestService(ctx context.Context, token string) PullRequestService {
+func NewPullRequestService(ctx context.Context, token string) DefaultPullRequestService {
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token})
 	tc := oauth2.NewClient(ctx, ts)
 	client := github.NewClient(tc)
-	return PullRequestService{client: client}
+	return DefaultPullRequestService{client: client}
 }
 
 type createPRWithContentInput struct {
@@ -37,8 +41,7 @@ type createPRWithContentInput struct {
 	Subject     string
 }
 
-func (prService PullRequestService) createPRWithContent(ctx context.Context, input createPRWithContentInput) (string, error) {
-
+func (prService DefaultPullRequestService) createPRWithContent(ctx context.Context, input createPRWithContentInput) (string, error) {
 	var baseRef *github.Reference
 	var err error
 	if baseRef, _, err = prService.client.Git.GetRef(ctx, repoOwner, repo, "refs/heads/"+branchTo); err != nil {
@@ -97,7 +100,7 @@ type createFileInput struct {
 	authorEmail   string
 }
 
-func (prService PullRequestService) createFile(ctx context.Context, input createFileInput) error {
+func (prService DefaultPullRequestService) createFile(ctx context.Context, input createFileInput) error {
 
 	fileContent, _, resp, err := prService.client.Repositories.GetContents(ctx, input.owner, input.repository, input.path, nil)
 	if err != nil {
@@ -135,7 +138,7 @@ type createPRInput struct {
 }
 
 // createPR creates a pull request. Based on: https://godoc.org/github.com/google/go-github/github#example-PullRequestsService-Create
-func (prService PullRequestService) createPR(ctx context.Context, input createPRInput) (url string, err error) {
+func (prService DefaultPullRequestService) createPR(ctx context.Context, input createPRInput) (url string, err error) {
 	if input.prSubject == "" {
 		return "", errors.New("PR subject is missing")
 	}

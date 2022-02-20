@@ -1,4 +1,4 @@
-module github.com/raymonstah/asianamericanswiki/functions/contributer
+module github.com/raymonstah/asianamericanswiki/functions/contributor
 
 go 1.17
 

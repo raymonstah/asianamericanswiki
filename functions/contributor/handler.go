@@ -1,18 +1,17 @@
-package contributer
+package contributor
 
 import (
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"strings"
 	"time"
 
-	// gcp requires this when vendoring.
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 )
 
 const (
@@ -23,49 +22,28 @@ const (
 	branchTo    = "main"
 )
 
-type PullRequester interface {
-	createPRWithContent(ctx context.Context, input createPRWithContentInput) (string, error)
+var token = os.Getenv("GITHUB_AUTH_TOKEN")
+
+func init() {
+	ctx := context.Background()
+	h := Handler{
+		PullRequestService: NewPullRequestService(ctx, token),
+	}
+
+	functions.HTTP("Handle", h.Handle)
 }
 
-type mockPrService struct {
-	url string
+type Handler struct {
+	PullRequestService PullRequestService
 }
-
-func (m mockPrService) createPRWithContent(ctx context.Context, input createPRWithContentInput) (string, error) {
-	return m.url, nil
-}
-
-// used for testing
-var mockPrServiceKey struct{}
 
 // Handle is the signature required for GCP Cloud function.
-func Handle(w http.ResponseWriter, r *http.Request) {
+func (h Handler) Handle(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-
-	ctx := r.Context()
-	token := os.Getenv("GITHUB_AUTH_TOKEN")
-
-	var pullRequester PullRequester
-	if value, ok := ctx.Value(mockPrServiceKey).(PullRequester); ok {
-		pullRequester = value
-		token = "blah"
-	} else {
-		pullRequester = NewPullRequestService(ctx, token)
-	}
-
-	origin := r.Header.Get("Origin")
-	log.Printf("Origin: %v\n", origin)
-	if origin != "https://asianamericans.wiki" {
-		pullRequester = mockPrService{url: "https://example.com"}
-	}
-
-	if token == "" {
-		w.WriteHeader(http.StatusUnauthorized)
+		errorResponse(w, http.StatusMethodNotAllowed, fmt.Errorf("http method must be POST"))
 		return
 	}
 
@@ -81,25 +59,23 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		Twitter       string   `json:"twitter"`
 		Draft         bool     `json:"draft"`
 
-		Description string `json:"description`
+		Description string `json:"description"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintln(w, err)
+		errorResponse(w, http.StatusBadRequest, err)
+
 		return
 	}
 
 	if input.Name == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintln(w, "name is required")
+		errorResponse(w, http.StatusBadRequest, fmt.Errorf("name is required"))
 		return
 	}
 
 	asBirthdate, err := toBirthdate(input.Dob)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "birthdate invalid: %s", err)
+		errorResponse(w, http.StatusBadRequest, fmt.Errorf("birthday invalid: %w", err))
 		return
 	}
 
@@ -117,14 +93,13 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		Draft:         input.Draft,
 	}, input.Description)
 	if err != nil {
-		w.WriteHeader(http.StatusBadGateway)
-		fmt.Fprintf(w, "unable to generate markdown: %s", err)
+		errorResponse(w, http.StatusInternalServerError, fmt.Errorf("unable to generate markdown: %w", err))
 		return
 	}
 
 	nameWithDashes := strings.ReplaceAll(input.Name, " ", "-")
 	path := fmt.Sprintf("content/humans/%s/index.md", nameWithDashes)
-	url, err := pullRequester.createPRWithContent(ctx, createPRWithContentInput{
+	url, err := h.PullRequestService.createPRWithContent(ctx, createPRWithContentInput{
 		Name:        input.Name,
 		Path:        path,
 		Content:     content,
@@ -136,12 +111,11 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, ErrBranchAlreadyExists) ||
 			errors.Is(err, ErrFileAlreadyExists) {
-			w.WriteHeader(http.StatusUnprocessableEntity)
-			fmt.Fprintln(w, err.Error())
+			errorResponse(w, http.StatusUnprocessableEntity, err)
 			return
 		}
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "error generating pull request: %s", err)
+		errorResponse(w, http.StatusInternalServerError,
+			fmt.Errorf("error generating pull request: %w", err))
 		return
 	}
 
@@ -149,7 +123,8 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	resp := response{Link: url}
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		fmt.Fprintf(w, "error encoding response")
+		errorResponse(w, http.StatusInternalServerError, err)
+		return
 	}
 }
 
@@ -164,4 +139,17 @@ func toBirthdate(date string) (time.Time, error) {
 
 type response struct {
 	Link string `json:"link,omitempty"`
+}
+
+func errorResponse(w http.ResponseWriter, statusCode int, err error) {
+	w.Header().Set("Content-Type", "application/json charset=utf-8")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.WriteHeader(statusCode)
+	response := struct {
+		Error string `json:"error"`
+	}{
+		Error: err.Error(),
+	}
+
+	_ = json.NewEncoder(w).Encode(response)
 }
