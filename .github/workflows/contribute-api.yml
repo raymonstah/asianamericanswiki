@@ -8,7 +8,7 @@ jobs:
 
       - name: Test
         run: go test ./...
-        working-directory: ./functions/contributer
+        working-directory: ./functions/contributor
 
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@master
@@ -24,7 +24,7 @@ jobs:
           name: contribute-api
           runtime: go116
           entry_point: Handle
-          source_dir: ./functions/contributer
+          source_dir: ./functions/contributor
           description: An API that creates pull requests for the contribute page.
           max_instances: 1
           timeout: 10

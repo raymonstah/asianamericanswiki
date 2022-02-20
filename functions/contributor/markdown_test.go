@@ -1,4 +1,4 @@
-package contributer
+package contributor
 
 import (
 	"testing"
