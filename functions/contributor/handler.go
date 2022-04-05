@@ -23,9 +23,12 @@ const (
 	branchTo    = "main"
 )
 
-var token = os.Getenv("GITHUB_AUTH_TOKEN")
-
 func init() {
+	token := os.Getenv("GITHUB_AUTH_TOKEN")
+	if token == "" {
+		log.Fatalln("GITHUB_AUTH_TOKEN not set")
+	}
+
 	ctx := context.Background()
 	h := Handler{
 		PullRequestService: NewPullRequestService(ctx, token),
