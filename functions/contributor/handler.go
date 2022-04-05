@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -142,6 +143,7 @@ type response struct {
 }
 
 func errorResponse(w http.ResponseWriter, statusCode int, err error) {
+	log.Printf("error: %v", err.Error())
 	w.Header().Set("Content-Type", "application/json charset=utf-8")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(statusCode)
