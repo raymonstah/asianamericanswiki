@@ -1,7 +1,7 @@
 ---
 title: Jiaoying Summers
 date: 2022-04-14T05:51:44
-aka: [""]
+aka: []
 dob: YYYY-MM-DD
 tags: [comedian]
 website: https://www.jiaoyingsummers.com/
