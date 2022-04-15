@@ -7,7 +7,7 @@ tags: [actress]
 website: ""
 ethnicity: [Malaysian]
 birthLocation: ""
-location: [""]
+location: []
 twitter: ""
 draft: false
 ---
