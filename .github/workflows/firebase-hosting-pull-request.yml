@@ -19,7 +19,7 @@ jobs:
           # extended: true
 
       - name: Build
-        run: HUGO_ENV=development hugo
+        run: HUGO_ENV=development hugo --baseURL ""
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
