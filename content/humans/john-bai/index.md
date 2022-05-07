@@ -1,7 +1,7 @@
 ---
 title: John Bai
 date: 2022-05-07T05:54:09
-aka: [""]
+aka: []
 dob: YYYY-MM-DD
 tags: [designer]
 website: ""
