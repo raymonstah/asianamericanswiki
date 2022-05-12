@@ -1,19 +1,21 @@
 <script>
-    window.store = {
-    // You can specify your blog section only:
-    {{ range where .Site.Pages "Section" "humans" }}
-    // For all pages in your site, use "range .Site.Pages"
+  humansSearchIndex = {
+  // You can specify your blog section only:
+  // For all pages in your site, use "range .Site.Pages"
+  {{ range where .Site.RegularPages "Section" "humans" }}
+    {{ if not .Params.Draft}}
     // You can use any unique identifier here
-    "{{ .Permalink }}": {
-        // You can customize your searchable fields using any .Page parameters
-        "title": "{{ .Title  }}",
+        "{{ .Permalink }}": {
+            // You can customize your searchable fields using any .Page parameters
+            "title": "{{ .Title  }}",
             "tags": [{{ range .Params.Tags }}"{{ . }}",{{ end }}],
-        "ethnicity": [{{ range .Params.Ethnicity }}"{{ . }}",{{ end }}],
-        "content": {{ .Content | plainify }}, // Strip out HTML tags
-        "url": "{{ .Permalink }}"
-    },
+            "ethnicity": [{{ range .Params.Ethnicity }}"{{ . }}",{{ end }}],
+            "content": {{ .Content | plainify }}, // Strip out HTML tags
+            "url": "{{ .Permalink }}"
+        },
+        {{ end }}
     {{ end }}
-    }
+  }
 </script>
 <!-- Include Lunr and code for your search function,
 which you'll write in the next section -->
