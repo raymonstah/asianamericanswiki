@@ -13,7 +13,7 @@ SectionPagesMenu = "main"
   
 [params]
   favicon = "/favicon.ico"
-  site_logo = "/logo64.png"
+  site_logo = "/scalable.svg"
   description = "The open source database of Asian Americans"
   twitter = "https://twitter.com/aapiwiki"
   github = "https://github.com/raymonstah/asianamericanswiki"
