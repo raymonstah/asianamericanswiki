@@ -5,4 +5,4 @@ description: Fill out the form below to contribute an inspirational Asian Americ
 omit_header_text: true
 ---
 
-{{< contribute action="https://example.com"  >}}
+{{< contribute >}}
