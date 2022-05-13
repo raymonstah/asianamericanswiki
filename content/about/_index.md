@@ -20,10 +20,3 @@ to see what's been done before and to push the boundaries of what can be done.
 The list of influential Asian Americans continues to grow every day, with more and more people excelling at what they
 do. This website aims to solve that. I wanted to build something for the people, that would also allow contributions by
 the people. There are over 20 million of us, and we're a whole lot stronger when we collaborate and work together.
-
-# Technical details
-
-This entire website is open sourced on [Github](https://github.com/raymonstah/asianamericanswiki). It's built using a
-static site generator, so all the content is written in Markdown. If you're a developer and want to contribute to the
-list, please open a pull request. In the meantime, we're working on a form that you can submit to simplify the process
-for less technical users. 
