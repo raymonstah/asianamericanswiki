@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - main
+    paths:
+      # only run when the source code changes or this file changes
+      - 'content/humans/**'
+      - '.github/workflows/twitter-follower.yml'
 jobs:
   checks:
     name: run
