@@ -2,6 +2,11 @@
   push:
     branches:
       - main
+    paths:
+      # only run when the source code changes or this file changes
+      - 'functions/contributor/**'
+      - '.github/workflows/contribute-api.yml'
+
 name: Deploy contribute api
 jobs:
   build:
