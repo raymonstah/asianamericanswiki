@@ -3,3 +3,4 @@ public/
 .firebase/
 .hugo_build.lock
 .DS_Store
+resources/_gen/*
