@@ -1,7 +1,7 @@
 baseURL = "https://asianamericans.wiki"
 languageCode = "en-us"
 title = "AsianAmericans.wiki"
-theme = "ananke"
+theme = ["github.com/theNewDynamic/gohugo-theme-ananke"]
 enableGitInfo = true
 googleAnalytics = "G-DNWC1SD6ZZ"
 enableRobotsTXT = true
