@@ -6,7 +6,8 @@ on:
     paths:
       # only run when the source code changes or this file changes
       - 'content/humans/**'
-      - '.github/workflows/twitter-follower.yml'
+      - 'functions/twitterfollower/**'
+      - '.github/workflows/twitter-follow.yml'
 jobs:
   checks:
     name: run
