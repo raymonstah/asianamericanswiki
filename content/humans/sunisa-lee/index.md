@@ -7,7 +7,7 @@ dod: YYYY-MM-DD
 website: "https://en.wikipedia.org/wiki/Sunisa_Lee"
 ethnicity: ["Hmong"]
 birthLocation: "St. Paul, Minnesota"
-location: [""]
+location: []
 tags: ["gymnast", "gold", "olympics"]
 influencedBy: []
 twitter: "https://twitter.com/sunisalee_"

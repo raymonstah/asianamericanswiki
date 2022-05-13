@@ -1,7 +1,7 @@
 ---
 title: Ellison Onizuka
 date: 2022-05-03T00:15:37
-aka: [""]
+aka: []
 dob: "1946-06-24"
 tags: [Japanese, astronaut, NASA, challenger]
 website: ""
