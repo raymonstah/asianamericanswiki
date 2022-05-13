@@ -5,7 +5,7 @@ date: "2021-05-24T00:25:29"
 dob: YYYY-MM-DD
 dod: YYYY-MM-DD
 website: "http://www.mona-zhang.com/"
-ethnicity: [""]
+ethnicity: []
 birthLocation: ""
 location: ["Washington, DC", "New York, NY"]
 tags: ["Journalist", "Founder"]

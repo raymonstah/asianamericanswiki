@@ -9,7 +9,7 @@ website: "https://www.happyasianwoman.com/"
 ethnicity: ["Chinese"]
 birthLocation: ""
 location: ["San Francisco Bay Area, California"]
-influencedBy: [""]
+influencedBy: []
 twitter: "https://twitter.com/acchen"
 draft: false
 ---
