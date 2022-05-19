@@ -33,3 +33,13 @@ SectionPagesMenu = "main"
   name = 'ethnicity'
   weight = 10
 
+[taxonomies]
+    ethnicity = "ethnicity"
+    tags = "tags"
+
+[outputs]
+    page = ["HTML", "json"]
+    home = ["HTML", "RSS"]
+    section = ["HTML", "RSS", "json"]
+    term = ["HTML", "RSS", "json"]
+    tag = ["HTML", "RSS", "json"]

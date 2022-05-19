@@ -1,0 +1,6 @@
+{{ define "response" }} [
+{{ range $index, $e := .Data.Pages.ByTitle }}
+{{ if $index }},{{ end }}{{ .Render "item" }}
+{{ end }}
+]
+{{ end }}
