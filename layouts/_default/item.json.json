@@ -1,0 +1,17 @@
+{
+  "name": "{{ .Title }}",
+  "ethnicity": {{ .Params.ethnicity | jsonify }},
+  "aka": {{ .Params.aka | jsonify}},
+  "dob": {{ .Params.dob | jsonify }},
+  "dod": {{ .Params.dod | jsonify }},
+  "tags": {{ .Params.tags | jsonify }},
+  "website": {{ .Params.website | jsonify }},
+  "birthLocation": {{ .Params.birthLocation | jsonify }},
+  "location": {{ .Params.location | jsonify }},
+  "influencedBy": {{ .Params.influencedBy | jsonify }},
+  "twitter": {{ .Params.twitter | jsonify }},
+  "featured_image": {{ .Params.featured_image | jsonify }},
+  "content": {{ .Summary | jsonify }},
+  "draft": {{ .Draft }},
+  "permalink" : "{{ .Permalink }}"
+}
