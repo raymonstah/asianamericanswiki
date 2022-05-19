@@ -5,7 +5,7 @@ date: "2021-05-24T00:25:29"
 dob: "1968-11-06"
 dod: ""
 website: "https://en.wikipedia.org/wiki/Jerry_Yang"
-ethnicity: ["Tawianese"]
+ethnicity: ["taiwanese"]
 birthLocation: "Taiwan"
 tags: ["Technology"]
 influencedBy: []
