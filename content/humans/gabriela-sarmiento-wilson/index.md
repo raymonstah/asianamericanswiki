@@ -1,5 +1,5 @@
 ---
-title: "Gabriela Sarmiento Wilson"
+title: "Gabriela Sarmiento Wilson (H.E.R)"
 aka: ["H.E.R"]
 date: 2021-06-23T10:40:52-07:00
 dob: 1997-06-27
