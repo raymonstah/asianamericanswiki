@@ -8,7 +8,7 @@ website: "https://www.jimmycomedy.com/"
 ethnicity: ["Hong Kong"]
 birthLocation: "Hong Kong"
 tags: ["Entertainment", "Comedy"]
-influencedBy: ["Stephen Chow", "Ng Man Tat"]
+influencedBy: ["Stephen Chow", "Ng Man Tat", "Bobby Lee", "Dat Phan"]
 draft: false
 ---
 
