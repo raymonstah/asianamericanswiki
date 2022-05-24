@@ -12,4 +12,6 @@ influencedBy: []
 draft: false
 ---
 
-Gemma is an English actress who studied law before pursing a career in acting and is an advocate for children suffering in adverse conditions by volunteering at various organizations
+Gemma is an English actress who studied law before pursing a career in acting
+and is an advocate for children suffering in adverse conditions by volunteering
+at various organizations

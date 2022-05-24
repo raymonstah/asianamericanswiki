@@ -15,8 +15,10 @@ featured_image: ""
 draft: false
 ---
 
-Thuy is a Vietnamese rnb singer from the Bay Area. She now resides in Los Angeles making music full time.
+Thuy is a Vietnamese rnb singer from the Bay Area. She now resides in Los
+Angeles making music full time.
 
-Check out her music on Youtube and [Spotify](https://open.spotify.com/artist/3R80OE4RViOWbnuvqh0j8a):
+Check out her music on Youtube and
+[Spotify](https://open.spotify.com/artist/3R80OE4RViOWbnuvqh0j8a):
 
 {{< youtube cmUmrVfxQ9o >}}

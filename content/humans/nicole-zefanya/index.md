@@ -13,4 +13,5 @@ twitter: "https://twitter.com/nikizefanya"
 draft: false
 ---
 
-Nicole Zefanya, also known as NIKI is an Indonesian singer, songwriter, and producer signed with 88rising.
+Nicole Zefanya, also known as NIKI is an Indonesian singer, songwriter, and
+producer signed with 88rising.

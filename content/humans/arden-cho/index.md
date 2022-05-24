@@ -14,4 +14,5 @@ twitter: "https://twitter.com/arden_cho"
 draft: false
 ---
 
-Arden Cho is a Korean American singer, actress, and model known for her role on Teen Wolf.
+Arden Cho is a Korean American singer, actress, and model known for her role on
+Teen Wolf.

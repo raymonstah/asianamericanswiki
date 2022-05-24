@@ -12,4 +12,5 @@ influencedBy: []
 draft: false
 ---
 
-Teacher that helped legalize bilingual and English-as-a-Second-Language education public schools
+Teacher that helped legalize bilingual and English-as-a-Second-Language
+education public schools

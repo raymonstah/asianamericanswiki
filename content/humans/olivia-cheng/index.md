@@ -14,4 +14,5 @@ twitter: "https://twitter.com/ThatOliviaCheng"
 draft: false
 ---
 
-Olivia Cheng is a Canadian actress known for playing Ah Toy in the TV show, Warrior.
+Olivia Cheng is a Canadian actress known for playing Ah Toy in the TV show,
+Warrior.

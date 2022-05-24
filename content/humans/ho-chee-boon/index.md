@@ -14,4 +14,6 @@ twitter: ""
 draft: false
 ---
 
-Ho Chee Boon is a Michelin-starred chef with over 25 years of experience. His most recent work includes opening up a Cantonese restaurant, "Empress by Boon" in San Francisco.
+Ho Chee Boon is a Michelin-starred chef with over 25 years of experience. His
+most recent work includes opening up a Cantonese restaurant, "Empress by Boon"
+in San Francisco.

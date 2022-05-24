@@ -14,4 +14,5 @@ twitter: "https://twitter.com/auliicravalho"
 draft: false
 ---
 
-Auli'i (pronounced ow-lee-ee) is a multi-racial actress known for her debut role in the movie Moana.
+Auli'i (pronounced ow-lee-ee) is a multi-racial actress known for her debut role
+in the movie Moana.

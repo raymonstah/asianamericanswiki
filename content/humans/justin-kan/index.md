@@ -13,4 +13,5 @@ twitter: "https://twitter.com/justinkan"
 draft: false
 ---
 
-Justin Kan is the co-founder of Twitch. He is a start-up investor, and now a YouTuber.
+Justin Kan is the co-founder of Twitch. He is a start-up investor, and now a
+YouTuber.

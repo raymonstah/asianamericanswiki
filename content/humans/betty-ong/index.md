@@ -14,4 +14,10 @@ twitter: ""
 draft: false
 ---
 
-Betty Ann Ong was an American flight attendant aboard American Airlines Flight 11, the first airplane hijacked during the September 11 attacks. Ong was the first person to alert authorities to the hijackings taking place that day.[1] Shortly after the hijacking, Ong notified the American Airlines ground crew of the hijacking, staying on the radiophone for 25 minutes to relay vital information that led to the closing of airspace by the FAA, a first in United States history. For this, the 9/11 Commission declared Ong a hero.
+Betty Ann Ong was an American flight attendant aboard American Airlines Flight
+11, the first airplane hijacked during the September 11 attacks. Ong was the
+first person to alert authorities to the hijackings taking place that day.[1]
+Shortly after the hijacking, Ong notified the American Airlines ground crew of
+the hijacking, staying on the radiophone for 25 minutes to relay vital
+information that led to the closing of airspace by the FAA, a first in United
+States history. For this, the 9/11 Commission declared Ong a hero.

@@ -14,4 +14,5 @@ twitter: ""
 draft: false
 ---
 
-Sing J. Lee is a director, producer, writer, and artist. He is known for directing music videos for the Migos and Rich Brian.
+Sing J. Lee is a director, producer, writer, and artist. He is known for
+directing music videos for the Migos and Rich Brian.

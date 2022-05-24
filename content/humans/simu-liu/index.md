@@ -14,4 +14,5 @@ twitter: "https://twitter.com/SimuLiu"
 draft: false
 ---
 
-Simu is a famous actor known for his role in Kim's Convenience. He is also playing the role of Shang-Chi, an Asian American superhero.
+Simu is a famous actor known for his role in Kim's Convenience. He is also
+playing the role of Shang-Chi, an Asian American superhero.

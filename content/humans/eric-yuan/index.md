@@ -14,6 +14,10 @@ twitter: "https://twitter.com/ericsyuan"
 draft: false
 ---
 
-Eric Yuan is a Chinese American entrepreneur known for being the founder of Zoom, a video-based conferencing application. He was an early employee at WebEx.
+Eric Yuan is a Chinese American entrepreneur known for being the founder of
+Zoom, a video-based conferencing application. He was an early employee at WebEx.
 
-Eric founded Zoom in 2011 and successfully brought the company to its IPO in 2019. He initially attempted to pitch a mobile friendly video conferencing system to Cisco, but they turned him down. That's when he left Cisco to start Zoom. Today Zoom is worth over $100 Billion.
+Eric founded Zoom in 2011 and successfully brought the company to its IPO
+in 2019. He initially attempted to pitch a mobile friendly video conferencing
+system to Cisco, but they turned him down. That's when he left Cisco to start
+Zoom. Today Zoom is worth over $100 Billion.

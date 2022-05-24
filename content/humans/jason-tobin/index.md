@@ -14,4 +14,7 @@ twitter: "https://twitter.com/jsntbn"
 draft: false
 ---
 
-Tobin is an actor known for his lead role of Young Jun in the TV show, "Warrior". He was interviewed by Shannon Lee on the [Bruce Lee Podcast](https://brucelee.com/podcast-blog/2021/5/27/304-flowing-with-jason-tobin). He has worked with Justin Lin on many films.
+Tobin is an actor known for his lead role of Young Jun in the TV show,
+"Warrior". He was interviewed by Shannon Lee on the
+[Bruce Lee Podcast](https://brucelee.com/podcast-blog/2021/5/27/304-flowing-with-jason-tobin).
+He has worked with Justin Lin on many films.

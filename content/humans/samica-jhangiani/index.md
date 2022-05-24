@@ -14,4 +14,5 @@ twitter: "https://twitter.com/samicamusic"
 draft: false
 ---
 
-Samica is an Indian American musician, primarily known for writing and singing R&B and pop music.
+Samica is an Indian American musician, primarily known for writing and singing
+R&B and pop music.

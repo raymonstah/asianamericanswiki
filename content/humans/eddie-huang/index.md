@@ -15,5 +15,6 @@ featured_image: ""
 draft: false
 ---
 
-Eddie Huang is well known his memoir turned ABC sitcom, Fresh Off the Boat.
-He also hosts "Huang's World", a TV docuseries exploring identity using food as a medium.
+Eddie Huang is well known his memoir turned ABC sitcom, Fresh Off the Boat. He
+also hosts "Huang's World", a TV docuseries exploring identity using food as a
+medium.

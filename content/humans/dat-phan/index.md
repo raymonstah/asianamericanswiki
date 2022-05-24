@@ -15,4 +15,5 @@ featured_image: ""
 draft: false
 ---
 
-Dat Phan is a Vietnamese American stand-up comedian. He is considered an OG in the Asian American comedy space.
+Dat Phan is a Vietnamese American stand-up comedian. He is considered an OG in
+the Asian American comedy space.

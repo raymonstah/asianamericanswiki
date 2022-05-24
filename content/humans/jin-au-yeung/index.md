@@ -14,8 +14,9 @@ twitter: "https://twitter.com/iammcjin"
 draft: false
 ---
 
-First Asian American solo rapper to be signed to a major record label. Jin has also pursued stand-up comedy and acting as well.
-He started his career in battle rap and participated in Freestyle Fridays on 106 & Park.
-He then was signed under Ruff Ryders Entertainment where he released his debut album "The Rest is History".
-In 2007, Jin moved to Hong Kong where he released his cantonese album ABC and also became a born again Christian.
-He now resides in New York.
+First Asian American solo rapper to be signed to a major record label. Jin has
+also pursued stand-up comedy and acting as well. He started his career in battle
+rap and participated in Freestyle Fridays on 106 & Park. He then was signed
+under Ruff Ryders Entertainment where he released his debut album "The Rest is
+History". In 2007, Jin moved to Hong Kong where he released his cantonese album
+ABC and also became a born again Christian. He now resides in New York.

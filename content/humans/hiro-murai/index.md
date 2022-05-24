@@ -12,6 +12,8 @@ twitter: https://twitter.com/muraihiro
 draft: false
 ---
 
-Hiro Murai is a Tokyo-born filmmaker based out of Los Angeles. Hiro has worked with many successful artists, producing music videos for Childish Gambino, Frank Ocean, Chance the Rapper, and many more.
+Hiro Murai is a Tokyo-born filmmaker based out of Los Angeles. Hiro has worked
+with many successful artists, producing music videos for Childish Gambino, Frank
+Ocean, Chance the Rapper, and many more.
 
 Hiro also directed a few episodes of the American comedy-drama TV show, Atlanta.

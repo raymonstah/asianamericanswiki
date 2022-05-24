@@ -15,4 +15,6 @@ featured_image: ""
 draft: false
 ---
 
-Samantha Tan is a professional race car driver and multi champion. She is trailblazer and paving the road for Asian American women to thrive in non traditional careers.
+Samantha Tan is a professional race car driver and multi champion. She is
+trailblazer and paving the road for Asian American women to thrive in non
+traditional careers.

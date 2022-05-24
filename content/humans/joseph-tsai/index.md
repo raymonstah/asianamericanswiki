@@ -15,6 +15,7 @@ featured_image: "humans/clara-wu-tsai/img.png"
 draft: false
 ---
 
-Joe Tsai is the Executive Vice Chairman of Alibaba and owner the Brooklyn Nets, New York Liberty, and San Diego Seals.
+Joe Tsai is the Executive Vice Chairman of Alibaba and owner the Brooklyn Nets,
+New York Liberty, and San Diego Seals.
 
 He is married to [Clara Wu Tsai](../clara-wu-tsai)

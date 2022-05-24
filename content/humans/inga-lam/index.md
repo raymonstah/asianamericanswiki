@@ -12,4 +12,5 @@ influencedBy: ["Early Youtubers"]
 draft: false
 ---
 
-Inga Lam was born in Oakland, CA but raised in Hong Kong. She works at Buzzfeed creating content that is both personal and relatable for Asian Americans.
+Inga Lam was born in Oakland, CA but raised in Hong Kong. She works at Buzzfeed
+creating content that is both personal and relatable for Asian Americans.

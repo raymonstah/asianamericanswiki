@@ -13,4 +13,5 @@ twitter: "https://twitter.com/richbrian"
 draft: false
 ---
 
-Also known as Rich Brian, Brian Imanuel is an Indonesian rapper who went viral overnight with his music video, "Dat $tick"
+Also known as Rich Brian, Brian Imanuel is an Indonesian rapper who went viral
+overnight with his music video, "Dat $tick"

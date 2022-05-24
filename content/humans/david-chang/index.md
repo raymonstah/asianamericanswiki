@@ -13,4 +13,5 @@ twitter: "https://twitter.com/davidchang"
 draft: false
 ---
 
-David Chang is a Korean American restaurateur known fo rstarting Momofuku and Milk Bar. He also has a Netflix original series "Ugly Delicious".
+David Chang is a Korean American restaurateur known fo rstarting Momofuku and
+Milk Bar. He also has a Netflix original series "Ugly Delicious".

@@ -14,4 +14,7 @@ twitter: "https://twitter.com/adeleBlim"
 draft: false
 ---
 
-Adele Lim is a Malaysian American film and television producer and screenwriter. She is best known as a screenwriter for the 2018 movie Crazy Rich Asians. She has given support to young writers as mentor and speaker for the Coalition of Asian Pacifics in Entertainment (CAPE).
+Adele Lim is a Malaysian American film and television producer and screenwriter.
+She is best known as a screenwriter for the 2018 movie Crazy Rich Asians. She
+has given support to young writers as mentor and speaker for the Coalition of
+Asian Pacifics in Entertainment (CAPE).

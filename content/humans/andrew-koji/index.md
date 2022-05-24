@@ -14,4 +14,5 @@ twitter: ""
 draft: false
 ---
 
-Andrew Koji is a British actor known for playing the lead role of Ah Sahm in "Warrior".
+Andrew Koji is a British actor known for playing the lead role of Ah Sahm in
+"Warrior".

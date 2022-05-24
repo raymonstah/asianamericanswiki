@@ -14,4 +14,8 @@ twitter: "https://twitter.com/aliwong"
 draft: false
 ---
 
-Ali Wong is a stand-up comedian, writer, and actress. She helped write and starred in "Always Be My Maybe" alongside with [Randall Park](../randall-park). Ali is known for her raunchy style when she's delivering her punch lines. She was included in [Time magazine's 100 Most Influential People of 2020](https://time.com/collection/100-most-influential-people-2020/).
+Ali Wong is a stand-up comedian, writer, and actress. She helped write and
+starred in "Always Be My Maybe" alongside with [Randall Park](../randall-park).
+Ali is known for her raunchy style when she's delivering her punch lines. She
+was included in
+[Time magazine's 100 Most Influential People of 2020](https://time.com/collection/100-most-influential-people-2020/).

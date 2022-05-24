@@ -14,4 +14,5 @@ twitter: "https://twitter.com/HERMusicx"
 draft: false
 ---
 
-Gabriela goes by her stage name, H.E.R, which stands for "Having Everything Revealed". She is a famous RnB artist from the Bay Area.
+Gabriela goes by her stage name, H.E.R, which stands for "Having Everything
+Revealed". She is a famous RnB artist from the Bay Area.

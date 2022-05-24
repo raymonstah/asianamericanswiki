@@ -14,4 +14,5 @@ twitter: "https://twitter.com/justinlin"
 draft: false
 ---
 
-Justin Lin is a film director known for the director of the Fast & Furious series. He is also the executive producer of the TV show, "Warrior".
+Justin Lin is a film director known for the director of the Fast & Furious
+series. He is also the executive producer of the TV show, "Warrior".

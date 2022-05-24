@@ -12,4 +12,5 @@ influencedBy: []
 draft: false
 ---
 
-Joanna Ho is a New York Times bestseller, and author of "Eyes that Kiss in the Corner".
+Joanna Ho is a New York Times bestseller, and author of "Eyes that Kiss in the
+Corner".

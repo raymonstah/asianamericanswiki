@@ -14,4 +14,6 @@ twitter: "https://twitter.com/andrew__kung"
 draft: false
 ---
 
-Andrew Kung is a freelance photographer based in Brooklyn. His goal is to normalize Asian American beauty and individuality. Here's one of his articles, [The desexualization of the Asian American male](https://www.cnn.com/style/article/andrew-kung-asian-american-men/index.html).
+Andrew Kung is a freelance photographer based in Brooklyn. His goal is to
+normalize Asian American beauty and individuality. Here's one of his articles,
+[The desexualization of the Asian American male](https://www.cnn.com/style/article/andrew-kung-asian-american-men/index.html).

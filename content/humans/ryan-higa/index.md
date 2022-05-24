@@ -14,4 +14,7 @@ twitter: "https://twitter.com/therealryanhiga"
 draft: false
 ---
 
-Ryan started his career off making funny Youtube videos back in 2006 and held the spot as the most subscribed channel on Youtube for a couple of years. Since then, he has started a K-pop group "B.G.A", published a memoir "How to Write Good", and hosts a podcast "Off The Pill".
+Ryan started his career off making funny Youtube videos back in 2006 and held
+the spot as the most subscribed channel on Youtube for a couple of years. Since
+then, he has started a K-pop group "B.G.A", published a memoir "How to Write
+Good", and hosts a podcast "Off The Pill".

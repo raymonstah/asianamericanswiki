@@ -12,4 +12,7 @@ influencedBy: []
 draft: false
 ---
 
-Randall Park is a Korean American actor, comedian and writer bes tknown for portraying Eddie Huang's father, American restauranteur Louis Huange in the ABC sitcom Fresh Off the Boat, for which he was nominated for the Critics' Choice Television Award for Best Actor in a Comedy Series in 2016
+Randall Park is a Korean American actor, comedian and writer bes tknown for
+portraying Eddie Huang's father, American restauranteur Louis Huange in the ABC
+sitcom Fresh Off the Boat, for which he was nominated for the Critics' Choice
+Television Award for Best Actor in a Comedy Series in 2016

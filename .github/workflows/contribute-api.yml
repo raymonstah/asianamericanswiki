@@ -35,7 +35,8 @@ jobs:
           runtime: go116
           entry_point: Handle
           source_dir: ./functions/contributor
-          description: An API that creates pull requests for the contribute page.
+          description:
+            An API that creates pull requests for the contribute page.
           max_instances: 1
           timeout: 10
           secret_environment_variables: "GITHUB_AUTH_TOKEN=projects/424340922093/secrets/asianamericanswiki-contributer-pat"

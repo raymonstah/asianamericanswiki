@@ -14,4 +14,6 @@ twitter: ""
 draft: false
 ---
 
-Raymond Townsend is the first Filipino American NBA player, who played as a point guard for the Golden State Warriors and Indiana Pacers. He's also a UCLA alumni.
+Raymond Townsend is the first Filipino American NBA player, who played as a
+point guard for the Golden State Warriors and Indiana Pacers. He's also a UCLA
+alumni.

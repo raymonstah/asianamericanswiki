@@ -15,4 +15,6 @@ featured_image: "/humans/nathan-chen/img.jpeg"
 draft: false
 ---
 
-Nathan Chen is a Chinese American figure skater, who began his journey skating at the age of three. He is the 2022 champion of the Beijing Olympics, winning gold in Men's singles Figure skating.
+Nathan Chen is a Chinese American figure skater, who began his journey skating
+at the age of three. He is the 2022 champion of the Beijing Olympics, winning
+gold in Men's singles Figure skating.

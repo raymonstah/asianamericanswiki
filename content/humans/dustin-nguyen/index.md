@@ -14,4 +14,5 @@ twitter: ""
 draft: false
 ---
 
-Growing up in Vietnam where both his parents were also actors, Dustin Nguyen has been acting since the early 80's. He is known for playing Zing in Warrior.
+Growing up in Vietnam where both his parents were also actors, Dustin Nguyen has
+been acting since the early 80's. He is known for playing Zing in Warrior.

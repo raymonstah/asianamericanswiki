@@ -14,4 +14,7 @@ twitter: "https://twitter.com/hasanminhaj"
 draft: false
 ---
 
-Hasan is an Indian American comedian who grew up in Davis, California. He graduated from UC Davis from with a degree in Political Science. In 2018, his show "Patriot Act with Hasan Minhaj" premiered on Netflix. He is now on The Morning Show.
+Hasan is an Indian American comedian who grew up in Davis, California. He
+graduated from UC Davis from with a degree in Political Science. In 2018, his
+show "Patriot Act with Hasan Minhaj" premiered on Netflix. He is now on The
+Morning Show.

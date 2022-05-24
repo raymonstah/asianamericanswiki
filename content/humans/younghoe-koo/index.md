@@ -14,4 +14,5 @@ twitter: "https://twitter.com/YounghoeKoo"
 draft: false
 ---
 
-Younghoe Koo is a South Korean American football placekicker for the Atlanta Falcons of the National Football League (NFL).
+Younghoe Koo is a South Korean American football placekicker for the Atlanta
+Falcons of the National Football League (NFL).

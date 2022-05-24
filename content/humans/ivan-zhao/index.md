@@ -14,4 +14,5 @@ twitter: "https://twitter.com/ivanhzhao"
 draft: false
 ---
 
-Ivan Zhao is the CEO and cofounder of a productivity and collaboration tool, Notion.
+Ivan Zhao is the CEO and cofounder of a productivity and collaboration tool,
+Notion.

@@ -12,4 +12,5 @@ influencedBy: []
 draft: false
 ---
 
-Jerry Yang is the co-creator of Yahoo! He is an entrepreneur, having invested in Alibaba early on, and also a philantropist.
+Jerry Yang is the co-creator of Yahoo! He is an entrepreneur, having invested in
+Alibaba early on, and also a philantropist.

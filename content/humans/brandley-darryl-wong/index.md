@@ -14,4 +14,6 @@ twitter: "https://twitter.com/wongbd"
 draft: false
 ---
 
-BD Wong is a Chinese American actor born and raised in San Francisco. He is known for his roles in Jurassic Park, Oz, and Law & Order. He is also openly gay.
+BD Wong is a Chinese American actor born and raised in San Francisco. He is
+known for his roles in Jurassic Park, Oz, and Law & Order. He is also openly
+gay.

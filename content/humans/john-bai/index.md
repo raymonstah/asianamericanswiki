@@ -12,4 +12,6 @@ twitter: https://twitter.com/BohnJai
 draft: false
 ---
 
-John Bai is a Chinese designer currently working for Brex. He's been at a handful of other tech companies such as Lyft, Dropbox, and Carta. John is based in New York City.
+John Bai is a Chinese designer currently working for Brex. He's been at a
+handful of other tech companies such as Lyft, Dropbox, and Carta. John is based
+in New York City.

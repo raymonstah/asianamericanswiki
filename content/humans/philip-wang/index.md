@@ -14,4 +14,6 @@ twitter: "https://twitter.com/philipwang"
 draft: false
 ---
 
-Phil Wang is known for starting Wong Fu Productions back in 2004 with Wesley Chan and Ted Fu. Wong Fu Productions is on a mission to share Asian American stories and spread positive influence around the world.
+Phil Wang is known for starting Wong Fu Productions back in 2004 with Wesley
+Chan and Ted Fu. Wong Fu Productions is on a mission to share Asian American
+stories and spread positive influence around the world.

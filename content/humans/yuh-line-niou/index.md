@@ -14,4 +14,5 @@ twitter: "https://twitter.com/yuhline"
 draft: false
 ---
 
-Yuh-Line Niou is a Taiwanese American politician, the first Asian American elected to the State Assembly for the 65th district.
+Yuh-Line Niou is a Taiwanese American politician, the first Asian American
+elected to the State Assembly for the 65th district.

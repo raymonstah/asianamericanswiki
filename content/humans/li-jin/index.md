@@ -15,4 +15,5 @@ featured_image: ""
 draft: false
 ---
 
-Li Jin is a founder and general partner of multiple firms. She is passionate about the creator economy and investing in web3.
+Li Jin is a founder and general partner of multiple firms. She is passionate
+about the creator economy and investing in web3.

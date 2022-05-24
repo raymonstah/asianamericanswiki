@@ -14,4 +14,6 @@ twitter: "https://twitter.com/TinaTchen"
 draft: false
 ---
 
-Tina Tchen is currently the CEO of TIME'S UP, an organization whose goal is to make work safer and more fair for women. She was previously at The White House, serving as Chief of Staff to the First Lady Michelle Obama.
+Tina Tchen is currently the CEO of TIME'S UP, an organization whose goal is to
+make work safer and more fair for women. She was previously at The White House,
+serving as Chief of Staff to the First Lady Michelle Obama.

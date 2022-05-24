@@ -12,4 +12,5 @@ influencedBy: []
 draft: false
 ---
 
-Liz is a chef and food blogger who is known for her vegan creations and recipes. She is the founder of Mylk and Bun, a vegan cinnamon scroll market stall
+Liz is a chef and food blogger who is known for her vegan creations and recipes.
+She is the founder of Mylk and Bun, a vegan cinnamon scroll market stall

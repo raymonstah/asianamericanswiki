@@ -14,4 +14,5 @@ Twitter: "https://twitter.com/zhangmona"
 draft: false
 ---
 
-Mona Zhang is the a freelance journalist and the founder and editor of the cannabis newsletter Word on the Tree.
+Mona Zhang is the a freelance journalist and the founder and editor of the
+cannabis newsletter Word on the Tree.

@@ -14,4 +14,5 @@ twitter: "https://twitter.com/nguyen_amanda"
 draft: false
 ---
 
-Amanda Nguyen is the founder of Rise, an organization created to empower sexual assault survivors.
+Amanda Nguyen is the founder of Rise, an organization created to empower sexual
+assault survivors.

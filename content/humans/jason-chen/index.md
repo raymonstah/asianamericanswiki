@@ -12,4 +12,5 @@ influencedBy: []
 draft: false
 ---
 
-Jason is a Taiwanese-American pop singer who performs covers on YouTube and has gained a sizable following
+Jason is a Taiwanese-American pop singer who performs covers on YouTube and has
+gained a sizable following
