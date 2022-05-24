@@ -1,13 +1,4 @@
 /* For /contribute */
-input[type="date"] {
-  box-sizing: border-box;
-}
-
-#contributeButton {
-  margin-top: 2rem;
-  cursor: pointer;
-}
-
 #formResultsWrapper {
   display: none;
   text-align: center;
