@@ -8,7 +8,7 @@ website: ""
 ethnicity: [Korean]
 birthLocation: ""
 location: [Los Angeles]
-twitter: '@JonnyKimUSA'
+twitter: "@JonnyKimUSA"
 draft: false
 ---
 

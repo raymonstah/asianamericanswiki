@@ -5,6 +5,7 @@
 AsianAmericans.wiki is generated from a website generator, [Hugo](https://gohugo.io/).
 
 ## Contributing
+
 If you want to contribute to the list of Asian Americans, you can fork this repo and add a new human to `content/humans`
 . Please follow the same conventions as the existing humans.
 
@@ -26,10 +27,3 @@ Once you're satisfied with your changes, you can submit a pull request. As soon 
 changes will go live in production.
 
 > :warning: I'm not accepting pull requests related to the website itself. Content only please!
-
-
-
-
-
-
-

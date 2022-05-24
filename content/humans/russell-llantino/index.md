@@ -14,6 +14,7 @@ draft: false
 
 RUSELL!, formally known as D-Pryde is a rapper & singer from Ontario.
 Listen to his music on Spotify:
+
 1. [RUSSELL!](https://open.spotify.com/artist/1cEcF3RdBDSBjhF5Udcmdb).
 2. [Pryde](https://open.spotify.com/artist/2jXkmOvMSrdTP5wmWjezVo?si=H31vfff_RLu153k9mAw22w)
 3. [D-Pryde](https://open.spotify.com/artist/6IIV6llD55sJRQNfezyFwq?si=8mEM-T5FQEefqAaVLiSYag)

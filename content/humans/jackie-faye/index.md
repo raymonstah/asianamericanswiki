@@ -13,5 +13,5 @@ influencedBy: []
 twitter: "https://twitter.com/gotjackie"
 draft: false
 ---
-Jackie Faye is an Asian American, female, singer/rapper. Born and raised in Dallas, this Taiwanese-Korean-Texan cultivated her love for music in the dirty south - surrounded by the musical influences of Erykah Badu, Three 6 Mafia, Outkast, and many more.  As a data engineer by day, she manages to gain traction through various performances for cultural organizations, dropping her latest single, Grey Skies on all streaming platforms! In this unfiltered interview, we talk about the importance of setting boundaries with others as an Asian American woman in male-dominated industries, coming out to her mother, and being unapologetically herself!
 
+Jackie Faye is an Asian American, female, singer/rapper. Born and raised in Dallas, this Taiwanese-Korean-Texan cultivated her love for music in the dirty south - surrounded by the musical influences of Erykah Badu, Three 6 Mafia, Outkast, and many more. As a data engineer by day, she manages to gain traction through various performances for cultural organizations, dropping her latest single, Grey Skies on all streaming platforms! In this unfiltered interview, we talk about the importance of setting boundaries with others as an Asian American woman in male-dominated industries, coming out to her mother, and being unapologetically herself!

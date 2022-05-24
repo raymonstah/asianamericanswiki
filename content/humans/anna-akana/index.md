@@ -14,6 +14,4 @@ twitter: "https://twitter.com/AnnaAkana"
 draft: false
 ---
 
-Anna Akana is a famous internet personality, known for her YouTube skits, and her roles as an actress in Jupiter's Legacy. 
-
-
+Anna Akana is a famous internet personality, known for her YouTube skits, and her roles as an actress in Jupiter's Legacy.

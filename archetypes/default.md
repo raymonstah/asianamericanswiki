@@ -14,5 +14,3 @@ twitter: ""
 featured_image: ""
 draft: false
 ---
-
-

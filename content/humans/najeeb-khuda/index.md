@@ -15,4 +15,3 @@ draft: false
 ---
 
 Najeeb Khuda is a creative producer, strategist and storyteller focused on using a combination of creative insight and business acumen to discover and cultivate diverse voices and stories from around the world. Najeeb has been in love storytelling in film and televisions his whole life and as a first-generation Bangladeshi-American had a passion for making the world of entertainment more inclusive to diverse voices who can tell the type of stories that he grew up with and can span generations.
-

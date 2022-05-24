@@ -12,4 +12,4 @@ influencedBy: []
 draft: false
 ---
 
-Led the unionization of farmworkers 
+Led the unionization of farmworkers

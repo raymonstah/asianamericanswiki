@@ -12,4 +12,4 @@ influencedBy: []
 draft: false
 ---
 
-Sandy Kim is a Korean American who started her her career taking photos of musicians. She was featured on the cover of New York Times in 2021. 
+Sandy Kim is a Korean American who started her her career taking photos of musicians. She was featured on the cover of New York Times in 2021.

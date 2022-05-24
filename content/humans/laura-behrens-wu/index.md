@@ -15,4 +15,3 @@ draft: false
 ---
 
 Laura is the CEO and Co-Founder of Shippo, a software startup in San Francisco.
-

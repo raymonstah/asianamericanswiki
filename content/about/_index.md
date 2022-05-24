@@ -27,5 +27,5 @@ Asian Americans to help inspire the generations to come.
 1. Not every person mentioned is from America.
 2. No ads, ever.
 3. Any affiliate links will be labeled.
-    - There are none as of now.
+   - There are none as of now.
 4. We do not profit from maintaining this site.

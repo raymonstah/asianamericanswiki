@@ -2,7 +2,7 @@
 title: "Dat Phan"
 aka: []
 date: 2022-05-21T20:52:47-07:00
-dob: 1975-01-25 
+dob: 1975-01-25
 dod: YYYY-MM-DD
 tags: ["Comedian", "Actor"]
 website: "http://www.datphan.com/"
