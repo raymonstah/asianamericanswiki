@@ -14,5 +14,4 @@ twitter: ""
 draft: false
 ---
 
-
 Tai Tran is the founder of Asians Never Die, a popular Asian community known for humorous memes on the internet.

@@ -2,7 +2,7 @@
 title: "Sing J Lee"
 aka: []
 date: 2021-05-26T21:07:11-07:00
-dob: "" 
+dob: ""
 dod: ""
 website: "http://singjlee.com/"
 ethnicity: ["Hong Kong", "Chinese"]
@@ -14,6 +14,4 @@ twitter: ""
 draft: false
 ---
 
-
 Sing J. Lee is a director, producer, writer, and artist. He is known for directing music videos for the Migos and Rich Brian.
-

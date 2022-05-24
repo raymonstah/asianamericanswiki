@@ -15,6 +15,6 @@ featured_image: ""
 draft: false
 ---
 
-Phil Yu is known for his online persona, Angry Asian Man. He is also the author of 
-[RISE](https://www.harpercollins.com/pages/Rise), a vivid scrapbook documenting the 
+Phil Yu is known for his online persona, Angry Asian Man. He is also the author of
+[RISE](https://www.harpercollins.com/pages/Rise), a vivid scrapbook documenting the
 history of Asian American pop history. Phil also runs the [They Call us Bruce](https://theycallusbruce.libsyn.com/) podcast with Jeff Yang.

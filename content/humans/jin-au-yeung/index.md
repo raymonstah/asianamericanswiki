@@ -19,5 +19,3 @@ He started his career in battle rap and participated in Freestyle Fridays on 106
 He then was signed under Ruff Ryders Entertainment where he released his debut album "The Rest is History".
 In 2007, Jin moved to Hong Kong where he released his cantonese album ABC and also became a born again Christian.
 He now resides in New York.
-
-

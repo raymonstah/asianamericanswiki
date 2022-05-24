@@ -9,7 +9,7 @@ website: ""
 ethnicity: ["Taiwanese"]
 birthLocation: "Taipei, Taiwan"
 location: ["San Diego", "Los Angeles"]
-influencedBy: [] 
+influencedBy: []
 twitter: "https://twitter.com/justinlin"
 draft: false
 ---

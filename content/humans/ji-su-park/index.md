@@ -14,5 +14,4 @@ twitter: "https://twitter.com/jisupark_twt"
 draft: false
 ---
 
-
 Ji-Su is a South Korean professional basketball player who is in the currently in the WNBA playing for the Las Vegas Aces. She is 6'5" and plays the forward position.

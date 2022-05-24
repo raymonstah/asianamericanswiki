@@ -14,4 +14,4 @@ twitter: "https://twitter.com/joulee"
 draft: false
 ---
 
-Julie is well known in the product design industry. She had a previous role at Facebook as the VP of product design. She is also the author of the book "The Making of a Manager". She is currently spending her time building Sundial. 
+Julie is well known in the product design industry. She had a previous role at Facebook as the VP of product design. She is also the author of the book "The Making of a Manager". She is currently spending her time building Sundial.

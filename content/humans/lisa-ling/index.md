@@ -14,4 +14,4 @@ twitter: "https://twitter.com/lisaling"
 draft: false
 ---
 
-Lisa Ling has her own CNN original, "This is Life With Lisa Ling". 
+Lisa Ling has her own CNN original, "This is Life With Lisa Ling".

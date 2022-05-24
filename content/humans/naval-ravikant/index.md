@@ -8,7 +8,7 @@ website: https://nav.al/
 ethnicity: [Indian]
 birthLocation: ""
 location: []
-twitter: 'https://twitter.com/naval'
+twitter: "https://twitter.com/naval"
 draft: false
 ---
 

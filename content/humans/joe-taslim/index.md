@@ -14,5 +14,4 @@ twitter: "https://twitter.com/joe_taslim"
 draft: false
 ---
 
-
 Joe Taslim is an Indonesian model, actor, and martial artist known for his roles in Warrior and Mortal Kombat.

@@ -15,4 +15,4 @@ twitter: ""
 draft: false
 ---
 
-Viet is the author of many Vietnamese war writings. His debut novel, "The Sympathizer", won the 2016 Pulitzer Price. 
+Viet is the author of many Vietnamese war writings. His debut novel, "The Sympathizer", won the 2016 Pulitzer Price.

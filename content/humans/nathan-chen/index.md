@@ -1,6 +1,6 @@
 ---
 title: "Nathan Chen"
-aka: ['Nathan Wei Chen']
+aka: ["Nathan Wei Chen"]
 date: 2022-02-10T22:29:51-08:00
 dob: 1999-05-05
 dod: YYYY-MM-DD
