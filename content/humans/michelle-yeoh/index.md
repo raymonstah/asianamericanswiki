@@ -12,4 +12,6 @@ twitter: ""
 draft: false
 ---
 
-Michelle Yeoh is a Malaysian actress known for her roles in Crouching Tiger Hidden Dragon (2001), Star Trek (2018), Crazy Rich Asians (2018), and more recently, Everything Everywhere All At Once (2022).
+Michelle Yeoh is a Malaysian actress known for her roles in Crouching Tiger
+Hidden Dragon (2001), Star Trek (2018), Crazy Rich Asians (2018), and more
+recently, Everything Everywhere All At Once (2022).

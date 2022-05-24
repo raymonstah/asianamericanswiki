@@ -12,4 +12,5 @@ influencedBy: []
 draft: false
 ---
 
-Chinese worker who was hunted down and brutally killed with a baseball bat by 2 white men. They thought he was Japanese and blamed him for their job loss.
+Chinese worker who was hunted down and brutally killed with a baseball bat by 2
+white men. They thought he was Japanese and blamed him for their job loss.

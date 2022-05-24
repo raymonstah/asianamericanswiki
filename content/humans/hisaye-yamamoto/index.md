@@ -12,4 +12,5 @@ influencedBy: []
 draft: false
 ---
 
-Hisaye was a Japanese American author who highlighted the issues and struggles of Japanese immigrants in America.
+Hisaye was a Japanese American author who highlighted the issues and struggles
+of Japanese immigrants in America.

@@ -14,5 +14,6 @@ twitter: "https://twitter.com/naomiosaka"
 draft: false
 ---
 
-Naomi Osaka is a half Japanese half Haitian professional tennis player. She represents Japan when playing.
-Naomi was included in [Time magazine’s 100 Most Influential People of 2021](https://time.com/collection/100-most-influential-people-2021/).
+Naomi Osaka is a half Japanese half Haitian professional tennis player. She
+represents Japan when playing. Naomi was included in
+[Time magazine’s 100 Most Influential People of 2021](https://time.com/collection/100-most-influential-people-2021/).

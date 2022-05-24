@@ -14,4 +14,5 @@ twitter: "https://twitter.com/angelaleemma"
 draft: false
 ---
 
-Angela Seung Ju Lee is a Canadian-American mixed martial artist of Singaporean, Chinese and Korean heritage who is currently competing in ONE Championship.
+Angela Seung Ju Lee is a Canadian-American mixed martial artist of Singaporean,
+Chinese and Korean heritage who is currently competing in ONE Championship.

@@ -13,4 +13,5 @@ twitter: "https://twitter.com/garrytan"
 draft: false
 ---
 
-Garry Tan is a designer, entrepreneur, and startup investor. He is known for helping cofounding Palantir as employee #10 and creating the logo.
+Garry Tan is a designer, entrepreneur, and startup investor. He is known for
+helping cofounding Palantir as employee #10 and creating the logo.

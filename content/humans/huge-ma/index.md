@@ -15,6 +15,9 @@ featured_image: ""
 draft: false
 ---
 
-Huge Ma is an Asian American activist and candidate for NY State Assembly District 37. He is also a software engineer who build TurboVax, a free tool built for the community for people to easily find COVID-19 vaccine appointments.
+Huge Ma is an Asian American activist and candidate for NY State Assembly
+District 37. He is also a software engineer who build TurboVax, a free tool
+built for the community for people to easily find COVID-19 vaccine appointments.
 
-He has also been a voice in spreading awareness in the anti-Asian racism during the pandemic.
+He has also been a voice in spreading awareness in the anti-Asian racism during
+the pandemic.

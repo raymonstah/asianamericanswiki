@@ -15,5 +15,6 @@ featured_image: ""
 draft: false
 ---
 
-Kelly Marie Tran is an American actress from San Diego who is known for voicing Raya from "Raya and the Last Dragon"
-and playing Rose Tico from the Star Wars trilogy.
+Kelly Marie Tran is an American actress from San Diego who is known for voicing
+Raya from "Raya and the Last Dragon" and playing Rose Tico from the Star Wars
+trilogy.

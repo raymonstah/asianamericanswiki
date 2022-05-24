@@ -12,4 +12,5 @@ influencedBy: ["Lucy Liu"]
 draft: false
 ---
 
-Nora, aka Awkwafina is best known for being a rapper and playing the role of Goh Peik Lin in the all Asian cast "Crazy Rich Asians"
+Nora, aka Awkwafina is best known for being a rapper and playing the role of Goh
+Peik Lin in the all Asian cast "Crazy Rich Asians"

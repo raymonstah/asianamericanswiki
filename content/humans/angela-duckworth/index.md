@@ -14,4 +14,6 @@ twitter: "https://twitter.com/angeladuckw"
 draft: false
 ---
 
-Angela Duckworth is the founder and CEO of Character Lab, a non profit with the goal of helping young children succeed. She's best known for her research on grit, and is the author of the book "Grit", and has given a TED talk about it.
+Angela Duckworth is the founder and CEO of Character Lab, a non profit with the
+goal of helping young children succeed. She's best known for her research on
+grit, and is the author of the book "Grit", and has given a TED talk about it.

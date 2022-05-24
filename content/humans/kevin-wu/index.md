@@ -14,4 +14,5 @@ twitter: ""
 draft: false
 ---
 
-Kevin Wu is known for being an early Youtuber, posting funny videos often featuring his dad, PapaJumba. Kevin is now a Twitch streamer.
+Kevin Wu is known for being an early Youtuber, posting funny videos often
+featuring his dad, PapaJumba. Kevin is now a Twitch streamer.

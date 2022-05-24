@@ -14,4 +14,6 @@ twitter: "https://twitter.com/acchen"
 draft: false
 ---
 
-Mom and blogger who enjoys traveling. Alice is also a college application essay writing consulting who is passionate about mentoring high school students and teaching them how to become outstanding communicators.
+Mom and blogger who enjoys traveling. Alice is also a college application essay
+writing consulting who is passionate about mentoring high school students and
+teaching them how to become outstanding communicators.

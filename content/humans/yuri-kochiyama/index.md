@@ -12,4 +12,5 @@ influencedBy: []
 draft: false
 ---
 
-Japanese American civil rights activist who worked with Malcolm X. In addition, she advocated against the incerations of Japanese Americans during WWII
+Japanese American civil rights activist who worked with Malcolm X. In addition,
+she advocated against the incerations of Japanese Americans during WWII

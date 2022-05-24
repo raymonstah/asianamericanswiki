@@ -14,4 +14,7 @@ twitter: "https://twitter.com/brucelee"
 draft: false
 ---
 
-Daughter of Bruce Lee, Shannon Lee carries on her father's legacy. She runs the Bruce Lee Family Companies and is a on the board of the Burce Lee Foundation. She also hosts the Bruce Lee Podcast and is the author of the book, "Be Water, My Friend" where she discusses her father's philosophies.
+Daughter of Bruce Lee, Shannon Lee carries on her father's legacy. She runs the
+Bruce Lee Family Companies and is a on the board of the Burce Lee Foundation.
+She also hosts the Bruce Lee Podcast and is the author of the book, "Be Water,
+My Friend" where she discusses her father's philosophies.

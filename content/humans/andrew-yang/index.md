@@ -13,4 +13,6 @@ twitter: "https://twitter.com/AndrewYang"
 draft: false
 ---
 
-An Asian American entrepreneur who sped up America's adoption of Universal Basic Income through his run towards becoming the first Asian American President of the United States
+An Asian American entrepreneur who sped up America's adoption of Universal Basic
+Income through his run towards becoming the first Asian American President of
+the United States

@@ -14,4 +14,5 @@ twitter: "https://twitter.com/heybvp"
 draft: false
 ---
 
-Victoria Park is an actress born and raised in Chicago, IL. She is known for her roles in Wong Fu films, and now plays Kamilla Hwang on The Flash.
+Victoria Park is an actress born and raised in Chicago, IL. She is known for her
+roles in Wong Fu films, and now plays Kamilla Hwang on The Flash.

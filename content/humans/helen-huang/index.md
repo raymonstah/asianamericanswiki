@@ -12,4 +12,5 @@ influencedBy: []
 draft: false
 ---
 
-Helen is a classical pianist who performs and tours with major symphony orchestras
+Helen is a classical pianist who performs and tours with major symphony
+orchestras

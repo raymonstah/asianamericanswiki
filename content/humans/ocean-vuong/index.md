@@ -14,6 +14,7 @@ twitter: ""
 draft: false
 ---
 
-Ocean Vuong is a Vietnamese American poet and author of "On Earth We're Briefly Gorgeous", where he shares his personal life story.
+Ocean Vuong is a Vietnamese American poet and author of "On Earth We're Briefly
+Gorgeous", where he shares his personal life story.
 
 In 2022, Ocean Vuong released a collection of poems called "Time is a Mother".

@@ -14,4 +14,6 @@ twitter: "https://twitter.com/margaretcho"
 draft: false
 ---
 
-Margaret Cho is considered one of the OGs of Asian American entertainment. She is known for her stand-up comedy. She has also won awards for representing women, Asian Americans, and the LGBT community.
+Margaret Cho is considered one of the OGs of Asian American entertainment. She
+is known for her stand-up comedy. She has also won awards for representing
+women, Asian Americans, and the LGBT community.

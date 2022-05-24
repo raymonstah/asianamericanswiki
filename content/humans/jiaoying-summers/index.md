@@ -12,4 +12,5 @@ twitter: https://twitter.com/JiaoyingSummers
 draft: false
 ---
 
-Jiaoying Summers is a comedian popular with over 1 million followers on her [TikTok](https://www.tiktok.com/@jiaoyingsummers).
+Jiaoying Summers is a comedian popular with over 1 million followers on her
+[TikTok](https://www.tiktok.com/@jiaoyingsummers).

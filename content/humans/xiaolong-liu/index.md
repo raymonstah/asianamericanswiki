@@ -12,4 +12,6 @@ twitter: ""
 draft: false
 ---
 
-Xiaolong Liu is a Chinese born director of photography focused on music videos. He has worked with many top artists including Kanye West, The Weeknd, and many more.
+Xiaolong Liu is a Chinese born director of photography focused on music videos.
+He has worked with many top artists including Kanye West, The Weeknd, and many
+more.

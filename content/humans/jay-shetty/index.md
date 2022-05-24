@@ -14,4 +14,6 @@ twitter: "https://twitter.com/JayShettyIW"
 draft: false
 ---
 
-Jay Shetty is a former monk, and author of the book "Think Like a Monk". He also hosts a podcast, where he has invited many guests to talk about their mental health and habits.
+Jay Shetty is a former monk, and author of the book "Think Like a Monk". He also
+hosts a podcast, where he has invited many guests to talk about their mental
+health and habits.

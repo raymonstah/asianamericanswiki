@@ -14,6 +14,8 @@ twitter: "https://twitter.com/EugeneLeeYang"
 draft: false
 ---
 
-Eugune is known for being a part of the YouTube group, The Try Guys. During the COVID-19 pandemic, he has released a video on Anti-Asian Hate, which raised over $140,000 dollars in donations. The video can be viewed below:
+Eugune is known for being a part of the YouTube group, The Try Guys. During the
+COVID-19 pandemic, he has released a video on Anti-Asian Hate, which raised over
+$140,000 dollars in donations. The video can be viewed below:
 
 {{< youtube 14WUuya94QE >}}

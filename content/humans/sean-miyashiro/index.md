@@ -14,4 +14,5 @@ twitter: ""
 draft: false
 ---
 
-Sean Miyashiro is the CEO of 88rising (88⬆), a music platform primarily featuring Asian and Asian American artists.
+Sean Miyashiro is the CEO of 88rising (88⬆), a music platform primarily
+featuring Asian and Asian American artists.

@@ -12,8 +12,11 @@ twitter: https://twitter.com/MrNigelNg
 draft: false
 ---
 
-Nigel Ng is known for his online Youtube personality, Uncle Roger, where he plays a prideful middle aged Asian man who critiques Asian food recipes.
+Nigel Ng is known for his online Youtube personality, Uncle Roger, where he
+plays a prideful middle aged Asian man who critiques Asian food recipes.
 
-Nigel was born in Kuala Lumpar, Malaysia. He moved to the states for college, and then moved to London to pursue his comedy career.
+Nigel was born in Kuala Lumpar, Malaysia. He moved to the states for college,
+and then moved to London to pursue his comedy career.
 
-Nigel has over 5 million subscribers on his [YouTube channel](https://www.youtube.com/channel/UCVjlpEjEY9GpksqbEesJnNA).
+Nigel has over 5 million subscribers on his
+[YouTube channel](https://www.youtube.com/channel/UCVjlpEjEY9GpksqbEesJnNA).

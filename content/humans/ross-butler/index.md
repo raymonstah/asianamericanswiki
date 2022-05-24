@@ -14,4 +14,6 @@ twitter: "https://twitter.com/rossbutler"
 draft: false
 ---
 
-Ross is a Chinese-Malaysian / English-Dutch actor based in Los Angeles. He is known for his role is 13 Reasons Why. Ross wants to change the stereotype of Asian American men in Hollywood.
+Ross is a Chinese-Malaysian / English-Dutch actor based in Los Angeles. He is
+known for his role is 13 Reasons Why. Ross wants to change the stereotype of
+Asian American men in Hollywood.

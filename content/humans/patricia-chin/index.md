@@ -14,4 +14,10 @@ twitter: ""
 draft: false
 ---
 
-Co-Founded reggae label VP Records in 1979 with her late husband Vincent "Randy" Chin and building VP Records into the world's largest independent label and distributor of Caribbean music. She received American Association of Independent Music Awards' Lifetime Achievement Award for her dedication to the reggae music industry over the past 50 years. Her memoir, Pat Chin: Miss Pay My Reggae Music Journey shares anecdotes of her recordings with Bob Marley and Lee "Scratch" Perry.
+Co-Founded reggae label VP Records in 1979 with her late husband Vincent "Randy"
+Chin and building VP Records into the world's largest independent label and
+distributor of Caribbean music. She received American Association of Independent
+Music Awards' Lifetime Achievement Award for her dedication to the reggae music
+industry over the past 50 years. Her memoir, Pat Chin: Miss Pay My Reggae Music
+Journey shares anecdotes of her recordings with Bob Marley and Lee "Scratch"
+Perry.

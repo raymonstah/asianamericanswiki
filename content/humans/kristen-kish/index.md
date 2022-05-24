@@ -12,4 +12,5 @@ influencedBy: []
 draft: false
 ---
 
-Kristen is a Korean-born American chef known for winning the tenth season of Top Chef
+Kristen is a Korean-born American chef known for winning the tenth season of Top
+Chef

@@ -12,4 +12,5 @@ influencedBy: []
 draft: false
 ---
 
-Jonathan Park aka Dumbfoundead started his career off as a battle rapper and making hip-hop music.
+Jonathan Park aka Dumbfoundead started his career off as a battle rapper and
+making hip-hop music.

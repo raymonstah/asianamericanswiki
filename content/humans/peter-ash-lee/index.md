@@ -14,4 +14,5 @@ twitter: "https://twitter.com/peterashlee"
 draft: false
 ---
 
-Peter Ash Lee is a famous freelance photographer, with many high profile clients. He is currently at Burdock Media.
+Peter Ash Lee is a famous freelance photographer, with many high profile
+clients. He is currently at Burdock Media.

@@ -14,4 +14,5 @@ twitter: "https://twitter.com/jettila"
 draft: false
 ---
 
-Jet Tila is a celebrity chef who holds multiple world records, such as creating the longest California roll and the largest stir fry.
+Jet Tila is a celebrity chef who holds multiple world records, such as creating
+the longest California roll and the largest stir fry.

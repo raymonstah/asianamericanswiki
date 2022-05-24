@@ -14,4 +14,6 @@ twitter: "https://twitter.com/jeffstaple"
 draft: false
 ---
 
-Jeff Staple is a graphic and fashion designer, founder of Staple Design, which focuses on streetwear. Jeff also is a Skillshare instructor and has classes where he teaches about Branding and T Shirt design.
+Jeff Staple is a graphic and fashion designer, founder of Staple Design, which
+focuses on streetwear. Jeff also is a Skillshare instructor and has classes
+where he teaches about Branding and T Shirt design.

@@ -12,4 +12,7 @@ influencedBy: []
 draft: false
 ---
 
-Jimmy Chin is an Academy Award winning filmmaker, National Geographic photographer and mountain sports athlete known for his ability to capture extraordinary imagery and stories while climbing and skiing in extremely high-risk environments and expeditions.
+Jimmy Chin is an Academy Award winning filmmaker, National Geographic
+photographer and mountain sports athlete known for his ability to capture
+extraordinary imagery and stories while climbing and skiing in extremely
+high-risk environments and expeditions.

@@ -14,4 +14,5 @@ twitter: "https://twitter.com/jimkwik"
 draft: false
 ---
 
-Jim Kwik is a brain coach and helps people reclaim their brain power to its full potential.
+Jim Kwik is a brain coach and helps people reclaim their brain power to its full
+potential.

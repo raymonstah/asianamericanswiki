@@ -15,4 +15,5 @@ featured_image: ""
 draft: false
 ---
 
-Bobby Lee is a stand-up comedian, actor, and co-hosts the TigerBelly and Bad Friends podcast. Bobby is considered an OG in the Asian American comedy space.
+Bobby Lee is a stand-up comedian, actor, and co-hosts the TigerBelly and Bad
+Friends podcast. Bobby is considered an OG in the Asian American comedy space.

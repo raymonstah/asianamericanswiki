@@ -14,4 +14,5 @@ twitter: "https://twitter.com/MichelleWKwan"
 draft: false
 ---
 
-Michelle Kwan is a olympian and world champion figure skater, known as one of the greatst figure skaters of all time.
+Michelle Kwan is a olympian and world champion figure skater, known as one of
+the greatst figure skaters of all time.

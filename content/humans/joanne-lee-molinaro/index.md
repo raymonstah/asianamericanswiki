@@ -12,4 +12,5 @@ influencedBy: []
 draft: false
 ---
 
-Joanne is a Korean American home cook who shares her vegan recipes and why they're important to her. She also goes by TheKoreanVegan.
+Joanne is a Korean American home cook who shares her vegan recipes and why
+they're important to her. She also goes by TheKoreanVegan.

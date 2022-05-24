@@ -14,4 +14,7 @@ twitter: "https://twitter.com/GeorgeTakei"
 draft: false
 ---
 
-George is best known for his role as Mr. Sulu in the original Star Trek TV series. He spent his early years of his life imprisoned in Japanese internment camps. His goal is to make sure America doesn't forget its history. He is also openly gay.
+George is best known for his role as Mr. Sulu in the original Star Trek TV
+series. He spent his early years of his life imprisoned in Japanese internment
+camps. His goal is to make sure America doesn't forget its history. He is also
+openly gay.

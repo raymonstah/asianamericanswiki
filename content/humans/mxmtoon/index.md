@@ -14,4 +14,5 @@ twitter: "https://twitter.com/mxmtoon"
 draft: false
 ---
 
-Maia, also known as mxmtoon, is an artist who started off on Youtube and is known for playing the ukelele.
+Maia, also known as mxmtoon, is an artist who started off on Youtube and is
+known for playing the ukelele.

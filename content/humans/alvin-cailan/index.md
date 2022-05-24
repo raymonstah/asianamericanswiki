@@ -14,4 +14,6 @@ twitter: "https://twitter.com/alvincailan"
 draft: false
 ---
 
-Alvin is a Filipino American chef known for starting Eggslut, a popular egg sandwich food truck based in LA. He has also authored a cookbook, "Amboy", where he shares his Filipino American recipes.
+Alvin is a Filipino American chef known for starting Eggslut, a popular egg
+sandwich food truck based in LA. He has also authored a cookbook, "Amboy", where
+he shares his Filipino American recipes.

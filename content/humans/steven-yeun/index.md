@@ -12,4 +12,5 @@ influencedBy: []
 draft: false
 ---
 
-Steven Yeun is a Korean American actor known for playing Glenn in the The Walking Dead.
+Steven Yeun is a Korean American actor known for playing Glenn in the The
+Walking Dead.
