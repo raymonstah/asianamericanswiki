@@ -3,3 +3,4 @@ _vendor
 .idea/
 **/vendor/*
 *.min.js
+**/resources/_gen/*
