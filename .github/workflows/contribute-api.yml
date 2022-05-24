@@ -1,11 +1,11 @@
-'on':
+"on":
   push:
     branches:
       - main
     paths:
       # only run when the source code changes or this file changes
-      - 'functions/contributor/**'
-      - '.github/workflows/contribute-api.yml'
+      - "functions/contributor/**"
+      - ".github/workflows/contribute-api.yml"
 
 name: Deploy contribute api
 jobs:
@@ -18,14 +18,14 @@ jobs:
         run: go test ./...
         working-directory: ./functions/contributor
 
-      - id: 'auth'
-        name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v0'
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v0"
         with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"
 
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v0'
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v0"
 
       - name: Deploy
         id: deploy
@@ -38,7 +38,7 @@ jobs:
           description: An API that creates pull requests for the contribute page.
           max_instances: 1
           timeout: 10
-          secret_environment_variables: 'GITHUB_AUTH_TOKEN=projects/424340922093/secrets/asianamericanswiki-contributer-pat'
+          secret_environment_variables: "GITHUB_AUTH_TOKEN=projects/424340922093/secrets/asianamericanswiki-contributer-pat"
           # have to set unauthenticated requests via GCP console
 
       - name: log url
