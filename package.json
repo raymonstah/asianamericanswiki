@@ -1,0 +1,32 @@
+{
+  "name": "asianamericanswiki",
+  "dependencies": {
+    "prettier-plugin-go-template": "^0.0.13"
+  },
+  "devDependencies": {
+    "husky": "^8.0.1",
+    "lint-staged": "^12.4.2",
+    "pre-commit": "^1.2.2",
+    "prettier": "2.6.2"
+  },
+  "scripts": {
+    "prettier": "prettier -w .",
+    "pre-commit": "lint-staged",
+    "prepare": "husky install"
+  },
+  "pre-commit": [
+    "pre-commit"
+  ],
+  "lint-staged": {
+    "*": "prettier --write --ignore-unknown"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raymonstah/asianamericanswiki.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/raymonstah/asianamericanswiki/issues"
+  },
+  "homepage": "https://github.com/raymonstah/asianamericanswiki#readme"
+}
