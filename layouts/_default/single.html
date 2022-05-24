@@ -1,116 +1,125 @@
 {{ define "header" }}
-{{/* We can override any block in the baseof file be defining it in the template */}}
-{{ partial "page-header.html" . }}
+  {{/* We can override any block in the baseof file be defining it in the template */}}
+  {{ partial "page-header.html" . }}
 {{ end }}
 
 {{ define "main" }}
-{{ $section := .Site.GetPage "section" .Section }}
-<article class="flex-l flex-wrap justify-between mw8 center ph3">
+  {{ $section := .Site.GetPage "section" .Section }}
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
     <header class="mt4 w-100">
-        <aside class="instapaper_ignoref b helvetica tracked">
-            {{/*
-            CurrentSection allows us to use the section title instead of inferring from the folder.
-            https://gohugo.io/variables/page/#section-variables-and-methods
-            */}}
-            {{with .CurrentSection.Title }}{{. | upper }}{{end}}
-        </aside>
-        {{ partial "social-share.html" . }}
-        <h1 class="f1 athelas mt3 mb1">
-            {{- .Title -}}
-        </h1>
-        {{ with .Params.author }}
+      <aside class="instapaper_ignoref b helvetica tracked">
+        {{/* CurrentSection allows us to use the section title instead of inferring from the folder.
+          https://gohugo.io/variables/page/#section-variables-and-methods
+        */}}
+        {{ with .CurrentSection.Title }}{{ . | upper }}{{ end }}
+      </aside>
+      {{ partial "social-share.html" . }}
+      <h1 class="f1 athelas mt3 mb1">
+        {{- .Title -}}
+      </h1>
+      {{ with .Params.author }}
         <p class="tracked">
-            By <strong>
+          By
+          <strong>
             {{ if reflect.IsSlice . }}
-            {{ delimit . ", " | markdownify }}
-            {{else}}
-            {{ . | markdownify }}
+              {{ delimit . ", " | markdownify }}
+            {{ else }}
+              {{ . | markdownify }}
             {{ end }}
-        </strong>
+          </strong>
         </p>
-        {{ end }}
-        {{/* Hugo uses Go's date formatting is set by example. Here are two formats */}}
-        <time class="f6 mv4 dib tracked" {{ printf `datetime="%s"` (.Date.Format "2006-01-02T15:04:05Z07:00") | safeHTMLAttr }}>
+      {{ end }}
+      {{/* Hugo uses Go's date formatting is set by example. Here are two formats */}}
+      <time
+        class="f6 mv4 dib tracked"
+        {{ printf `datetime="%s"` (.Date.Format "2006-01-02T15:04:05Z07:00") | safeHTMLAttr }}
+      >
         <span>Published: </span>
         {{- .Date.Format "January 2, 2006" -}}
-        </time>
+      </time>
 
-        {{ with .Params.aka }}
+      {{ with .Params.aka }}
         <p>
-            Also known as: {{ delimit . ", " }}
+          Also known as:
+          {{ delimit . ", " }}
         </p>
-        {{ end }}
+      {{ end }}
 
-        {{ with .Params.dob }}
-          {{ if ne . "YYYY-MM-DD" }}
-          <p>
-              Born: {{ dateFormat "Jan 2, 2006" . }}
-          </p>
-          {{ end }}
-        {{ end }}
-
-        {{ with .Params.dod }}
+      {{ with .Params.dob }}
         {{ if ne . "YYYY-MM-DD" }}
+          <p>
+            Born:
+            {{ dateFormat "Jan 2, 2006" . }}
+          </p>
+        {{ end }}
+      {{ end }}
+
+      {{ with .Params.dod }}
+        {{ if ne . "YYYY-MM-DD" }}
+          <p>
+            Died:
+            {{ dateFormat "Jan 2, 2006" . }}
+          </p>
+        {{ end }}
+
+      {{ end }}
+
+      {{ with .Params.birthLocation }}
         <p>
-            Died: {{ dateFormat "Jan 2, 2006" . }}
+          Born in:
+          {{ . }}
         </p>
-        {{ end }}
+      {{ end }}
 
-        {{ end }}
-
-        {{ with .Params.birthLocation }}
-        <p>
-            Born in: {{ . }}
-        </p>
-        {{ end }}
-
-        {{ with .Params.ethnicity }}
+      {{ with .Params.ethnicity }}
         <p>Ethnicity: {{ delimit . ", " }}</p>
-        {{ end }}
+      {{ end }}
 
-        {{ with .Params.location }}
+      {{ with .Params.location }}
         <p>Location: {{ delimit . ", " }}</p>
-        {{ end }}
+      {{ end }}
 
-        {{ with .Params.twitter }}
+      {{ with .Params.twitter }}
         <p>
-            <a rel="noopener" href={{ . }}>Twitter</a>
+          <a rel="noopener" href="{{ . }}">Twitter</a>
         </p>
-        {{ end }}
+      {{ end }}
 
-        {{ with .Params.website }}
+      {{ with .Params.website }}
         <p>
-            <a rel="noopener" href={{ . }}>Website</a>
+          <a rel="noopener" href="{{ . }}">Website</a>
         </p>
-        {{ end }}
+      {{ end }}
 
-        {{/*
-        Show "reading time" and "word count" but only if one of the following are true:
+      {{/* Show "reading time" and "word count" but only if one of the following are true:
         1) A global config `params` value is set `show_reading_time = true`
         2) A section front matter value is set `show_reading_time = true`
         3) A page front matter value is set `show_reading_time = true`
-        */}}
-        {{ if (or (eq (.Param "show_reading_time") true) (eq $section.Params.show_reading_time true) )}}
-        <span class="f6 mv4 dib tracked"> - {{ .ReadingTime}} minutes read</span>
-        <span class="f6 mv4 dib tracked"> - {{ .WordCount}} words</span>
-        {{ end }}
+      */}}
+      {{ if (or (eq (.Param "show_reading_time") true) (eq $section.Params.show_reading_time true) ) }}
+        <span class="f6 mv4 dib tracked">
+          - {{ .ReadingTime }} minutes read</span
+        >
+        <span class="f6 mv4 dib tracked"> - {{ .WordCount }} words</span>
+      {{ end }}
     </header>
-    <div class="nested-copy-line-height lh-copy {{ $.Param "post_content_classes"  | default "serif"}} f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
-    {{- .Content -}}
-    {{- partial "tags.html" . -}}
-    <div class="mt6 instapaper_ignoref">
+    <div
+      class="nested-copy-line-height lh-copy {{ $.Param "post_content_classes"  | default "serif" }} f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"
+    >
+      {{- .Content -}}
+      {{- partial "tags.html" . -}}
+      <div class="mt6 instapaper_ignoref">
         {{ if .Site.DisqusShortname }}
-        {{ template "_internal/disqus.html" . }}
+          {{ template "_internal/disqus.html" . }}
         {{ end }}
         {{ if .Site.Params.commentoEnable }}
-        {{- partial "commento.html" . -}}
+          {{- partial "commento.html" . -}}
         {{ end }}
-    </div>
+      </div>
     </div>
 
     <aside class="w-30-l mt6-l">
-        {{- partial "menu-contextual.html" . -}}
+      {{- partial "menu-contextual.html" . -}}
     </aside>
-
-</article>
+  </article>
 {{ end }}
