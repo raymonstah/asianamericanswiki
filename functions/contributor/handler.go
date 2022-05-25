@@ -39,76 +39,108 @@ type Handler struct {
 	PullRequestService PullRequestService
 }
 
-// Handle is the signature required for GCP Cloud function.
-func (h Handler) Handle(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+type ContributeRequest struct {
+	Name          string   `json:"name"`
+	Aliases       []string `json:"aka"`
+	Dob           string   `json:"dob"` // format 2000-12-01
+	Tags          []string `json:"tags"`
+	Website       string   `json:"website"`
+	Ethnicity     []string `json:"ethnicity"`
+	BirthLocation string   `json:"birthLocation"`
+	Location      []string `json:"location"`
+	Twitter       string   `json:"twitter"`
+	Draft         bool     `json:"draft"`
 
+	Description string `json:"description"`
+}
+
+type Post struct {
+	frontMatter frontMatterInput
+	description string
+}
+
+func (h Handler) validate(w http.ResponseWriter, r *http.Request) (Post, bool) {
 	if r.Method != http.MethodPost {
 		errorResponse(w, http.StatusMethodNotAllowed, fmt.Errorf("http method must be POST"))
-		return
+		return Post{}, false
 	}
 
-	var input struct {
-		Name          string   `json:"name"`
-		Aliases       []string `json:"aka"`
-		Dob           string   `json:"dob"` // format 2000-12-01
-		Tags          []string `json:"tags"`
-		Website       string   `json:"website"`
-		Ethnicity     []string `json:"ethnicity"`
-		BirthLocation string   `json:"birthLocation"`
-		Location      []string `json:"location"`
-		Twitter       string   `json:"twitter"`
-		Draft         bool     `json:"draft"`
-
-		Description string `json:"description"`
-	}
-
+	var input ContributeRequest
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		errorResponse(w, http.StatusBadRequest, err)
-
-		return
+		return Post{}, false
 	}
 
 	if input.Name == "" {
 		errorResponse(w, http.StatusBadRequest, fmt.Errorf("name is required"))
-		return
+		return Post{}, false
 	}
 
 	asBirthdate, err := toBirthdate(input.Dob)
 	if err != nil {
 		errorResponse(w, http.StatusBadRequest, fmt.Errorf("birthday invalid: %w", err))
-		return
+		return Post{}, false
 	}
 
-	content, err := generateMarkdown(frontMatterInput{
-		Name:          input.Name,
-		Date:          time.Now(),
-		Aliases:       input.Aliases,
-		Dob:           asBirthdate,
-		Tags:          input.Tags,
-		Website:       input.Website,
-		Ethnicity:     input.Ethnicity,
-		BirthLocation: input.BirthLocation,
-		Location:      input.Location,
-		Twitter:       input.Twitter,
-		Draft:         input.Draft,
-	}, input.Description)
+	return Post{
+		frontMatter: frontMatterInput{
+			Name:          input.Name,
+			Date:          time.Now(),
+			Aliases:       input.Aliases,
+			Dob:           asBirthdate,
+			Tags:          input.Tags,
+			Website:       input.Website,
+			Ethnicity:     input.Ethnicity,
+			BirthLocation: input.BirthLocation,
+			Location:      input.Location,
+			Twitter:       input.Twitter,
+			Draft:         input.Draft,
+		},
+		description: input.Description,
+	}, true
+}
+
+// Handle is the signature required for GCP Cloud function.
+func (h Handler) Handle(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	post, ok := h.validate(w, r)
+	if !ok {
+		return
+	}
+	content, err := generateMarkdown(post.frontMatter, post.description)
 	if err != nil {
 		errorResponse(w, http.StatusInternalServerError, fmt.Errorf("unable to generate markdown: %w", err))
 		return
 	}
 
-	nameWithDashes := strings.ReplaceAll(input.Name, " ", "-")
+	if r.URL.Query().Has("test") {
+		switch r.URL.Query().Get("test") {
+		case "dupe":
+			errorResponse(w, http.StatusUnprocessableEntity, ErrBranchAlreadyExists)
+			return
+		default:
+			w.WriteHeader(http.StatusCreated)
+			resp := response{Link: "https://github.com/raymonstah/asianamericanswiki/pulls/1"}
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				errorResponse(w, http.StatusInternalServerError, err)
+				return
+			}
+			return
+		}
+	}
+
+	nameWithDashes := strings.ReplaceAll(post.frontMatter.Name, " ", "-")
 	path := fmt.Sprintf("content/humans/%s/index.md", nameWithDashes)
 	url, err := h.PullRequestService.createPRWithContent(ctx, createPRWithContentInput{
-		Name:        input.Name,
+		Name:        post.frontMatter.Name,
 		Path:        path,
 		Content:     content,
 		Branch:      strings.ToLower(nameWithDashes),
 		AuthorName:  authorName,
 		AuthorEmail: authorEmail,
-		Subject:     input.Name,
+		Subject:     post.frontMatter.Name,
 	})
 	if err != nil {
 		if errors.Is(err, ErrBranchAlreadyExists) ||
