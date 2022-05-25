@@ -7,16 +7,20 @@ function displayResults(results, store) {
     for (const n in results) {
       const item = store[results[n].ref];
       resultList +=
-        '<li style="list-style-type: none"><p><a href="' +
+        '<div class="bg-white mv3 pa4 gray overflow-hidden"><h1 class="f3 near-black"><a class="link black dim" href="' +
         item.url +
         '">' +
         item.title +
-        "</a></p>";
-      resultList += "<p>" + item.content.substring(0, 150) + "...</p></li>";
+        "</a></h1>";
+      resultList +=
+        '<p class="nested-links f5 lh-copy nested-copy-line-height">' +
+        item.content.substring(0, 150) +
+        "...</p></div>";
     }
     searchResults.innerHTML = resultList;
   } else {
-    searchResults.innerHTML = "No results found.";
+    searchResults.innerHTML =
+      "No results found -- consider making a <a href='/contribute'>contribution</a>.";
   }
 }
 
@@ -43,7 +47,7 @@ window.onload = function () {
         this.add({
           id: key,
           title: humansSearchIndex[key].title,
-          tags: humansSearchIndex[key].category,
+          tags: humansSearchIndex[key].tags,
           content: humansSearchIndex[key].content,
           ethnicity: humansSearchIndex[key].ethnicity,
         });

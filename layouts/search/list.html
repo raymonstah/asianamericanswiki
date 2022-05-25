@@ -2,12 +2,10 @@
   {{ partial "search-index.html" . }}
   <article class="pa3 pa4-ns nested-copy-line-height nested-img">
     <section
-      class="cf ph3 ph5-l pv3 pv4-l f4 tc-l center measure-wide lh-copy mid-gray"
+      class="cf ma3 ph3 ph5-l pv3 pv4-l f4 center measure-wide lh-copy mid-gray"
     >
       {{ partial "search-form.html" . }}
-      <ul id="results">
-        <li style="list-style-type: none"></li>
-      </ul>
+      <div id="results"></div>
     </section>
   </article>
 {{ end }}

@@ -3,7 +3,19 @@
   action="{{ with .GetPage "/search" }}{{ .Permalink }}{{ end }}"
   method="get"
 >
-  <label hidden for="search-input">Search site</label>
-  <input type="text" id="search-input" name="query" placeholder="Bruce Lee" />
-  <input type="submit" value="search" />
+  <div class="cf">
+    <label class="clip" for="search-input">Search</label>
+    <input
+      class="f6 f5-l input-reset bn fl black-80 bg-white pa3 lh-solid w-100 w-75-m w-80-l"
+      type="text"
+      id="search-input"
+      name="query"
+      placeholder="Bruce Lee"
+    />
+    <input
+      class="f6 f5-l button-reset fl pv3 tc bn bg-animate bg-black-70 hover-bg-black white pointer w-100 w-25-m w-20-l"
+      type="submit"
+      value="search"
+    />
+  </div>
 </form>
