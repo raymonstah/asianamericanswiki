@@ -115,7 +115,7 @@ func (h Handler) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.URL.Query().Has("test") {
+	if r.URL.Query().Get("test") != "" {
 		switch r.URL.Query().Get("test") {
 		case "dupe":
 			errorResponse(w, http.StatusUnprocessableEntity, ErrBranchAlreadyExists)
