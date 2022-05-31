@@ -30,3 +30,11 @@ as your pull request gets merged, your changes will go live in production.
 
 > :warning: I'm not accepting pull requests related to the website itself.
 > Content only please!
+
+## Formatting
+
+All source code should be formatted with prettier for consistency.
+
+```shell
+npm run prettier
+```
