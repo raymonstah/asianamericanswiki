@@ -10,10 +10,10 @@
   width: 100%;
 }
 
-#formResultsIntroValid {
+#formResultsValid {
   display: none;
 }
 
-#formResults {
-  overflow-wrap: break-word;
+#formResultsInvalid {
+  display: none;
 }
