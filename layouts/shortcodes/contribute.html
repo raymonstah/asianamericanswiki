@@ -115,8 +115,8 @@
   />
 
   <div id="formResultsWrapper">
-    <em id="formResultsIntroValid">Pull request created:</em>
-    <em id="formResults"></em>
+    <em id="formResultsValid">Pull request created</em>
+    <em id="formResultsInvalid"></em>
   </div>
 </form>
 
@@ -124,10 +124,8 @@
   document.addEventListener("DOMContentLoaded", () => {
     let form = document.querySelector("form");
     let formResultsWrapper = document.querySelector("#formResultsWrapper");
-    let formResultsIntroValid = document.querySelector(
-      "#formResultsIntroValid"
-    );
-    let formResults = document.querySelector("#formResults");
+    let formResultsValid = document.querySelector("#formResultsValid");
+    let formResultsInvalid = document.querySelector("#formResultsInvalid");
 
     form.onsubmit = () => {
       let formData = new FormData(form);
@@ -150,7 +148,7 @@
         "https://us-central1-asianamericans-wiki.cloudfunctions.net/contribute-api";
       const COLOR_VALID = "#00a711";
       const COLOR_INVALID = "#930c00";
-
+      let responseOK = false;
       // send JSON data as POST request in body using fetch API
       fetch(ENDPOINT, {
         method: "POST",
@@ -158,6 +156,7 @@
       })
         .then((response) => {
           if (response.status === 201) {
+            responseOK = true;
             return response.json();
           }
 
@@ -165,45 +164,47 @@
         })
         .then((result) => {
           // display JSON if request valid, otherwise display text
-          if (result.link) {
+          if (responseOK) {
             formResultsWrapper.style.background = COLOR_VALID;
 
-            // display "pull request created"
-            formResultsIntroValid.style.display = "inline-block";
+            // hide existing error message
+            formResultsInvalid.style.display = "none";
 
-            // assign result
-            formResults.textContent = result.link;
+            // display "pull request created"
+            formResultsValid.style.display = "inline-block";
 
             // assign href from response result
-            formResultsLink.href = result.link;
+            formResultsLink.setAttribute("href", result.link);
 
-            // if <a> not already on formResult, append it
-            if (!formResultsLink.hasChildNodes()) {
+            // if link not yet on formResult, simply append it
+            if (!document.querySelector("#formResultsLink")) {
               formResultsWrapper.appendChild(formResultsLink);
-              formResultsLink.appendChild(formResults);
+              formResultsLink.appendChild(formResultsValid);
+            } else {
+              // otherwise remove existing link and reappend it
+              formResultsWrapper.removeChild(document.querySelector("#formResultsLink"));
+              formResultsWrapper.appendChild(formResultsLink);
+              formResultsLink.appendChild(formResultsValid);
             }
 
             // clear the form
             form.reset();
           } else {
             formResultsWrapper.style.background = COLOR_INVALID;
-
-            // remove the <a> link if it exists
-            if (document.querySelector("#formResultsLink")) {
-              formResultsWrapper.removeChild(
-                document.querySelector("#formResultsLink")
-              );
-
-              // removing formResultsLink also removed its child,
-              // so we have to append formResults back
-              formResultsWrapper.appendChild(formResults);
-            }
-
+            
             // hide "pull request created"
-            formResultsIntroValid.style.display = "none";
+            formResultsValid.style.display = "none";
+
+            // display error message
+            formResultsInvalid.style.display = "inline-block";
 
             // assign result
-            formResults.textContent = result;
+            try {
+              formResultsInvalid.textContent = JSON.parse(result).error;
+            } catch (err) {
+              console.log(err.message);
+              formResultsInvalid.textContent = result;
+            }
           }
 
           // finally, display form results
@@ -212,6 +213,19 @@
         .catch((error) => {
           // catch any errors with fetching API
           console.log("Error: ", error);
+
+          formResultsWrapper.style.background = COLOR_INVALID;
+            
+          // hide "pull request created"
+          formResultsValid.style.display = "none";
+
+          // display error message
+          formResultsInvalid.style.display = "inline-block";
+
+          formResultsInvalid.textContent = "Something went wrong";
+
+          // display form results
+          formResultsWrapper.style.display = "inline-block";
         });
 
       // submitting should not redirect
@@ -239,7 +253,7 @@
         key === "location" ||
         key === "tags"
       ) {
-        object[key] = value.split(",");
+        object[key] = value.split(",").filter(el => el);
       } else {
         object[key] = value;
       }
