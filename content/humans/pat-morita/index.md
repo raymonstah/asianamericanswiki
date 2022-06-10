@@ -12,4 +12,5 @@ twitter: ""
 draft: false
 ---
 
-Pat Morita was a Japanese American actor known for playing the role of Matsuo "Arnold" Takahashi on Happy Days, and Mr. Miyagi in the The Karate Kid.
+Pat Morita was a Japanese American actor known for playing the role of Matsuo
+"Arnold" Takahashi on Happy Days, and Mr. Miyagi in the The Karate Kid.
