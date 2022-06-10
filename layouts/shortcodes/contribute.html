@@ -182,7 +182,9 @@
               formResultsLink.appendChild(formResultsValid);
             } else {
               // otherwise remove existing link and reappend it
-              formResultsWrapper.removeChild(document.querySelector("#formResultsLink"));
+              formResultsWrapper.removeChild(
+                document.querySelector("#formResultsLink")
+              );
               formResultsWrapper.appendChild(formResultsLink);
               formResultsLink.appendChild(formResultsValid);
             }
@@ -191,7 +193,7 @@
             form.reset();
           } else {
             formResultsWrapper.style.background = COLOR_INVALID;
-            
+
             // hide "pull request created"
             formResultsValid.style.display = "none";
 
@@ -215,7 +217,7 @@
           console.log("Error: ", error);
 
           formResultsWrapper.style.background = COLOR_INVALID;
-            
+
           // hide "pull request created"
           formResultsValid.style.display = "none";
 
@@ -253,7 +255,7 @@
         key === "location" ||
         key === "tags"
       ) {
-        object[key] = value.split(",").filter(el => el);
+        object[key] = value.split(",").filter((el) => el);
       } else {
         object[key] = value;
       }

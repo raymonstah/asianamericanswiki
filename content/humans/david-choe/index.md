@@ -12,4 +12,6 @@ twitter: https://twitter.com/davidchoe
 draft: false
 ---
 
-David Choe started off his artist career spray-painting on the streets of LA in his teens. David has a show on Hulu [The Choe Show](https://www.hulu.com/series/the-choe-show-c964e5f4-ab76-429d-8ed5-a0cf5db56cf2).
+David Choe started off his artist career spray-painting on the streets of LA in
+his teens. David has a show on Hulu
+[The Choe Show](https://www.hulu.com/series/the-choe-show-c964e5f4-ab76-429d-8ed5-a0cf5db56cf2).

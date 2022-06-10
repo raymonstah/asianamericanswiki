@@ -14,5 +14,18 @@ twitter: "https://twitter.com/SimuLiu"
 draft: false
 ---
 
-Simu is a famous actor known for his role in Kim's Convenience. He is also
-playing the role of Shang-Chi, an Asian American superhero.
+Simu is most well known for playing the role of Shang-Chi, the first Marvel
+Asian superhero. He also has prior roles on Kim's Convenience, Awkwafina Is Nora
+From Queens, Fresh Off the Boat, Yappie, and many more.
+
+Simu's Chinese name means introspection, or ideation, and envy, to serve as a
+reminder of his parents' decision and sacrifices they've made to keep Simu
+separated until he turned five. Simu also has a Chinese nickname, Maomao.
+
+Simu was born in Harbin, China, and by his grandparents. When he turned five,
+his father came to take him back to Toronto so that he could reunite with his
+parents. Simu learned English using flash cards when he was still in Harbin, in
+preparation of his journey to Canada.
+
+To learn more about Simu, check out his memoir
+[We Were Dreamers](https://www.amazon.com/We-Were-Dreamers-Simu-Liu-ebook/dp/B08728NNKQ).
