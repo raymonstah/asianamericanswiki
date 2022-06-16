@@ -15,6 +15,9 @@ jobs:
       - run: npm ci
       - run: npm run format
 
+      - name: Pull Remote Changes
+        run: git pull
+
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
