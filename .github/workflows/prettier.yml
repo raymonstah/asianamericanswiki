@@ -21,6 +21,6 @@ jobs:
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_options: "--amend --no-verify --no-signoff"
-          skip_dirty_check: true
+          commit_message: "automatically format using prettier"
+          skip_dirty_check: false
           branch: ${{ github.head_ref }}
