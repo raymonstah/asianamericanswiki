@@ -12,13 +12,14 @@
   "scripts": {
     "prettier": "prettier -w .",
     "pre-commit": "lint-staged",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "format": "prettier --write --ignore-unknown --loglevel error ."
   },
   "pre-commit": [
     "pre-commit"
   ],
   "lint-staged": {
-    "*": "prettier --write --ignore-unknown"
+    "*": "prettier --write --ignore-unknown --loglevel error"
   },
   "repository": {
     "type": "git",
