@@ -12,6 +12,9 @@ twitter: https://twitter.com/jasminericegirl
 draft: false
 ---
 
-Rosie Nguyen is a Wharton graduate, but better known as her online persona @jasminericegirl. She is the founder of a creator platform, [Fanhouse](https://fanhouse.app/). Rosie is a content creator herself, and is passionate about creating a platform for other content creators.
+Rosie Nguyen is a Wharton graduate, but better known as her online persona
+@jasminericegirl. She is the founder of a creator platform,
+[Fanhouse](https://fanhouse.app/). Rosie is a content creator herself, and is
+passionate about creating a platform for other content creators.
 
 Rosie was recently named as a Forbes 30 Under 30 member.
