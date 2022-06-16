@@ -12,4 +12,6 @@ twitter: ""
 draft: false
 ---
 
-Raymond Lee is an actor originally from New York. He moved to California at a young age, and attended CSU Long Beach to study acting. Raymond plays Lt. Logan "Yale" Lee in Top Gun: Maverick.
+Raymond Lee is an actor originally from New York. He moved to California at a
+young age, and attended CSU Long Beach to study acting. Raymond plays Lt. Logan
+"Yale" Lee in Top Gun: Maverick.
