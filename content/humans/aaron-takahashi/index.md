@@ -12,4 +12,5 @@ twitter: https://twitter.com/takahashtag
 draft: false
 ---
 
-Aaron Takahashi is a Japanese American actor known for his roles in over 50 commericals.
+Aaron Takahashi is a Japanese American actor known for his roles in over 50
+commericals.
