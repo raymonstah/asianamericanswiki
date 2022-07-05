@@ -12,4 +12,5 @@ twitter: https://twitter.com/joeyunlee
 draft: false
 ---
 
-Joseph Lee is a Korean American actor and artist, known for his role in Searching.
+Joseph Lee is a Korean American actor and artist, known for his role in
+Searching.
