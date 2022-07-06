@@ -15,4 +15,5 @@ draft: false
 
 Jay is a Korean-American rapper, singer, songwriter who is a memeber of the
 Seattle-based b-boy crew Art of Movement and founder of independent hip hop
-record labels AOMG and H1ghr Music. Jay Park was born in Seattle and currently based in Korea.
+record labels AOMG and H1ghr Music. Jay Park was born in Seattle and currently
+based in Korea.
