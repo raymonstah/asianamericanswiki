@@ -12,4 +12,7 @@ twitter: https://twitter.com/SHANNONKOOK
 draft: false
 ---
 
-Shannon Kook is a Chinese and South African actor based in Canada. He is best known for his roles in the television series Degrassi: The Next Generation, Carmilla, Shadowhunters, and The 100, as well as his role as Drew Thomas in the film franchise The Conjuring.
+Shannon Kook is a Chinese and South African actor based in Canada. He is best
+known for his roles in the television series Degrassi: The Next Generation,
+Carmilla, Shadowhunters, and The 100, as well as his role as Drew Thomas in the
+film franchise The Conjuring.
