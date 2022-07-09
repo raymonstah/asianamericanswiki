@@ -12,4 +12,7 @@ twitter: https://twitter.com/KWOK_ROCK
 draft: false
 ---
 
-Patrick Kwok-Choon is a Canadian actor, best known for his recurring roles as Perry Crofte in the television adaptation of the horror Western comic book miniseries Wynonna Earp and as lieutenant commander Gen Rhys in the CBS science fiction drama Star Trek: Discovery.
+Patrick Kwok-Choon is a Canadian actor, best known for his recurring roles as
+Perry Crofte in the television adaptation of the horror Western comic book
+miniseries Wynonna Earp and as lieutenant commander Gen Rhys in the CBS science
+fiction drama Star Trek: Discovery.
