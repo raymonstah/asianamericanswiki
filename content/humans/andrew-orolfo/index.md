@@ -12,4 +12,8 @@ twitter: https://twitter.com/Andrew_Orolfo
 draft: false
 ---
 
-Andrew Orolfo is a Filipino American comedian based in the Bay Area. He has been featured in SF Sketchfest, High Plains Comedy Festival and Comedy Central Clusterfest. He can be heard on Sirius XM Radio and seen on [Comedy Central](https://www.youtube.com/watch?v=BSjax05IWc0), The Late Late Show with James Corden as well as Jo Koy: In His Elements on Netflix.
+Andrew Orolfo is a Filipino American comedian based in the Bay Area. He has been
+featured in SF Sketchfest, High Plains Comedy Festival and Comedy Central
+Clusterfest. He can be heard on Sirius XM Radio and seen on
+[Comedy Central](https://www.youtube.com/watch?v=BSjax05IWc0), The Late Late
+Show with James Corden as well as Jo Koy: In His Elements on Netflix.
