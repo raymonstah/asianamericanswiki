@@ -12,4 +12,7 @@ twitter: https://twitter.com/irene_tu
 draft: false
 ---
 
-Irene Tu is an American comedian, actor, and writer. She has appeared at comedy festivals such as SF Sketchfest, the Portland Queer Comedy Festival, Bridgetown Comedy Festival, and Comedy Central’s Clusterfest, and on shows such as Take My Wife and Funny How?
+Irene Tu is an American comedian, actor, and writer. She has appeared at comedy
+festivals such as SF Sketchfest, the Portland Queer Comedy Festival, Bridgetown
+Comedy Festival, and Comedy Central’s Clusterfest, and on shows such as Take My
+Wife and Funny How?
