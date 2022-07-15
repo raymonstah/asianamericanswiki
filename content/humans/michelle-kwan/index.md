@@ -15,4 +15,6 @@ draft: false
 ---
 
 Michelle Kwan is a olympian and world champion figure skater, known as one of
-the greatst figure skaters of all time.
+the greatest figure skaters of all time. Although retired as a skater, Michelle
+is active as voice in the Asian American community to combat racism and
+celebrate AAPI culture.

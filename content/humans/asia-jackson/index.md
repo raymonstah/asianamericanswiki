@@ -17,4 +17,4 @@ draft: false
 Asia Jackson is a half Filipino, half Black actress, content creator, and
 activist. In 2016, she started the trend #MagandangMorenx, which translates to
 "beautiful brown skin" to not only spread awareness of colorism, but also to
-celebreFilipino beauty.
+celebrate Filipino beauty.
