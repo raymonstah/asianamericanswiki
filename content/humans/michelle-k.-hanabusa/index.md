@@ -12,4 +12,7 @@ twitter: https://twitter.com/weareuprisers
 draft: false
 ---
 
-Michelle is a fourth-generation Japanese American entrepreneur from Southern California. She is the founder and Creative Director of UPRISERS + Co-Founder of Hate Is A Virus, an organization and social movement to combat xenophobia and racism against Asian Americans.
+Michelle is a fourth-generation Japanese American entrepreneur from Southern
+California. She is the founder and Creative Director of UPRISERS + Co-Founder of
+Hate Is A Virus, an organization and social movement to combat xenophobia and
+racism against Asian Americans.
