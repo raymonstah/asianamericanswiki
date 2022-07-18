@@ -12,4 +12,5 @@ twitter: https://twitter.com/kristykim1015
 draft: false
 ---
 
-Kristy Kim is a Korean immigrant who founded TomoCredit, a platform that helps immigrants and young adults build their credit.
+Kristy Kim is a Korean immigrant who founded TomoCredit, a platform that helps
+immigrants and young adults build their credit.
