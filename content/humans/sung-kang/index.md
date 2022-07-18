@@ -12,4 +12,6 @@ twitter: https://twitter.com/sungkang
 draft: false
 ---
 
-Sung-Ho Kang is a Korean-American actor and producer from Clarkston, Georgia who is widely known for playing Han Lue from the Fast & Furious series of films and Better Luck Tomorrow.
+Sung-Ho Kang is a Korean-American actor and producer from Clarkston, Georgia who
+is widely known for playing Han Lue from the Fast & Furious series of films and
+Better Luck Tomorrow.
