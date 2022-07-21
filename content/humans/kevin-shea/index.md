@@ -12,4 +12,5 @@ twitter: ""
 draft: false
 ---
 
-Kevin Shea is a Korean American stand-up comedian. Kevin has been featured on Jimmy Kimmel, Comedy Central, and Kims of Comedy.
+Kevin Shea is a Korean American stand-up comedian. Kevin has been featured on
+Jimmy Kimmel, Comedy Central, and Kims of Comedy.
