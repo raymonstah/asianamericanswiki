@@ -12,4 +12,8 @@ twitter: ""
 draft: false
 ---
 
-Han Ong is a Chinese American playwright and novelist who was born in the Phillippines. He is known for his novels, Fixer Chao and The Disinherited. Han is a high school dropout, but also one of the youngest recipients of the MacArthur Fellowship. Han has also been a guest lecturer at different universities.
+Han Ong is a Chinese American playwright and novelist who was born in the
+Phillippines. He is known for his novels, Fixer Chao and The Disinherited. Han
+is a high school dropout, but also one of the youngest recipients of the
+MacArthur Fellowship. Han has also been a guest lecturer at different
+universities.
