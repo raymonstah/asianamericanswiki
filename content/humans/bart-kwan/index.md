@@ -12,6 +12,10 @@ twitter: ""
 draft: false
 ---
 
-Bart Kwan is a Chinese American Youtuber and entrepreneur. He is best known for starting JustkiddingFilms, a youtube channel where he and his team posts comedic skits. More recently, he's also started Barbell Brigade with his partner Geo, a power lifting gym.
+Bart Kwan is a Chinese American Youtuber and entrepreneur. He is best known for
+starting JustkiddingFilms, a youtube channel where he and his team posts comedic
+skits. More recently, he's also started Barbell Brigade with his partner Geo, a
+power lifting gym.
 
-Bart is considered an OG of Youtube, posting comedic skits with his partner Joe Jitsukawa.
+Bart is considered an OG of Youtube, posting comedic skits with his partner Joe
+Jitsukawa.
