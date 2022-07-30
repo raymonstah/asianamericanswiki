@@ -12,4 +12,5 @@ twitter: ""
 draft: false
 ---
 
-Gedde Watanabe is a Japanese American actor best known for his stereotypical Asian character Long Duk Dong in the movie Sixteen Candles.
+Gedde Watanabe is a Japanese American actor best known for his stereotypical
+Asian character Long Duk Dong in the movie Sixteen Candles.
