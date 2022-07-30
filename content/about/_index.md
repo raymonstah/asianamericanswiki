@@ -1,36 +1,52 @@
 ---
-title: "About Us"
+title: "Our Story"
 date: 2021-05-24T14:01:42-07:00
 ---
 
-# Welcome
+# Welcome.
 
-Welcome to the open source database of Asian Americans! This is the place to not
-only learn about the history of important Asian American figures, but also
-discover new creators, musicians, entrepreneurs, professionals, and role models
-of the future generation. This is for those who are looking to be inspired by
-others. This is meant to fill the missing void of the absent role models in our
-lives, to see what's been done before and to push the boundaries of what can be
-done.
+Recently, I took a much needed break from work and went on a trip to Southeast
+Asia. And there I experienced something quite odd, a feeling I don’t know how to
+fully put into words. I couldn’t count with all my fingers the number of times
+the locals assumed that I was Korean or Japanese. (I am neither.) “konichiwa”
+and “annyeonghaseyo” they would holler as I walked by. I was so caught off
+guard. Can you imagine if this happened in America? This experience nearly
+brought me into a crisis and had me questioning my own identity.
 
-The number of influential Asian Americans continues to grow every day, with more
-and more people excelling at what they do. Together, we can build something for
-the people. There are over 20 million of us, and we're a lot stronger when we
-collaborate and work together.
+Why did they assume I was of one ethnicity or another?
 
-# How it works
+Was my skin tone not dark enough, or was it my monolid eyes, or the way I
+dressed and walked?
 
-All the people mentioned on this site are publicly available and labeled where
-possible, specifically here on
-[Github](https://github.com/raymonstah/asianamericanswiki/tree/main/content/humans).
-Any time a new person gets added, this site will regenerate itself
-automatically. With your contribution, we can grow the database of influential
-Asian Americans to help inspire the generations to come.
+Why did any of this even matter?”
 
-## Disclaimers
+Even in Asia, where I was surrounded by majority Asians, I didn’t feel like I
+fully fit in. You know the cliché: not Asian enough for Asia, not American
+enough for America.
 
-1. Not every person mentioned is from America.
-2. No ads, ever.
-3. Any affiliate links will be labeled.
-   - There are none as of now.
-4. We do not profit from maintaining this site.
+My trip strangely brought back memories of growing up in America. I remember
+when kids would tease me when I brought Japanese yams for lunch; so much that I
+convinced my mom to buy me expensive, non-nutritious Lunchables instead of her
+homemade meals. It wasn’t until my later years when I learned I should be proud
+and completely unashamed of who I am. Not just the foods I ate at home, but the
+traditions and cultures we celebrated. Similarly, when traveling abroad, when
+the unassuming, but very kind locals would ask where we’re from, I would proudly
+let them know I was American. “We’re from California!” And yes, that's where I'm
+_really_ from.
+
+The common theme here is that I just wanted to fit in. I wanted to be accepted
+and seen for who I am — not my race or what I looked like. I wanted other people
+like me to know that they belong. And that’s why this site exists: to share the
+stories of Asian Americans, and their journey to get to where they are. To
+provide a safe space where we can discover our role-models, and the people who
+look like us and represent us on television. To give flowers for the
+trailblazers, the OGs, and the leaders who are going to inspire the next
+generation of Asian Americans to come.
+
+We're surely not going anywhere else. America is our home. From the first
+Filipino sailors to set foot on the promised land, to the curious and brave
+adventurers studying internationally -- from the Chinese railroad workers who
+_literally_ paved the way for us, to the young entrepreneurs who are able to
+pursue their dreams today -- from the immigrant families fleeing from war,
+famine, and regime, to the kid working at the family restaurant and doing
+homework in the back: your stories make America.
