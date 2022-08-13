@@ -12,6 +12,7 @@ import (
 	"cloud.google.com/go/firestore"
 	"github.com/segmentio/ksuid"
 	"github.com/urfave/cli/v2"
+	"google.golang.org/api/option"
 
 	"github.com/raymonstah/asianamericanswiki/functions/api"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
@@ -38,8 +39,9 @@ func main() {
 				Usage: "dry run adding to firestore",
 			},
 			&cli.StringFlag{
-				Name:  flagFirestoreCredentials,
-				Usage: "service account json credentials",
+				Name:    flagFirestoreCredentials,
+				EnvVars: []string{"FIRESTORE_CREDENTIALS"},
+				Usage:   "service account json credentials",
 			},
 		},
 	}
@@ -57,8 +59,8 @@ func action(c *cli.Context) error {
 	}
 
 	if c.Bool(flagAddToFireStore) {
-		//credentials := []byte(c.String(flagFirestoreCredentials))
-		fsClient, err := firestore.NewClient(ctx, api.ProjectID)
+		credentials := []byte(c.String(flagFirestoreCredentials))
+		fsClient, err := firestore.NewClient(ctx, api.ProjectID, option.WithCredentialsJSON(credentials))
 		if err != nil {
 			return fmt.Errorf("unable to create firestore client: %w", err)
 		}

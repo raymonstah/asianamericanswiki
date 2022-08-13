@@ -20,13 +20,9 @@ jobs:
         with:
           go-version: "1.19.0"
 
-      - id: "auth"
-        name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v0"
-        with:
-          credentials_json: "${{ secrets.GCP_SA_HUMAN_ADDER }}"
-
       - run: go run main.go --add-to-firestore
+        env:
+          FIRESTORE_CREDENTIALS: ${{ secrets.GCP_SA_HUMAN_ADDER }}
         working-directory: ./functions/idinjector
 
       - name: Pull Remote Changes
