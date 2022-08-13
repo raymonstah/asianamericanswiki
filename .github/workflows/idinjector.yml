@@ -9,7 +9,7 @@ on:
       - "functions/idinjector/**"
       - ".github/workflows/idinjector.yml"
 jobs:
-  format:
+  id-injector:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -26,7 +26,7 @@ jobs:
         with:
           credentials_json: "${{ secrets.GCP_SA_KEY }}"
 
-      - run: go run main.go --add-to-firestore --dry-run
+      - run: go run main.go --add-to-firestore
         working-directory: ./functions/idinjector
 
       - name: Pull Remote Changes
