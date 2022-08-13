@@ -75,6 +75,7 @@ func action(c *cli.Context) error {
 			if err != nil {
 				return fmt.Errorf("unable to add %v: %w", human.Name, err)
 			}
+			log.Printf("added human %v with id %v\n\n", human.Name, human.ID)
 		}
 	}
 
