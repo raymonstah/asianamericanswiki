@@ -1,5 +1,4 @@
 ---
-id: "2DJneFKobC3m3FgCblR6jm0UZbS"
 title: "Andrew Koji"
 aka: []
 date: 2021-06-23T12:50:22-07:00

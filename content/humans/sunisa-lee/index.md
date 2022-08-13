@@ -1,5 +1,4 @@
 ---
-id: "2DJne9gVnRTSrRX1AUUUuq1g11F"
 title: "Sunisa Lee"
 aka: ["Suni Lee"]
 date: "2021-05-24T00:25:29"

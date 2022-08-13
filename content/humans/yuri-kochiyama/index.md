@@ -1,5 +1,4 @@
 ---
-id: "2DJneEKqM4G6E8OdwKqA66fAXGc"
 title: "Yuri Kochiyama"
 aka: []
 date: "2021-05-24T00:25:29"

@@ -1,5 +1,4 @@
 ---
-id: "2DJneDslGrYlsb16659ZLKg9NTz"
 title: "Michelle Wu"
 aka: []
 date: 2021-10-01T12:54:10-07:00

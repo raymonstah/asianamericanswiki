@@ -1,5 +1,4 @@
 ---
-id: "2DJneC5YaO94t3n7s1eK3Q3EVe4"
 title: "Gemma Chan"
 aka: []
 date: "2021-05-24T00:25:29"

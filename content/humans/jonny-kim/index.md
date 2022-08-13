@@ -1,5 +1,4 @@
 ---
-id: "2DJne9muaswhCHVIb5EBKCPJwSo"
 title: Jonny Kim
 date: 2022-05-03T00:17:37
 aka: []

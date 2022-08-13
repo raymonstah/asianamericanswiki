@@ -1,5 +1,4 @@
 ---
-id: "2DJneFKsik83A40U3Uf0rmiok05"
 title: "Tina Tchen"
 aka: ["Christina M. Tchen"]
 date: 2021-07-06T12:13:11-07:00

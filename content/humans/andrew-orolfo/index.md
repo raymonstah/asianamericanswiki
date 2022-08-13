@@ -1,5 +1,4 @@
 ---
-id: "2DJne8Z5zLddNSdf6g1PIUNBH04"
 title: Andrew Orolfo
 date: 2022-07-09T22:46:37
 aka: []

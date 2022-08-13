@@ -1,5 +1,4 @@
 ---
-id: "2DJneCnUITNeDafs49eWTI0toaB"
 title: "Alice Chen"
 aka: []
 date: 2021-06-23T12:50:22-07:00

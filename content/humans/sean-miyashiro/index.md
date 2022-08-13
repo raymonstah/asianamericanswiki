@@ -1,5 +1,4 @@
 ---
-id: "2DJneEy6qKesQGj1EYS5QFF3com"
 title: "Sean Miyashiro"
 aka: []
 date: 2021-05-26T21:15:02-07:00

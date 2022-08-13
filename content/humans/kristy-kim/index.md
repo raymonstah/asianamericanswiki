@@ -1,5 +1,4 @@
 ---
-id: "2DJne7oFy6rcJ309cthrUFJan6F"
 title: Kristy Kim
 date: 2022-07-18T22:51:50
 aka: []

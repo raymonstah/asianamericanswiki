@@ -1,5 +1,4 @@
 ---
-id: "2DJneAu00DfVbYqEYboJIYrFmvR"
 title: Xiaolong Liu
 date: 2022-04-05T18:42:00
 aka: []

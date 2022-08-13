@@ -1,5 +1,4 @@
 ---
-id: "2DJne9Rf9Y9jiaHnLa7E1eBMGS1"
 title: "Ji-Su Park"
 aka: []
 date: 2021-06-02T23:22:21-07:00

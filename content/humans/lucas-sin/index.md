@@ -1,5 +1,4 @@
 ---
-id: "2DJneBFgd7j4aSuRxti7ATQfaDD"
 title: "Lucas Sin"
 aka: []
 date: 2021-08-31T09:36:12-07:00

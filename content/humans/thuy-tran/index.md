@@ -1,5 +1,4 @@
 ---
-id: "2DJne8PEkrT7gk0PJYNXAq4KHij"
 title: "Thuy Tran"
 aka: ["Thuy"]
 date: 2022-05-13T11:58:52-07:00

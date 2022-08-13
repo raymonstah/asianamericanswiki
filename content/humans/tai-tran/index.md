@@ -1,5 +1,4 @@
 ---
-id: "2DJneCfgJqeDy1QaeH40LAgQbbX"
 title: "Tai Tran"
 aka: ["Ty McFly"]
 date: 2021-05-29T13:07:20-07:00

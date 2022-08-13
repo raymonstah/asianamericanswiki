@@ -1,5 +1,4 @@
 ---
-id: "2DJneA48LfLIRes9DbHsB7Sj1Po"
 title: "Brian Imanuel"
 aka: ["Rich Brian"]
 date: "2021-05-24T00:25:29"

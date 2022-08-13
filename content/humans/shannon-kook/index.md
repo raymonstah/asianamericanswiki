@@ -1,5 +1,4 @@
 ---
-id: "2DJne7qKY8vTxr6m9MADDvcqxL1"
 title: Shannon Kook
 date: 2022-07-09T02:36:13
 aka: [Shannon Xiao Lóng Kook-Chun]

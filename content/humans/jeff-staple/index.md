@@ -1,5 +1,4 @@
 ---
-id: "2DJneBR3MZuWhm8a3nbFQT4GuCa"
 title: "Jeff Staple"
 aka: ["Jeffrey Ng"]
 date: 2021-08-05T10:46:56-07:00

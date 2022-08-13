@@ -1,5 +1,4 @@
 ---
-id: "2DJneCKRFl5p9HOoiwmAFV5ZZTh"
 title: "Patricia Chin"
 aka: ["Miss. Pat"]
 date: 2021-05-29T13:30:32-07:00

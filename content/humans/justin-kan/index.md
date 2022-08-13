@@ -1,5 +1,4 @@
 ---
-id: "2DJneANJ1F0Phs07fPoAWqDU3Sr"
 title: "Justin Kan"
 aka: []
 date: "2021-05-24T00:25:29"

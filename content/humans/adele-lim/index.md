@@ -1,5 +1,4 @@
 ---
-id: "2DJne95IHJXogcKaVku18HKmf5a"
 title: "Adele Lim"
 aka: []
 date: 2021-10-01T12:49:41-07:00

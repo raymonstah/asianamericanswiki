@@ -1,5 +1,4 @@
 ---
-id: "2DJneCPnfibNtU0xZPONskzfqHr"
 title: Raymond Lee
 date: 2022-06-12T05:18:26
 aka: []

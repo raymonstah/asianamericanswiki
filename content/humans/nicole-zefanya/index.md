@@ -1,5 +1,4 @@
 ---
-id: "2DJneBZvrLcdhCkzhmlVhNlIC3g"
 title: "Nicole Zefanya"
 aka: ["NIKI"]
 date: "2021-05-24T00:25:29"

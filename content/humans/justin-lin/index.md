@@ -1,5 +1,4 @@
 ---
-id: "2DJne7zerh56TwsHPsgHG4Rksjw"
 title: "Justin Lin"
 aka: []
 date: 2021-06-23T12:37:50-07:00

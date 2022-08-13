@@ -1,5 +1,4 @@
 ---
-id: "2DJneEteiU3mWJT7Pa1KiQUBD5p"
 title: "Jay Park"
 aka: []
 date: "2021-05-24T00:25:29"

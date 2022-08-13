@@ -1,5 +1,4 @@
 ---
-id: "2DJneFS05vBkOrKAWXOLnR7KVse"
 title: "Vincent Chin"
 aka: []
 date: "2021-05-24T00:25:29"

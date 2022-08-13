@@ -1,5 +1,4 @@
 ---
-id: "2DJneAvCrVJpDKOXUoJNS1Cl0ch"
 title: "Peter Ash Lee"
 aka: []
 date: 2021-05-29T13:30:32-07:00

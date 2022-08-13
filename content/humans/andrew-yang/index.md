@@ -1,5 +1,4 @@
 ---
-id: "2DJneD6sHdZb1xykV6yBhWKl0n4"
 title: "Andrew Yang"
 aka: []
 date: "2021-05-24T00:25:29"

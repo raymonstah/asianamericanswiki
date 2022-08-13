@@ -1,5 +1,4 @@
 ---
-id: "2DJneDGVgkrw6UeWTHMgVzwO0Hr"
 title: Fumi Abe
 date: 2022-07-09T02:29:46
 aka: []

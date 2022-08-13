@@ -1,5 +1,4 @@
 ---
-id: "2DJneBVoH2URM8jaPsE0KP833vv"
 title: "Naomi Osaka"
 aka: []
 date: 2021-06-02T23:24:10-07:00

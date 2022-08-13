@@ -1,5 +1,4 @@
 ---
-id: "2DJneBZPG33MTCYzWyBRfumPhMm"
 title: Jasper Wu
 date: 2021-11-22T07:11:56
 aka: []

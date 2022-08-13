@@ -1,5 +1,4 @@
 ---
-id: "2DJneAvVWdiFGSCY6IxQk0La15c"
 title: Kevin Shea
 date: 2022-07-21T18:34:47
 aka: []

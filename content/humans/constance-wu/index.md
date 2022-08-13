@@ -1,5 +1,4 @@
 ---
-id: "2DJneCXVOQl1hsBbmH4C0GsBnYe"
 title: Constance Wu
 date: 2022-07-15T00:30:04
 aka: []

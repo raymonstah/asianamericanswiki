@@ -1,5 +1,4 @@
 ---
-id: "2DJneBkAmIC0k7UvXF77zaamFEm"
 title: Jo Koy
 date: 2022-06-17T00:21:45
 aka: [Joseph Glenn Herbert Sr]

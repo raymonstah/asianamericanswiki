@@ -1,5 +1,4 @@
 ---
-id: "2DJneDcng0MiLOrFLSDOOrEQDLd"
 title: "Jimmy Wong"
 aka: ["James Franklin Wong"]
 date: 2021-07-06T12:29:05-07:00

@@ -1,5 +1,4 @@
 ---
-id: "2DJneDJvYkcLP5GtFmeHiTGvjDC"
 title: "Yuh Line Niou"
 aka: []
 date: 2021-06-02T23:24:57-07:00

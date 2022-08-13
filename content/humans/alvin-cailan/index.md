@@ -1,5 +1,4 @@
 ---
-id: "2DJneBP6t2ibCdJlXo8FbWws09h"
 title: "Alvin Cailan"
 aka: []
 date: 2021-07-06T12:24:01-07:00

@@ -1,5 +1,4 @@
 ---
-id: "2DJneBHALOEXLomYEkjv6cu3JYE"
 title: "Olivia Rodrigo"
 aka: []
 date: 2021-10-01T13:39:33-07:00

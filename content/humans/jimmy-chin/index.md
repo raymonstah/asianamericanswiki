@@ -1,5 +1,4 @@
 ---
-id: "2DJneCYFTnMdAOPdZTUFxJX0Ryu"
 title: "Jimmy Chin"
 aka: []
 date: "2021-05-24T00:25:29"

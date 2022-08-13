@@ -1,5 +1,4 @@
 ---
-id: "2DJneFVu1B3snTyPaKAM4AqIeLG"
 title: "Grace Lee Boggs"
 aka: []
 date: "2021-05-24T00:25:29"

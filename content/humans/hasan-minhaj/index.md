@@ -1,5 +1,4 @@
 ---
-id: "2DJneAk9c065QzWT5JrjvEvXs2k"
 title: "Hasan Minhaj"
 aka: []
 date: 2021-07-06T12:04:55-07:00

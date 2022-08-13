@@ -1,5 +1,4 @@
 ---
-id: "2DJneD3OWoxkAUVoGicstywCiGj"
 title: "Tyrus Wong"
 aka: []
 date: 2021-05-29T13:07:20-07:00

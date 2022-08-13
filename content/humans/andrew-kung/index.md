@@ -1,5 +1,4 @@
 ---
-id: "2DJneDlmKbjcIpa8RJf4LKZWzjt"
 title: "Andrew Kung"
 aka: []
 date: 2021-06-18T15:17:53-07:00

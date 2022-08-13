@@ -1,5 +1,4 @@
 ---
-id: "2DJneEP6BPnl912G5HZSZV01wsi"
 title: "Ocean Vuong"
 aka: []
 date: 2021-05-29T13:35:42-07:00

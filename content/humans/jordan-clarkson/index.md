@@ -1,5 +1,4 @@
 ---
-id: "2DJneCr2b8sgsXJAXO96iaBHpfm"
 title: "Jordan Clarkson"
 aka: []
 date: 2021-06-18T15:27:16-07:00

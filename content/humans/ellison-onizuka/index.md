@@ -1,5 +1,4 @@
 ---
-id: "2DJneARCx9eJSSSqhjp67kxRuXh"
 title: Ellison Onizuka
 date: 2022-05-03T00:15:37
 aka: []

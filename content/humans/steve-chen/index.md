@@ -1,5 +1,4 @@
 ---
-id: "2DJneAiGJJdLoKOFC0aJLniWvYv"
 title: "Steve Chen"
 aka: []
 date: "2021-05-24T00:25:29"

@@ -1,5 +1,4 @@
 ---
-id: "2DJneBcTS8FDtjqUgVCtcCLfAQT"
 title: "Jonathan Park"
 aka: ["Dumbfoundead"]
 date: "2021-05-24T00:25:29"

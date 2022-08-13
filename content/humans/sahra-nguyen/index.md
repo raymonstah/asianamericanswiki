@@ -1,5 +1,4 @@
 ---
-id: "2DJneC39Yk0YP30LmkyuOPaRre4"
 title: "Sahra Nguyen"
 aka: []
 date: "2021-05-24T00:25:29"

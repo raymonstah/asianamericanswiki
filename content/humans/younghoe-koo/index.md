@@ -1,5 +1,4 @@
 ---
-id: "2DJneC6EV5JFWi1ozdO5YYol3v9"
 title: "Younghoe Koo"
 aka: []
 date: 2021-10-01T13:16:29-07:00

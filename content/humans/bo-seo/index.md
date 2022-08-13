@@ -1,5 +1,4 @@
 ---
-id: "2DJneDrN7LouOOx3MpTXNzOXgXt"
 title: Bo Seo
 date: 2022-07-06T23:51:44
 aka: []

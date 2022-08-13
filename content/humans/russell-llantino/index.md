@@ -1,5 +1,4 @@
 ---
-id: "2DJne9dzLEG8s97eyn1tfKqPkse"
 title: Russell Llantino
 date: 2022-04-29T06:32:53
 aka: [RUSSELL!, D-Pryde, Pryde]

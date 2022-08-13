@@ -1,5 +1,4 @@
 ---
-id: "2DJne8zufUFIIcUqlV1Gk06zsS2"
 title: "Shannon Lee"
 aka: []
 date: 2021-05-26T21:25:18-07:00

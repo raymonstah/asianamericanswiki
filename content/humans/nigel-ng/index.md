@@ -1,5 +1,4 @@
 ---
-id: "2DJneCKX2HZ7XhiptvRZ0iOOUGE"
 title: Nigel Ng
 date: 2022-05-11T17:37:51
 aka: [Uncle Roger]

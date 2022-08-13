@@ -1,5 +1,4 @@
 ---
-id: "2DJne8VTnanpScIaHK0KwaS9nHz"
 title: "Michelle Kwan"
 aka: []
 date: 2021-07-06T12:05:11-07:00

@@ -1,5 +1,4 @@
 ---
-id: "2DJneCjG1LBqHbMBPqzbcGyfp8x"
 title: "Jennifer Lee"
 aka: ["TOKiMONSTA"]
 date: 2021-08-05T10:47:15-07:00

@@ -1,5 +1,4 @@
 ---
-id: "2DJneAYGqxkk4dvNysvjt7zihq4"
 title: Aaron Takahashi
 date: 2022-07-05T20:12:25
 aka: []

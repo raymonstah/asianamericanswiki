@@ -1,5 +1,4 @@
 ---
-id: "2DJneAktSB9UGFOxcE1vq8nRzPS"
 title: "James Gong Fu Dong"
 aka: []
 date: "2021-05-24T00:25:29"

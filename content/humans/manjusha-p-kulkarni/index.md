@@ -1,5 +1,4 @@
 ---
-id: "2DJneEduCWp0o0PVtCpcgGl80Sk"
 title: "Manjusha P Kulkarni"
 aka: ["Manju"]
 date: 2021-10-20T19:54:47-07:00

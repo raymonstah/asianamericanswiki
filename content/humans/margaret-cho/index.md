@@ -1,5 +1,4 @@
 ---
-id: "2DJne9HcbXxyMhO5pAVMKu0n4fx"
 title: "Margaret Cho"
 aka: []
 date: 2021-07-06T12:06:00-07:00

@@ -1,5 +1,4 @@
 ---
-id: "2DJne9ZJeEnZJyRktiBRDvxVYEE"
 title: "Joseph Tsai"
 aka: ["Joe Tsai"]
 date: 2021-10-20T19:50:58-07:00

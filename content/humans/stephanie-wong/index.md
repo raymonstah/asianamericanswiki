@@ -1,5 +1,4 @@
 ---
-id: "2DJneA4EAsjXjlCbNvCIZuX4e29"
 title: Stephanie Wong
 date: 2022-06-16T23:57:33
 aka: []

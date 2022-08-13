@@ -1,5 +1,4 @@
 ---
-id: "2DJne8njIyBXQIgmPIjtInGlFCd"
 title: Ruby Ibarra
 date: 2022-06-12T14:54:31
 aka: []

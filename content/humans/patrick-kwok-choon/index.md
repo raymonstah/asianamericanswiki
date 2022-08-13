@@ -1,5 +1,4 @@
 ---
-id: "2DJne8wTHDitpVGEwUGTRqFjhzy"
 title: Patrick Kwok-Choon
 date: 2022-07-09T02:34:14
 aka: []

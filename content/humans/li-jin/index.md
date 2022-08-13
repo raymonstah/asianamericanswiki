@@ -1,5 +1,4 @@
 ---
-id: "2DJne8Pk1i8x8R4UDPGvT3HSSdg"
 title: "Li Jin"
 aka: []
 date: 2022-01-23T09:16:56-08:00

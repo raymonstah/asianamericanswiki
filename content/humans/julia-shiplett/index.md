@@ -1,5 +1,4 @@
 ---
-id: "2DJneF5IU4NFRZ1ub0i6HqUjw05"
 title: Julia Shiplett
 date: 2022-06-16T16:06:41
 aka: []

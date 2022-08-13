@@ -1,5 +1,4 @@
 ---
-id: "2DJneBuaS3uCltFBhvuGc4WO59L"
 title: "Mayuko Inoue"
 aka: []
 date: 2021-06-08T13:01:40-07:00

@@ -1,5 +1,4 @@
 ---
-id: "2DJneCwuJD12szrJrCnIVcX25fc"
 title: "Jimmy O Yang"
 aka: []
 date: "2021-05-24T00:25:29"

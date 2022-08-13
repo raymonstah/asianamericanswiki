@@ -1,5 +1,4 @@
 ---
-id: "2DJneELETahdSPdmBzU42Zl5l8C"
 title: "Jin Au-Yeung"
 aka: ["MC Jin"]
 date: "2021-05-24T00:25:29"

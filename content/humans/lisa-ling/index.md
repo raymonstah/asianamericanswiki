@@ -1,5 +1,4 @@
 ---
-id: "2DJneD9fsQnSK3beHnOOgh1TCiP"
 title: "Lisa Ling"
 aka: []
 date: 2021-07-06T12:10:00-07:00

@@ -1,5 +1,4 @@
 ---
-id: "2DJneBh2qwpa7SXMunqhkLlpU8a"
 title: Joseph Lee
 date: 2022-07-05T20:34:38
 aka: []
