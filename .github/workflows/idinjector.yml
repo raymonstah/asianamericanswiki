@@ -24,7 +24,7 @@ jobs:
         name: "Authenticate to Google Cloud"
         uses: "google-github-actions/auth@v0"
         with:
-          credentials_json: "${{ secrets.GCP_SA_KEY }}"
+          credentials_json: "${{ secrets.GCP_SA_HUMAN_ADDER }}"
 
       - run: go run main.go --add-to-firestore
         working-directory: ./functions/idinjector
