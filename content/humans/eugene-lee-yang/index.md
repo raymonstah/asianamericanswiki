@@ -1,4 +1,5 @@
 ---
+id: "2DJsFGM3tqNV8axlFxfNtbWjyis"
 title: "Eugene Lee Yang"
 aka: []
 date: 2021-07-06T12:05:03-07:00

@@ -1,4 +1,5 @@
 ---
+id: "2DJsFNyCrjrnbdoeTCDjdulCf4F"
 title: Gedde Watanabe
 date: 2022-07-30T18:07:55
 aka: [Gary "Gedde" Watanabe]

@@ -1,4 +1,5 @@
 ---
+id: "2DJsFIyohZUOiKDbDntWivjoNPB"
 title: "Nathan Chen"
 aka: ["Nathan Wei Chen"]
 date: 2022-02-10T22:29:51-08:00

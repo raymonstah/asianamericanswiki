@@ -1,4 +1,5 @@
 ---
+id: "2DJsFNKTOTD3fnlYk2VoisUvnoh"
 title: "Viet Thanh Nguyen"
 aka: []
 date: 2021-05-29T13:40:50-07:00
