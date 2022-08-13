@@ -1,4 +1,5 @@
 ---
+id: "2DJne8PEc7Fo8z9e1yacrVW5V0V"
 title: "Bruce Lee"
 aka: []
 date: "2021-05-24T00:25:29"

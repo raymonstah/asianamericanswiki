@@ -1,4 +1,5 @@
 ---
+id: "2DJneDeCHhRT8Za1FQwSQGOVWUY"
 title: "Qui Nguyen"
 aka: []
 date: 2021-10-01T12:44:02-07:00

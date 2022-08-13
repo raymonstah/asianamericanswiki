@@ -1,4 +1,5 @@
 ---
+id: "2DJne9pa3nXShCPcQMCsjdaX7GU"
 title: "Steve Aoki"
 aka: ["Steven Hiroyuki Aoki"]
 date: 2021-08-19T22:28:24-07:00

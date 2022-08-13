@@ -1,4 +1,5 @@
 ---
+id: "2DJneBmJGrHqJOpCtMjd3ewrxjC"
 title: Rosie Nguyen
 date: 2022-06-16T23:47:51
 aka: [jasminericegirl]

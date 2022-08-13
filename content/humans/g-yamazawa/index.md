@@ -1,4 +1,5 @@
 ---
+id: "2DJneBCUG5hr9QJsOmiwpoTrBhU"
 title: "G YAMAZAWA"
 aka: []
 date: "2021-05-24T00:25:29"

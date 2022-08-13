@@ -1,4 +1,5 @@
 ---
+id: "2DJne8sDspbh1NsFHQv0ZavhaBo"
 title: David Choe
 date: 2022-06-06T21:04:15
 aka: []

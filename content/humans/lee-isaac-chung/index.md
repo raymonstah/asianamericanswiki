@@ -1,4 +1,5 @@
 ---
+id: "2DJne8cDWN51B6oIJwMethU2kvL"
 title: "Lee Isaac Chung"
 aka: []
 date: 2021-09-24T12:26:39-07:00
