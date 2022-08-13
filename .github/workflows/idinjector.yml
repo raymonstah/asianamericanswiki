@@ -1,8 +1,7 @@
 name: ID Injector
 on:
   push:
-    #    branches: [main]
-    branches: [raymond/inject-ids]
+    branches: [main]
     paths:
       # only run when the source code changes or this file changes
       - "content/humans/**"
