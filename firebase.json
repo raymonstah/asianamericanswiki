@@ -3,7 +3,22 @@
     "public": "public",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
   },
+  "emulators": {
+    "auth": {
+      "port": 8081
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "ui": {
+      "enabled": true
+    }
+  },
   "functions": {
     "source": "functions"
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
   }
 }

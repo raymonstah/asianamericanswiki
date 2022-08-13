@@ -1,4 +1,5 @@
 ---
+id: "2DJsFMs2SqmsZ9MfsQuNHoguvgd"
 title: "Eddie Huang"
 aka: ["Edwyn Charles Huang"]
 date: 2022-05-23T10:02:50-07:00

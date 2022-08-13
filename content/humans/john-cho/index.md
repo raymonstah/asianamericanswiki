@@ -1,4 +1,5 @@
 ---
+id: "2DJsFI4viahtaW1R6sTxe43axTP"
 title: John Cho
 date: 2022-06-12T05:27:30
 aka: [Cho Yo-Han]

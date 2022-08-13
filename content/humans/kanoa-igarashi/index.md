@@ -1,4 +1,5 @@
 ---
+id: "2DJsFNrHhkrebKbpyNIU1oSGq4W"
 title: "Kanoa Igarashi"
 aka: []
 date: 2021-10-01T13:13:36-07:00

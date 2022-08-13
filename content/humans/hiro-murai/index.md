@@ -1,4 +1,5 @@
 ---
+id: "2DJsFKIuQyCVrH7SUp5smX0wt9T"
 title: Hiro Murai
 date: 2022-05-11T17:50:43
 aka: []

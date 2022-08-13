@@ -1,4 +1,5 @@
 ---
+id: "2DJsFHlTVvfAjXCi73xskCdxGgH"
 title: Pat Morita
 date: 2022-06-06T17:22:53
 aka: []
