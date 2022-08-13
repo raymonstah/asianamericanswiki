@@ -1,4 +1,5 @@
 ---
+id: "2DJsFK8Ro2Qnz8CgjDZgLsrViPg"
 title: "Amanda Nguyen"
 aka: []
 date: 2021-07-06T12:12:09-07:00

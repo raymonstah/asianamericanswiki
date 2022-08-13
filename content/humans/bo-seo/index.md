@@ -1,4 +1,5 @@
 ---
+id: "2DJsFL4N5ZmGhJcRYcDiwAIMhaj"
 title: Bo Seo
 date: 2022-07-06T23:51:44
 aka: []

@@ -1,4 +1,5 @@
 ---
+id: "2DJsFL9wnXMpcrHDTKOHJcSCu9m"
 title: "Hisaye Yamamoto"
 aka: []
 date: "2021-05-24T00:25:29"

@@ -1,4 +1,5 @@
 ---
+id: "2DJsFGa1x71NSVyxlVJuXUpgiwp"
 title: "Jim Kwik"
 aka: []
 date: 2021-08-19T22:36:25-07:00

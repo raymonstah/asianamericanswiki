@@ -1,4 +1,5 @@
 ---
+id: "2DJsFNUswY3D2kawd00LNpzTQ2z"
 title: Naval Ravikant
 date: 2021-12-07T08:27:23
 aka: []

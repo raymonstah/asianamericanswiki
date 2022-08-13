@@ -1,4 +1,5 @@
 ---
+id: "2DJsFLkKrqIsTkvSW5rKdyEpcFY"
 title: "Angela Duckworth"
 aka: []
 date: 2021-05-29T13:25:26-07:00
