@@ -12,7 +12,6 @@ import (
 	"cloud.google.com/go/firestore"
 	"github.com/segmentio/ksuid"
 	"github.com/urfave/cli/v2"
-	"google.golang.org/api/option"
 
 	"github.com/raymonstah/asianamericanswiki/functions/api"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
@@ -21,6 +20,7 @@ import (
 var (
 	flagAddToFireStore       = "add-to-firestore"
 	flagFirestoreCredentials = "firestore-credentials"
+	flagDryRun               = "dry-run"
 	dir                      = "content/humans"
 	ErrAlreadyHasID          = errors.New("id already exists")
 )
@@ -32,6 +32,10 @@ func main() {
 			&cli.BoolFlag{
 				Name:  flagAddToFireStore,
 				Usage: "add new humans to firestore",
+			},
+			&cli.BoolFlag{
+				Name:  flagDryRun,
+				Usage: "dry run adding to firestore",
 			},
 			&cli.StringFlag{
 				Name:  flagFirestoreCredentials,
@@ -53,13 +57,18 @@ func action(c *cli.Context) error {
 	}
 
 	if c.Bool(flagAddToFireStore) {
-		credentials := []byte(c.String(flagFirestoreCredentials))
-		fsClient, err := firestore.NewClient(ctx, api.ProjectID, option.WithCredentialsJSON(credentials))
+		//credentials := []byte(c.String(flagFirestoreCredentials))
+		fsClient, err := firestore.NewClient(ctx, api.ProjectID)
 		if err != nil {
 			return fmt.Errorf("unable to create firestore client: %w", err)
 		}
 		dao := humandao.NewDAO(fsClient)
 		for _, human := range newHumans {
+			if c.Bool(flagDryRun) {
+				log.Printf("add human %v with id %v\n", human.Name, human.ID)
+				continue
+			}
+
 			_, err := dao.AddHuman(ctx, humandao.AddHumanInput{HumanID: human.ID, Name: human.Name})
 			if err != nil {
 				return fmt.Errorf("unable to add %v: %w", human.Name, err)

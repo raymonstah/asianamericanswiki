@@ -1,0 +1,41 @@
+name: ID Injector
+on:
+  push:
+    #    branches: [main]
+    branches: [raymond/inject-ids]
+    paths:
+      # only run when the source code changes or this file changes
+      - "content/humans/**"
+      - "functions/idinjector/**"
+      - ".github/workflows/idinjector.yml"
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+
+      - uses: actions/setup-go@v3
+        with:
+          go-version: "1.19.0"
+
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v0"
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"
+
+      - run: go run main.go --add-to-firestore --dry-run
+        working-directory: ./functions/idinjector
+
+      - name: Pull Remote Changes
+        run: git pull
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "system: inject human id"
+          skip_dirty_check: false
+          file_pattern: content/humans/*
+          branch: ${{ github.ref }}
