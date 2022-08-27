@@ -10,14 +10,11 @@ export const GET = async ({ url }) => {
 
     const options = {
       offset: parseInt(params.get("offset")) || null,
-      limit: parseInt(params.get("limit")) || 10,
+      limit: parseInt(params.get("limit")) || -1,
+      tags: params.getAll("tags") || [],
+      ethnicity: params.getAll("ethnicity") || [],
     };
 
-    /**
-     * Endpoint uses a utility function for retrieving the posts, because without that,
-     * query parameters wouldn't result in static routes being generated at build time.
-     * It's also a little cleaner in the code.
-     */
     const posts = await fetchMarkdownPosts(options);
     return new Response(JSON.stringify(posts), {
       status: 200,
@@ -26,14 +23,19 @@ export const GET = async ({ url }) => {
       },
     });
   } catch (err) {
-    throw error(500, `Could not fetch posts. ${err}`);
+    throw error(500, `Could not fetch humans. ${err}`);
   }
 };
 
-const fetchMarkdownPosts = async () => {
+const fetchMarkdownPosts = async ({
+  offset = 0,
+  limit = -1,
+  tags = [],
+  ethnicity = [],
+} = {}) => {
   const allPostFiles = import.meta.glob("/content/humans/**/index.md");
   const iterablePostFiles = Object.entries(allPostFiles);
-  const allPosts = await Promise.all(
+  let allPosts = await Promise.all(
     iterablePostFiles.map(async ([path, resolver]) => {
       const { metadata } = await resolver();
       const postPath = path.slice(9, -9);
@@ -43,6 +45,29 @@ const fetchMarkdownPosts = async () => {
       };
     })
   );
+
+  // tags OR'ed, tagA or tagB or tagC...
+  if (tags.length) {
+    allPosts = allPosts.filter((post) => {
+      return post.meta.tags.some((t) => tags.includes(t.toLowerCase()));
+    });
+  }
+
+  if (ethnicity.length) {
+    allPosts = allPosts.filter((post) => {
+      return post.meta.ethnicity.some((e) =>
+        ethnicity.includes(e.toLowerCase())
+      );
+    });
+  }
+
+  if (offset) {
+    allPosts = allPosts.slice(offset);
+  }
+
+  if (limit && limit < allPosts.length && limit !== -1) {
+    allPosts = allPosts.slice(0, limit);
+  }
 
   return allPosts;
 };

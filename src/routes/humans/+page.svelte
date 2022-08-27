@@ -6,7 +6,7 @@
   <title>Humans | AsianAmericans.wiki</title>
 </svelte:head>
 
-<h1>This is the humans page</h1>
+<h1>Asian Americans</h1>
 <ul>
   {#each data.humans as human}
     <li>
