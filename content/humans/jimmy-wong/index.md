@@ -16,5 +16,4 @@ draft: false
 ---
 
 Jimmy Wong vent viral after raising awareness by responding to Alexandra
-Wallace's Asians in the library rant. The video can be found here:
-{{< youtube zulEMWj3sVA >}}
+Wallace's Asians in the library rant.

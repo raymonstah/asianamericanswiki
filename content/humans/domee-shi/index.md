@@ -19,7 +19,5 @@ draft: false
 Domee Shi is notable for her work with Pixar films including Bao, a short film
 about a Chinese mother dealing with empty nest syndrome.
 
-{{< youtube ypEuSSwB1Rk >}}
-
 In 2022, Domee wrote and directed Turning Red, a story about a coming of age
-Chinese girl. {{< youtube BeRYkSCXjMs >}}
+Chinese girl.

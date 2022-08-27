@@ -17,7 +17,3 @@ Julia Shiplett is a half Chinese comedian. Her dad is German-Irish and her mom
 is Chinese. She was recently named one of Comedy Central's Up Next comedians and
 a TBS Comic To Watch. View her upcoming shows on her
 [website](http://www.juliashiplett.com/shows/).
-
-Check out her comedy skits on youtube:
-
-{{< youtube lMTYiaZfY0I >}}

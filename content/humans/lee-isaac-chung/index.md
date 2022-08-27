@@ -16,10 +16,6 @@ draft: false
 ---
 
 Isaac is a Korean American film maker. He wrote and directed
-[Minari](https://a24films.com/films/minari), starring
-[Steven Yeun](../steven-yeun). Minari is a semi-autobiographical story of his
-own life growing up on a small farm in a rural town in America.
-
-You can watch the official trailer for Minari below:
-
-{{< youtube KQ0gFidlro8 >}}
+[Minari](https://a24films.com/films/minari), starring Steven Yeun. Minari is a
+semi-autobiographical story of his own life growing up on a small farm in a
+rural town in America.

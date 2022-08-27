@@ -23,6 +23,6 @@ Korean-American man at risk of deportation.
 
 ### Films by Justin
 
-1. Gook {{< youtube mmXVeH1lDjk >}}
-2. MS.PURPLE {{< youtube bAraywlg4Gg >}}
-3. Blue Bayou {{< youtube Jh59H_d19Kg >}}
+1. Gook
+2. MS.PURPLE
+3. Blue Bayou

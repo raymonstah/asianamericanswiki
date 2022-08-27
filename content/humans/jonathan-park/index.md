@@ -8,7 +8,7 @@ dod: ""
 website: "https://en.wikipedia.org/wiki/Dumbfoundead"
 ethnicity: ["Korean"]
 birthLocation: "Buenos Aires, Argentina"
-tags: ["Music"]
+tags: ["Music", "rapper", "podcast"]
 influencedBy: []
 draft: false
 ---

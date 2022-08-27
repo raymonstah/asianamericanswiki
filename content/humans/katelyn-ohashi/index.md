@@ -17,4 +17,3 @@ draft: false
 
 Katelyn Ohashi is a gymnast who has been training since the age of 3. She went
 viral in this video in 2019, where she scored perfectly.
-{{< youtube 4ic7RNS4Dfo >}}
