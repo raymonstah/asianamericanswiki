@@ -26,5 +26,3 @@ Bruce Lee is regarded as one of the most important Asian Americans in history,
 not only for his elite skills in Martial Arts, but also because he paved the way
 for the future generations of Asian Americans in Hollywood, showing the world
 that Asians can play the main role of a film.
-
-![Bruce Lee](./bruce-lee.jpeg)
