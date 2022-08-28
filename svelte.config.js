@@ -12,6 +12,7 @@ const config = {
       hydrate: true,
       router: true,
     },
+    trailingSlash: "always",
   },
   extensions: [".svelte", ".md"],
   preprocess: [

@@ -41,7 +41,7 @@ const fetchMarkdownPosts = async ({
       const postPath = path.slice(9, -9);
       return {
         meta: metadata,
-        path: postPath,
+        path: "/" + postPath,
       };
     })
   );
