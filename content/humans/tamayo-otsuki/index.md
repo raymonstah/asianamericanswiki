@@ -12,10 +12,15 @@ twitter: ""
 draft: false
 ---
 
-Tamayo Otsuki is a Japanese American actress and stand-up comic. She was born and raised in Osaka and learned English during an 18 month stay in Cambridge. Tamayo is known for her role of the Korean store owner in "Don't Be a Menace".
+Tamayo Otsuki is a Japanese American actress and stand-up comic. She was born
+and raised in Osaka and learned English during an 18 month stay in Cambridge.
+Tamayo is known for her role of the Korean store owner in "Don't Be a Menace".
 
-Here is a [YouTube](https://www.youtube.com/watch?v=7Gd1B3fcdGA) clip of her playing the role.
+Here is a [YouTube](https://www.youtube.com/watch?v=7Gd1B3fcdGA) clip of her
+playing the role.
 
-Although scenes like the one Tamayo did today would be considered insensitive, Tamayo is still a trailblazer for Asian American comedians and actresses.
+Although scenes like the one Tamayo did today would be considered insensitive,
+Tamayo is still a trailblazer for Asian American comedians and actresses.
 
-Read more about her in this [LA Times Article](https://www.latimes.com/archives/la-xpm-1991-03-17-ca-683-story.html).
+Read more about her in this
+[LA Times Article](https://www.latimes.com/archives/la-xpm-1991-03-17-ca-683-story.html).
