@@ -12,4 +12,5 @@ twitter: https://twitter.com/GishJen
 draft: false
 ---
 
-Gish Jen is a Chinese American author from New York. She's the author of 9 books, including most recently "Thank You, Mr. Nixon".
+Gish Jen is a Chinese American author from New York. She's the author of 9
+books, including most recently "Thank You, Mr. Nixon".
