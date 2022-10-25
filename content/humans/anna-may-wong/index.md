@@ -12,4 +12,5 @@ twitter: ""
 draft: false
 ---
 
-Anna May Wong is a Chinese American actress, and the first Asian American to appear on a US coin.
+Anna May Wong is a Chinese American actress, and the first Asian American to
+appear on a US coin.
