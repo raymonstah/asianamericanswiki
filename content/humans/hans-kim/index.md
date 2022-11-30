@@ -7,7 +7,7 @@ tags: [comedian]
 website: https://hanskimcomedian.com/
 ethnicity: [Korean]
 birthLocation: ""
-location: [Austin]
+location: [New York]
 twitter: https://twitter.com/DJHansKim
 draft: false
 ---
