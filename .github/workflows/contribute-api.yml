@@ -39,9 +39,9 @@ jobs:
             An API that creates pull requests for the contribute page.
           max_instances: 1
           timeout: 90
-          secret_environment_variables:
-            "GITHUB_AUTH_TOKEN=projects/424340922093/secrets/asianamericanswiki-contributer-pat
-            OPEN_AI_TOKEN=projects/424340922093/secrets/asianamericanswiki-openai-token"
+          secret_environment_variables: |-
+            GITHUB_AUTH_TOKEN=projects/424340922093/secrets/asianamericanswiki-contributer-pat
+            OPEN_AI_TOKEN=projects/424340922093/secrets/asianamericanswiki-openai-token
           # have to set unauthenticated requests via GCP console
 
       - name: log url
