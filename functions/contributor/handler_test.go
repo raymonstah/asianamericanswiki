@@ -33,7 +33,8 @@ func TestHandler(t *testing.T) {
 			"birthLocation": "San Francisco",
 			"location": ["Oakland", "Seattle"],
 			"twitter": "https://twitter.com/brucelee",
-			"draft": false
+			"draft": false,
+            "description": "foo bar"
 		}	
 		`)
 		req := httptest.NewRequest(http.MethodPost, "/", requestBody)
@@ -96,7 +97,8 @@ func TestHandler(t *testing.T) {
 			"birthLocation": "San Francisco",
 			"location": ["Oakland", "Seattle"],
 			"twitter": "https://twitter.com/brucelee",
-			"draft": false
+			"draft": false,
+			"description": "foo bar"
 		}	
 		`)
 		req := httptest.NewRequest(http.MethodPost, "/?test=ok", requestBody)
@@ -128,7 +130,8 @@ func TestHandler(t *testing.T) {
 			"birthLocation": "San Francisco",
 			"location": ["Oakland", "Seattle"],
 			"twitter": "https://twitter.com/brucelee",
-			"draft": false
+			"draft": false,
+			"description": "foo bar"
 		}	
 		`)
 		req := httptest.NewRequest(http.MethodPost, "/?test=dupe", requestBody)
