@@ -2,17 +2,18 @@
 title: Philip Vera Cruz
 date: 2022-12-05T03:57:50
 aka: []
-dob: YYYY-MM-DD
+dob: 1904-12-25
+dod: 1994-06-12
 tags: [laborer, union leader]
 website: ""
 ethnicity: [Filipino]
-birthLocation: ""
-location: []
+birthLocation: "Philippines"
+location: [California]
 twitter: ""
 draft: false
 ---
 
-Philip Vera Cruz (1900 – 1994) was an Asian American labor leader and union
+Philip Vera Cruz (1900 – 1994) was a Filipino American labor leader and union
 organizer who played an important role in creating a unified United Farm Workers
 (UFW) out of the National Farm Workers Association (NFWA) and the Agricultural
 Workers Organizing Committee (AWOC) in the United States.
