@@ -8,7 +8,7 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"github.com/raymonstah/asianamericanswiki/internal/openai"
+	"github.com/raymonstah/asianamericanswiki/openai"
 )
 
 func main() {
