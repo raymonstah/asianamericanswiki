@@ -13,6 +13,8 @@ import (
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
+
+	"github.com/raymonstah/asianamericanswiki/internal/openai"
 )
 
 const (
@@ -25,10 +27,13 @@ const (
 
 func init() {
 	var (
-		token = os.Getenv("GITHUB_AUTH_TOKEN")
-		ctx   = context.Background()
-		h     = Handler{
+		token       = os.Getenv("GITHUB_AUTH_TOKEN")
+		openAIToken = os.Getenv("OPEN_AI_TOKEN")
+		client      = openai.New(openAIToken)
+		ctx         = context.Background()
+		h           = Handler{
 			PullRequestService: NewPullRequestService(ctx, token),
+			OpenAI:             client,
 		}
 	)
 
@@ -37,6 +42,7 @@ func init() {
 
 type Handler struct {
 	PullRequestService PullRequestService
+	OpenAI             *openai.Client
 }
 
 type ContributeRequest struct {
@@ -109,6 +115,19 @@ func (h Handler) Handle(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
+
+	if post.description == "" {
+		generatedDescription, err := h.OpenAI.Generate(ctx, openai.GenerateInput{
+			Tags: post.frontMatter.Tags,
+			Name: post.frontMatter.Name,
+		})
+		if err != nil {
+			errorResponse(w, http.StatusInternalServerError, fmt.Errorf("error generating description"))
+			return
+		}
+		post.description = generatedDescription
+	}
+
 	content, err := generateMarkdown(post.frontMatter, post.description)
 	if err != nil {
 		errorResponse(w, http.StatusInternalServerError, fmt.Errorf("unable to generate markdown: %w", err))
