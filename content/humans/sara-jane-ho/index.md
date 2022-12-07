@@ -43,8 +43,8 @@ Daily and Harper's Bazaar magazine.
 
 In 2021, Ho was named in Forbes Asia's Top 50 Women in China list.
 
-In 2022, Ho released a Netflix series, "Mind Your Manners", where she helps people 
-become their best selves through good manners.
+In 2022, Ho released a Netflix series, "Mind Your Manners", where she helps
+people become their best selves through good manners.
 
 ## Philanthropy
 
