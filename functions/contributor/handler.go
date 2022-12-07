@@ -124,6 +124,7 @@ func (h Handler) Handle(w http.ResponseWriter, r *http.Request) {
 			errorResponse(w, http.StatusInternalServerError, fmt.Errorf("error generating description: %w", err))
 			return
 		}
+		post.frontMatter.AIGenerated = true
 		post.description = generatedDescription
 	}
 
