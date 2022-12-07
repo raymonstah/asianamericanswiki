@@ -12,6 +12,7 @@ birthLocation: "Philippines"
 location: [California]
 twitter: ""
 draft: false
+ai_generated: true
 ---
 
 Philip Vera Cruz (1900 – 1994) was a Filipino American labor leader and union

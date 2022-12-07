@@ -29,9 +29,9 @@ func (c *Client) Generate(ctx context.Context, input GenerateInput) (string, err
 	prompt := fmt.Sprintf("Write a wikipedia entry about Asian American %v, %v", tagWithCommas, input.Name)
 	req := gogpt.CompletionRequest{
 		Model:     "text-davinci-003",
-		MaxTokens: 4000,
+		MaxTokens: 500,
 		Prompt:    prompt,
-		BestOf:    5,
+		BestOf:    3,
 	}
 
 	resp, err := c.openAiClient.CreateCompletion(ctx, req)

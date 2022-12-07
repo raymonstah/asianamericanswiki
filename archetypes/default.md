@@ -13,4 +13,5 @@ influencedBy: []
 twitter: ""
 featured_image: ""
 draft: false
+ai_generated: false
 ---
