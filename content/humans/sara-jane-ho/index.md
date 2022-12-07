@@ -10,7 +10,7 @@ birthLocation: ""
 location: [Shanghai]
 twitter: https://twitter.com/sarajaneho
 draft: false
-ai_generated: false
+ai_generated: true
 ---
 
 Sara Jane Ho (born 1978) is a Chinese American etiquette teacher, television
@@ -18,7 +18,7 @@ host, and businesswoman. She is the founder and CEO of Institute Sarita, the
 first modern and lifestyle etiquette brand in China, and Ping language school, a
 Beijing-based language school for adults.
 
-Early life
+## Early life
 
 Ho was born in 1978 in Arcadia, California to Chinese parents and grew up in
 Boston, Massachusetts. She attended Harvard University, where she majored in
@@ -26,7 +26,7 @@ sociology and gender studies, and graduated in 1999. Ho was raised with Chinese
 cultural values, which included understanding the complexities of social
 etiquette.
 
-Career
+## Career
 
 Shortly after graduating, Ho left her job in Boston and moved to Beijing to
 pursue a career in the fashion industry. During her time living in China, she
@@ -43,7 +43,10 @@ Daily and Harper's Bazaar magazine.
 
 In 2021, Ho was named in Forbes Asia's Top 50 Women in China list.
 
-Philanthropy
+In 2022, Ho released a Netflix series, "Mind Your Manners", where she helps people 
+become their best selves through good manners.
+
+## Philanthropy
 
 Ho is an active philanthropist and supports a number of charities, including
 Teach For China, a nonprofit that supports Teach For All's mission to provide
