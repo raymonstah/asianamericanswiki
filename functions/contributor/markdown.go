@@ -36,6 +36,7 @@ type frontMatterInput struct {
 	Location      []string
 	Twitter       string
 	Draft         bool
+	AIGenerated   bool
 }
 
 type frontMatterOutput struct {
@@ -50,6 +51,7 @@ type frontMatterOutput struct {
 	Location      []string `yaml:"location,flow"`
 	Twitter       string   `yaml:"twitter"`
 	Draft         bool     `yaml:"draft"`
+	AIGenerated   bool     `yaml:"ai_generated"`
 }
 
 func (frontMatter frontMatterInput) yaml() frontMatterOutput {
@@ -65,6 +67,7 @@ func (frontMatter frontMatterInput) yaml() frontMatterOutput {
 		Location:      frontMatter.Location,
 		Twitter:       frontMatter.Twitter,
 		Draft:         frontMatter.Draft,
+		AIGenerated:   frontMatter.AIGenerated,
 	}
 
 	return output

@@ -56,8 +56,7 @@ type ContributeRequest struct {
 	Location      []string `json:"location"`
 	Twitter       string   `json:"twitter"`
 	Draft         bool     `json:"draft"`
-
-	Description string `json:"description"`
+	Description   string   `json:"description"`
 }
 
 type Post struct {
