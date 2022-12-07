@@ -121,7 +121,7 @@ func (h Handler) Handle(w http.ResponseWriter, r *http.Request) {
 			Name: post.frontMatter.Name,
 		})
 		if err != nil {
-			errorResponse(w, http.StatusInternalServerError, fmt.Errorf("error generating description"))
+			errorResponse(w, http.StatusInternalServerError, fmt.Errorf("error generating description: %w", err))
 			return
 		}
 		post.description = generatedDescription
