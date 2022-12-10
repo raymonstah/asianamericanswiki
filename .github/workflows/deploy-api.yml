@@ -37,8 +37,6 @@ jobs:
         with:
           source: "."
           metadata: "service.yml"
-          env_vars: |
-            GITHASH=${{ steps.vars.outputs.sha_short }}
 
       - name: "Use output"
         run: 'curl "${{ steps.deploy.outputs.url }}"'
