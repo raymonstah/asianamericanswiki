@@ -8,7 +8,7 @@
       - "functions/api/**"
       - ".github/workflows/deploy-api.yml"
 
-name: Deploy api
+name: Deploy cloud run api
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -35,6 +35,5 @@ jobs:
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
           metadata: "./functions/api/service.yaml"
-          source: "./functions/api"
       - name: "Use output"
         run: 'curl "${{ steps.deploy.outputs.url }}"/version'

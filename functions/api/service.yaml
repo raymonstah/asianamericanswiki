@@ -30,7 +30,7 @@ spec:
     spec:
       containerConcurrency: 80
       containers:
-        - image: us-central1-docker.pkg.dev/asianamericans-wiki/cloud-run-source-deploy/api@sha256:ff32768920e9efb0b68ba9712897d2f7348a9031ba1fa838e19f90f675a27261
+        - source: "."
           ports:
             - containerPort: 8080
               name: http1
