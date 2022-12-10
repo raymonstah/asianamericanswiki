@@ -6,7 +6,6 @@
       # only run when the source code changes or this file changes
       - "functions/contributor/**"
       - ".github/workflows/contribute-api.yml"
-      - "Dockerfile"
 
 name: Deploy contribute api
 jobs:
