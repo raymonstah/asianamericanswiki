@@ -24,7 +24,7 @@ jobs:
         name: "Authenticate to Google Cloud"
         uses: "google-github-actions/auth@v1"
         with:
-          credentials_json: "${{ secrets.GCP_SA_KEY }}"
+          credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT }}"
 
       - name: Set outputs
         id: vars
@@ -36,7 +36,7 @@ jobs:
         with:
           service: "api"
           region: "us-central1"
-          source: "."
+          source: "functions/api/"
           env_vars: |
             GIT_HASH=${{ steps.vars.outputs.sha_short }}
       - name: "Use output"
