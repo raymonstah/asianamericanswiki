@@ -1,24 +1,11 @@
-FROM golang:1.19 as builder
+# syntax=docker/dockerfile:1
 
-WORKDIR /app
+FROM golang:1.19-alpine as builder
 
-COPY go.mod ./
-COPY go.sum ./
-RUN go mod download
-
+WORKDIR /build
 COPY . .
-RUN go build -v -o /usr/local/bin/app functions/api/cmd/*go
-CMD ["app"]
+RUN go build -o app functions/api/cmd/*go
 
-# Use the official Alpine image for a lean production container.
-# https://hub.docker.com/_/alpine
-# https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
-FROM alpine:3
-RUN apk add --no-cache ca-certificates
-
-# Copy the binary to the production image from the builder stage.
-COPY --from=builder /usr/local/bin/app /server
-
-# Run the web service on container startup.
-EXPOSE $PORT
-CMD ["/server"]
+FROM alpine:latest
+COPY --from=builder /build/app /app
+ENTRYPOINT ["/app"]
