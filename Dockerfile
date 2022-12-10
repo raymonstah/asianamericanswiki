@@ -20,4 +20,5 @@ RUN apk add --no-cache ca-certificates
 COPY --from=builder /usr/local/bin/app /server
 
 # Run the web service on container startup.
+EXPOSE $PORT
 CMD ["/server"]
