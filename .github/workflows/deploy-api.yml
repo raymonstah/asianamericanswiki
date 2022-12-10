@@ -30,5 +30,15 @@ jobs:
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
+      - id: deploy
+        name: Deploy
+        working-directory: ./functions/api/
+        uses: "google-github-actions/deploy-cloudrun@v1"
+        with:
+          source: "."
+          metadata: "service.yml"
+          env_vars: |
+            GITHASH=${{ steps.vars.outputs.sha_short }}
+
       - name: "Use output"
         run: 'curl "${{ steps.deploy.outputs.url }}"'
