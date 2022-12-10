@@ -2,6 +2,7 @@
   push:
     branches:
       - main
+      - raymond/deploy-api
     paths:
       # only run when the source code changes or this file changes
       - "functions/api/**"
