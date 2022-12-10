@@ -61,7 +61,7 @@ jobs:
           timeout: 10
           service: "api"
           region: "us-central1"
-          tag: ${{ steps.vars.outputs.sha_short }}
+          labels: githash=${{ steps.vars.outputs.sha_short }}
           image: ${{ env.IMAGE_NAME }}:latest
           env_vars: |
             GIT_HASH=${{ steps.vars.outputs.sha_short }}
