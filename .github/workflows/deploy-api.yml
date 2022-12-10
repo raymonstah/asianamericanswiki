@@ -1,0 +1,69 @@
+"on":
+  push:
+    branches:
+      - main
+      - raymond/deploy-api
+    paths:
+      # only run when the source code changes or this file changes
+      - "functions/api/**"
+      - ".github/workflows/deploy-api.yml"
+      - "internal/**"
+      - "Dockerfile"
+
+name: Deploy cloud run api
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: us-central1-docker.pkg.dev/asianamericans-wiki/asianamericanswiki-api/api
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache firebase emulators
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/firebase/emulators
+          key:
+            ${{ runner.os }}-firebase-emulators-${{
+            hashFiles('~/.cache/firebase/emulators/**') }}
+
+      - name: Install emulators and Test
+        run: |
+          npm install -g firebase-tools
+          firebase emulators:exec --only "auth,firestore" 'go test ./...'
+
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT }}"
+
+      - name: Set outputs
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker --quiet us-central1-docker.pkg.dev
+
+      - name: Build Docker image
+        run: docker build -t $IMAGE_NAME .
+
+      - name: Push Docker image
+        run: docker push $IMAGE_NAME
+
+      - id: deploy
+        name: Deploy
+        uses: "google-github-actions/deploy-cloudrun@v1"
+        with:
+          timeout: 10
+          service: "api"
+          region: "us-central1"
+          labels: githash=${{ steps.vars.outputs.sha_short }}
+          image: ${{ env.IMAGE_NAME }}:latest
+          env_vars: |
+            GIT_HASH=${{ steps.vars.outputs.sha_short }}
+      - name: "Use output"
+        run: 'curl "${{ steps.deploy.outputs.url }}"/version'
