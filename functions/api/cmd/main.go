@@ -23,6 +23,7 @@ func main() {
 		Flags: []cli.Flag{
 			&cli.IntFlag{Name: "port", EnvVars: []string{"PORT"}, Value: 3000},
 			&cli.BoolFlag{Name: "local"},
+			&cli.StringFlag{Name: "git-hash", EnvVars: []string{"GIT_HASH"}, Value: "latest"},
 		},
 		Action: run,
 	}
@@ -66,6 +67,7 @@ func run(c *cli.Context) error {
 		AuthClient: authClient,
 		HumansDAO:  humansDAO,
 		Logger:     logger,
+		Version:    c.String("git-hash"),
 	}
 
 	mux := server.NewServer(config)

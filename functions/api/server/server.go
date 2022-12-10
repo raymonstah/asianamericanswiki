@@ -2,9 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
-	"sort"
 	"time"
 
 	"firebase.google.com/go/v4/auth"
@@ -20,13 +18,15 @@ type Config struct {
 	AuthClient *auth.Client
 	HumansDAO  *humandao.DAO
 	Logger     zerolog.Logger
+	Version    string
 }
 
 type Server struct {
 	authClient *auth.Client
 	router     chi.Router
 	logger     zerolog.Logger
-	humansDAO  *humandao.DAO
+	humanDAO   *humandao.DAO
+	version    string
 }
 
 func (s Server) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
@@ -45,7 +45,8 @@ func NewServer(config Config) Server {
 		authClient: config.AuthClient,
 		router:     r,
 		logger:     config.Logger,
-		humansDAO:  config.HumansDAO,
+		humanDAO:   config.HumansDAO,
+		version:    config.Version,
 	}
 
 	s.setupRoutes()
@@ -53,8 +54,9 @@ func NewServer(config Config) Server {
 }
 
 func (s Server) setupRoutes() {
-	s.router.Method(http.MethodGet, "/humans/{humanID}/reactions", Handler(s.ReactionsForHuman))
+	s.router.Method(http.MethodGet, "/version", Handler(s.Version))
 
+	s.router.Method(http.MethodGet, "/humans/{humanID}/reactions", Handler(s.ReactionsForHuman))
 	s.router.Route("/reactions", func(r chi.Router) {
 		r.Use(s.AuthMiddleware())
 		r.Method(http.MethodGet, "/", Handler(s.GetReactions))
@@ -63,166 +65,13 @@ func (s Server) setupRoutes() {
 	})
 }
 
-type ReactionResponse struct {
-	ID           string    `json:"id,omitempty"`
-	UserID       string    `json:"user_id,omitempty"`
-	HumanID      string    `json:"human_id,omitempty"`
-	ReactionKind string    `json:"reaction_kind,omitempty"`
-	CreatedAt    time.Time `json:"created_at,omitempty"`
-}
-
-func (s Server) ReactionsForHuman(w http.ResponseWriter, r *http.Request) (err error) {
-	var (
-		ctx     = r.Context()
-		oplog   = httplog.LogEntry(r.Context())
-		humanID = chi.URLParam(r, "humanID")
-	)
-	defer func(start time.Time) {
-		oplog.Err(err).
-			Str("request", "ReactionForHuman").
-			Dur("duration", time.Since(start).Round(time.Millisecond)).
-			Msg("completed request")
-	}(time.Now())
-
-	human, err := s.humansDAO.Human(ctx, humandao.HumanInput{
-		HumanID: humanID,
-	})
-	if err != nil {
-		if errors.Is(err, humandao.ErrHumanNotFound) {
-			return NewNotFoundError(err)
-		}
-		return NewInternalServerError(err)
+func (s Server) Version(w http.ResponseWriter, r *http.Request) error {
+	data := map[string]string{
+		"version": s.version,
+		"now":     time.Now().String(),
 	}
-
-	type reactionCountResponse struct {
-		ReactionKind humandao.ReactionKind `json:"reaction_kind"`
-		Count        int                   `json:"count"`
-	}
-
-	var response []reactionCountResponse
-
-	for _, reactionKind := range humandao.AllReactionKinds {
-		response = append(response, reactionCountResponse{
-			ReactionKind: reactionKind,
-			Count:        human.ReactionCount[reactionKind],
-		})
-	}
-
-	sort.Slice(response, func(i, j int) bool {
-		return response[i].ReactionKind < response[j].ReactionKind
-	})
-
-	s.WriteData(w, http.StatusOK, response)
+	s.WriteData(w, http.StatusOK, data)
 	return nil
-}
-
-func (s Server) GetReactions(w http.ResponseWriter, r *http.Request) (err error) {
-	var (
-		ctx   = r.Context()
-		oplog = httplog.LogEntry(r.Context())
-		token = Token(ctx)
-	)
-	defer func(start time.Time) {
-		oplog.Err(err).
-			Str("request", "GetReactions").
-			Dur("duration", time.Since(start).Round(time.Millisecond)).
-			Msg("completed request")
-	}(time.Now())
-
-	reactions, err := s.humansDAO.GetReactions(ctx, humandao.GetReactionsInput{UserID: token.UID})
-	if err != nil {
-		return NewInternalServerError(err)
-	}
-
-	reactionsResponse := toReactionsResponse(reactions)
-
-	s.WriteData(w, http.StatusOK, reactionsResponse)
-	return nil
-}
-
-func (s Server) PostReaction(w http.ResponseWriter, r *http.Request) (err error) {
-	var (
-		ctx   = r.Context()
-		oplog = httplog.LogEntry(r.Context())
-		token = Token(ctx)
-	)
-	defer func(start time.Time) {
-		oplog.Err(err).
-			Str("request", "PostReaction").
-			Dur("duration", time.Since(start).Round(time.Millisecond)).
-			Msg("completed request")
-	}(time.Now())
-
-	var input struct {
-		HumanID      string `json:"human_id"`
-		ReactionKind string `json:"reaction_kind"`
-	}
-
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		return NewBadRequestError(err)
-	}
-
-	reactionKind, err := humandao.ToReactionKind(input.ReactionKind)
-	if err != nil {
-		return NewBadRequestError(err)
-	}
-
-	reaction, err := s.humansDAO.React(ctx, humandao.ReactInput{
-		UserID:       token.UID,
-		HumanID:      input.HumanID,
-		ReactionKind: reactionKind,
-	})
-	if err != nil {
-		return NewInternalServerError(err)
-	}
-
-	reactionResponse := toReactionResponse(reaction)
-	s.WriteData(w, http.StatusCreated, reactionResponse)
-	return nil
-}
-
-func (s Server) DeleteReaction(w http.ResponseWriter, r *http.Request) (err error) {
-	var (
-		ctx        = r.Context()
-		oplog      = httplog.LogEntry(r.Context())
-		token      = Token(ctx)
-		reactionID = chi.URLParam(r, "id")
-	)
-	defer func(start time.Time) {
-		oplog.Err(err).
-			Str("request", "DeleteReaction").
-			Dur("duration", time.Since(start).Round(time.Millisecond)).
-			Msg("completed request")
-	}(time.Now())
-
-	err = s.humansDAO.ReactUndo(ctx, humandao.ReactUndoInput{UserID: token.UID, ReactionID: reactionID})
-	if err != nil {
-		if errors.Is(err, humandao.ErrUnauthorized) {
-			return NewForbiddenError(err)
-		}
-		return NewInternalServerError(err)
-	}
-
-	w.WriteHeader(http.StatusNoContent)
-	return nil
-}
-
-func toReactionsResponse(reactions []humandao.Reaction) []ReactionResponse {
-	reactionsResponse := make([]ReactionResponse, 0, len(reactions))
-	for _, reaction := range reactions {
-		reactionsResponse = append(reactionsResponse, toReactionResponse(reaction))
-	}
-	return reactionsResponse
-}
-
-func toReactionResponse(reaction humandao.Reaction) ReactionResponse {
-	return ReactionResponse{
-		ID:           reaction.ID,
-		UserID:       reaction.UserID,
-		HumanID:      reaction.HumanID,
-		ReactionKind: string(reaction.ReactionKind),
-		CreatedAt:    reaction.CreatedAt,
-	}
 }
 
 func (s Server) WriteData(w http.ResponseWriter, status int, data any) {
