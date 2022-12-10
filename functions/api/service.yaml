@@ -1,0 +1,66 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  annotations:
+    client.knative.dev/user-image: us-central1-docker.pkg.dev/asianamericans-wiki/cloud-run-source-deploy/api
+    run.googleapis.com/client-name: gcloud
+    run.googleapis.com/client-version: 396.0.0
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+    serving.knative.dev/creator: Raymonstah@gmail.com
+    serving.knative.dev/lastModifier: Raymonstah@gmail.com
+  creationTimestamp: "2022-08-08T23:17:26.848505Z"
+  generation: 2
+  labels:
+    cloud.googleapis.com/location: us-central1
+  name: api
+  namespace: "424340922093"
+  resourceVersion: AAXlw2sfyhs
+  selfLink: /apis/serving.knative.dev/v1/namespaces/424340922093/services/api
+  uid: 68064ed7-8bca-4684-83e2-1c78e859eeec
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: "1"
+        client.knative.dev/user-image: us-central1-docker.pkg.dev/asianamericans-wiki/cloud-run-source-deploy/api
+        run.googleapis.com/client-name: gcloud
+        run.googleapis.com/client-version: 396.0.0
+      name: api-00002-goc
+    spec:
+      containerConcurrency: 80
+      containers:
+        - image: us-central1-docker.pkg.dev/asianamericans-wiki/cloud-run-source-deploy/api@sha256:ff32768920e9efb0b68ba9712897d2f7348a9031ba1fa838e19f90f675a27261
+          ports:
+            - containerPort: 8080
+              name: http1
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+      serviceAccountName: 424340922093-compute@developer.gserviceaccount.com
+      timeoutSeconds: 10
+  traffic:
+    - latestRevision: true
+      percent: 100
+status:
+  address:
+    url: https://api-5cwffcuiba-uc.a.run.app
+  conditions:
+    - lastTransitionTime: "2022-08-08T23:46:02.074941Z"
+      status: "True"
+      type: Ready
+    - lastTransitionTime: "2022-08-08T23:45:52.683724Z"
+      status: "True"
+      type: ConfigurationsReady
+    - lastTransitionTime: "2022-08-08T23:46:02.182171Z"
+      status: "True"
+      type: RoutesReady
+  latestCreatedRevisionName: api-00002-goc
+  latestReadyRevisionName: api-00002-goc
+  observedGeneration: 2
+  traffic:
+    - latestRevision: true
+      percent: 100
+      revisionName: api-00002-goc
+  url: https://api-5cwffcuiba-uc.a.run.app
