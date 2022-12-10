@@ -35,5 +35,6 @@ jobs:
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
           metadata: "./functions/api/service.yaml"
+          source: "./functions/api"
       - name: "Use output"
-        run: 'curl "${{ steps.deploy.outputs.url }}"'
+        run: 'curl "${{ steps.deploy.outputs.url }}"/version'
