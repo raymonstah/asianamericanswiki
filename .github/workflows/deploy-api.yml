@@ -1,0 +1,46 @@
+"on":
+  push:
+    branches:
+      - main
+      - raymond/deploy-api
+    paths:
+      # only run when the source code changes or this file changes
+      - "functions/api/**"
+      - ".github/workflows/deploy-api.yml"
+
+name: Deploy api
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Test
+        run: go test ./...
+        working-directory: ./functions/api/
+
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"
+      #
+      #      - name: "Set up Cloud SDK"
+      #        uses: "google-github-actions/setup-gcloud@v0"
+
+      - name: Set outputs
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - id: deploy
+        name: Deploy
+        working-directory: ./functions/api/
+        uses: "google-github-actions/deploy-cloudrun@v1"
+        with:
+          source: "." # the working directory is already set
+          metadata: "service.yaml"
+          env_vars: |
+            GIT_HASH=${{ steps.vars.outputs.sha_short }}
+
+      - name: "Use output"
+        run: 'curl "${{ steps.deploy.outputs.url }}"'
