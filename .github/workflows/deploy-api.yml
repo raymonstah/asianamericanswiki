@@ -12,6 +12,8 @@ name: Deploy cloud run api
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: us-central1-docker.pkg.dev/asianamericans-wiki/asianamericanswiki-api/api
     steps:
       - uses: actions/checkout@v3
 
@@ -37,10 +39,7 @@ jobs:
         run: gcloud auth configure-docker --quiet
 
       - name: Build Docker image
-        run:
-          docker build -t  asianamericanswiki-api \
-          us-central1-docker.pkg.dev/asianamericanswiki/asianamericanswiki-api/api
-          \ .
+        run: docker build -t $IMAGE_NAME .
 
       - name: Push Docker image
         run: docker push $IMAGE_NAME
