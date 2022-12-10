@@ -2,11 +2,11 @@
   push:
     branches:
       - main
-      - raymond/deploy-api
     paths:
       # only run when the source code changes or this file changes
       - "functions/api/**"
       - ".github/workflows/deploy-api.yml"
+      - "internal/**"
       - "Dockerfile"
 
 name: Deploy cloud run api
@@ -18,10 +18,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      #      - name: Install emulators and Test
-      #        run: |
-      #          npm install -g firebase-tools
-      #          firebase emulators:exec --only "auth,firestore" 'go test ./...'
+      - name: Install emulators and Test
+        run: |
+          npm install -g firebase-tools
+          firebase emulators:exec --only "auth,firestore" 'go test ./...'
 
       - id: "auth"
         name: "Authenticate to Google Cloud"
@@ -51,7 +51,7 @@ jobs:
         with:
           service: "api"
           region: "us-central1"
-          image: "us-central1-docker.pkg.dev/asianamericans-wiki/asianamericanswiki-api/api:latest"
+          image: "${IMAGE_NAME}:latest"
 
           env_vars: |
             GIT_HASH=${{ steps.vars.outputs.sha_short }}
