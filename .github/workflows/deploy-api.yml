@@ -32,11 +32,7 @@ jobs:
 
       - id: deploy
         name: Deploy
-        working-directory: ./functions/api/
         uses: "google-github-actions/deploy-cloudrun@v1"
-        with:
-          source: "."
-          metadata: "service.yml"
 
       - name: "Use output"
         run: 'curl "${{ steps.deploy.outputs.url }}"'
