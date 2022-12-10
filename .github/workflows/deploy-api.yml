@@ -34,7 +34,7 @@ jobs:
         name: Deploy
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
-          service: "api"
+          service: "api-server"
           region: "us-central1"
           source: "functions/api/cmd"
           env_vars: |
