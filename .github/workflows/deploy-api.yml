@@ -36,7 +36,7 @@ jobs:
         with:
           service: "api"
           region: "us-central1"
-          source: "functions/api/"
+          source: "functions/api/cmd"
           env_vars: |
             GIT_HASH=${{ steps.vars.outputs.sha_short }}
       - name: "Use output"
