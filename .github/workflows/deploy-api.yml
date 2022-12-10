@@ -61,7 +61,7 @@ jobs:
           max_instances: 1
           service: "api"
           region: "us-central1"
-          image: $IMAGE_NAME
+          image: "${IMAGE_NAME}"
 
           env_vars: |
             GIT_HASH=${{ steps.vars.outputs.sha_short }}
