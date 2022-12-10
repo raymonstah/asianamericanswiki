@@ -25,23 +25,19 @@ jobs:
         with:
           credentials_json: "${{ secrets.GCP_SA_KEY }}"
 
-      #
-      #      - name: "Set up Cloud SDK"
-      #        uses: "google-github-actions/setup-gcloud@v0"
-
       - name: Set outputs
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - id: deploy
         name: Deploy
-        working-directory: ./functions/api/
+        working-directory: "./functions/api/"
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
-          source: "." # the working directory is already set
+          source: "."
           metadata: "service.yaml"
           env_vars: |
-            GIT_HASH=${{ steps.vars.outputs.sha_short }}
+            GIT_HASH="${{ steps.vars.outputs.sha_short }}"
 
       - name: "Use output"
         run: 'curl "${{ steps.deploy.outputs.url }}"'
