@@ -49,6 +49,7 @@ jobs:
         name: Deploy
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
+          max_instances: 1
           service: "api"
           region: "us-central1"
           image: "${IMAGE_NAME}:latest"
