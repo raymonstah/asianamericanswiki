@@ -58,11 +58,11 @@ jobs:
         name: Deploy
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
-          max_instances: 1
+          timeout: 10
           service: "api"
           region: "us-central1"
+          tag: ${{ steps.vars.outputs.sha_short }}
           image: ${{ env.IMAGE_NAME }}:latest
-
           env_vars: |
             GIT_HASH=${{ steps.vars.outputs.sha_short }}
       - name: "Use output"
