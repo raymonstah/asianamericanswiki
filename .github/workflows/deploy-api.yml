@@ -30,13 +30,26 @@ jobs:
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker --quiet
+
+      - name: Build Docker image
+        run:
+          docker build -t  asianamericanswiki-api
+          us-central1-docker.pkg.dev/asianamericanswiki/asianamericanswiki-api/api
+          .
+
       - id: deploy
         name: Deploy
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
-          service: "api-server"
+          service: "api"
           region: "us-central1"
-          source: "functions/api/cmd"
+          image: "us-central1-docker.pkg.dev/asianamericans-wiki/asianamericanswiki-api/api:latest"
+
           env_vars: |
             GIT_HASH=${{ steps.vars.outputs.sha_short }}
       - name: "Use output"
