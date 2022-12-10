@@ -38,9 +38,12 @@ jobs:
 
       - name: Build Docker image
         run:
-          docker build -t  asianamericanswiki-api
+          docker build -t  asianamericanswiki-api \
           us-central1-docker.pkg.dev/asianamericanswiki/asianamericanswiki-api/api
-          .
+          \ .
+
+      - name: Push Docker image
+        run: docker push $IMAGE_NAME
 
       - id: deploy
         name: Deploy
