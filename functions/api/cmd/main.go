@@ -14,7 +14,9 @@ import (
 
 	"github.com/raymonstah/asianamericanswiki/functions/api"
 	"github.com/raymonstah/asianamericanswiki/functions/api/server"
+	"github.com/raymonstah/asianamericanswiki/internal/contributor"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
+	"github.com/raymonstah/asianamericanswiki/internal/openai"
 )
 
 func main() {
@@ -24,6 +26,8 @@ func main() {
 			&cli.IntFlag{Name: "port", EnvVars: []string{"PORT"}, Value: 3000},
 			&cli.BoolFlag{Name: "local"},
 			&cli.StringFlag{Name: "git-hash", EnvVars: []string{"GIT_HASH"}, Value: "latest"},
+			&cli.StringFlag{Name: "github-auth-token", EnvVars: []string{"GITHUB_AUTH_TOKEN"}},
+			&cli.StringFlag{Name: "open-ai-token", EnvVars: []string{"OPEN_AI_TOKEN"}},
 		},
 		Action: run,
 	}
@@ -34,6 +38,7 @@ func main() {
 }
 
 func run(c *cli.Context) error {
+	ctx := c.Context
 	if c.Bool("local") {
 		if err := setupEmulatorEnvironmentVariables(); err != nil {
 			return fmt.Errorf("unable to setup local environment variables: %w", err)
@@ -63,11 +68,18 @@ func run(c *cli.Context) error {
 	}
 
 	humansDAO := humandao.NewDAO(fsClient)
+	openAiClient := openai.New(c.String("open-ai-token"))
+	contributorHandler := contributor.Client{
+		PullRequestService: contributor.NewPullRequestService(ctx, c.String("github-auth-token")),
+		OpenAI:             openAiClient,
+	}
+
 	config := server.Config{
-		AuthClient: authClient,
-		HumansDAO:  humansDAO,
-		Logger:     logger,
-		Version:    c.String("git-hash"),
+		Contributor: contributorHandler,
+		AuthClient:  authClient,
+		HumansDAO:   humansDAO,
+		Logger:      logger,
+		Version:     c.String("git-hash"),
 	}
 
 	mux := server.NewServer(config)

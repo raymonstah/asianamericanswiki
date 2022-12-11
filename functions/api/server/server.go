@@ -11,22 +11,25 @@ import (
 	"github.com/go-chi/httplog"
 	"github.com/rs/zerolog"
 
+	"github.com/raymonstah/asianamericanswiki/internal/contributor"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 )
 
 type Config struct {
-	AuthClient *auth.Client
-	HumansDAO  *humandao.DAO
-	Logger     zerolog.Logger
-	Version    string
+	AuthClient  *auth.Client
+	HumansDAO   *humandao.DAO
+	Logger      zerolog.Logger
+	Version     string
+	Contributor contributor.Client
 }
 
 type Server struct {
-	authClient *auth.Client
-	router     chi.Router
-	logger     zerolog.Logger
-	humanDAO   *humandao.DAO
-	version    string
+	authClient  *auth.Client
+	router      chi.Router
+	logger      zerolog.Logger
+	humanDAO    *humandao.DAO
+	version     string
+	contributor contributor.Client
 }
 
 func (s Server) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
@@ -42,11 +45,12 @@ func NewServer(config Config) Server {
 	r.Use(middleware.Recoverer)
 
 	s := Server{
-		authClient: config.AuthClient,
-		router:     r,
-		logger:     config.Logger,
-		humanDAO:   config.HumansDAO,
-		version:    config.Version,
+		authClient:  config.AuthClient,
+		router:      r,
+		logger:      config.Logger,
+		humanDAO:    config.HumansDAO,
+		version:     config.Version,
+		contributor: config.Contributor,
 	}
 
 	s.setupRoutes()
@@ -55,6 +59,7 @@ func NewServer(config Config) Server {
 
 func (s Server) setupRoutes() {
 	s.router.Method(http.MethodGet, "/version", Handler(s.Version))
+	s.router.Method(http.MethodPost, "/contribute", Handler(s.Contribute))
 
 	s.router.Method(http.MethodGet, "/humans/{humanID}/reactions", Handler(s.ReactionsForHuman))
 	s.router.Route("/reactions", func(r chi.Router) {
