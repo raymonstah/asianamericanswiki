@@ -8,6 +8,7 @@ import (
 	"firebase.google.com/go/v4/auth"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"github.com/go-chi/httplog"
 	"github.com/rs/zerolog"
 
@@ -43,7 +44,10 @@ func NewServer(config Config) Server {
 	r.Use(httplog.RequestLogger(config.Logger))
 	r.Use(middleware.StripSlashes)
 	r.Use(middleware.Recoverer)
-
+	r.Use(cors.Handler(cors.Options{
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+	}))
 	s := Server{
 		authClient:  config.AuthClient,
 		router:      r,
