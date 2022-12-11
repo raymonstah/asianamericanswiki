@@ -71,6 +71,21 @@ func (s Server) Contribute(w http.ResponseWriter, r *http.Request) error {
 		return NewBadRequestError(err)
 	}
 
+	if r.URL.Query().Get("test") != "" {
+		switch r.URL.Query().Get("test") {
+		case "dupe":
+			return ErrorResponse{
+				Status: http.StatusUnprocessableEntity,
+				Err:    contributor.ErrBranchAlreadyExists,
+			}
+		default:
+			w.WriteHeader(http.StatusCreated)
+			resp := ContributeResponse{Link: "https://github.com/raymonstah/asianamericanswiki/pulls/1"}
+			_ = json.NewEncoder(w).Encode(resp)
+			return nil
+		}
+	}
+
 	if post.Description == "" {
 		generatedDescription, err := s.contributor.OpenAI.Generate(ctx, openai.GenerateInput{
 			Tags: post.FrontMatter.Tags,
@@ -87,21 +102,6 @@ func (s Server) Contribute(w http.ResponseWriter, r *http.Request) error {
 	content, err := contributor.GenerateMarkdown(post.FrontMatter, post.Description)
 	if err != nil {
 		return NewInternalServerError(fmt.Errorf("unable to generate markdown: %w", err))
-	}
-
-	if r.URL.Query().Get("test") != "" {
-		switch r.URL.Query().Get("test") {
-		case "dupe":
-			return ErrorResponse{
-				Status: http.StatusUnprocessableEntity,
-				Err:    contributor.ErrBranchAlreadyExists,
-			}
-		default:
-			w.WriteHeader(http.StatusCreated)
-			resp := ContributeResponse{Link: "https://github.com/raymonstah/asianamericanswiki/pulls/1"}
-			_ = json.NewEncoder(w).Encode(resp)
-			return nil
-		}
 	}
 
 	nameWithDashes := strings.ReplaceAll(post.FrontMatter.Name, " ", "-")
