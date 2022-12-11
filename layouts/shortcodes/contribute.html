@@ -173,7 +173,7 @@
             formResultsValid.style.display = "inline-block";
 
             // assign href from response result
-            formResultsLink.setAttribute("href", result.link);
+            formResultsLink.setAttribute("href", result.data.link);
 
             // if link not yet on formResult, simply append it
             if (!document.querySelector("#formResultsLink")) {
