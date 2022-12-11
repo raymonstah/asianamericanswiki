@@ -118,7 +118,7 @@ func TestHandler(t *testing.T) {
 
 		assert.Equal(t, http.StatusCreated, result.StatusCode)
 		trimmedResponse := strings.TrimSpace(string(responseBody))
-		assert.Equal(t, `{"link":"https://github.com/raymonstah/asianamericanswiki/pulls/1"}`, trimmedResponse)
+		assert.Equal(t, `{"data":{"link":"https://github.com/raymonstah/asianamericanswiki/pulls/1"}}`, trimmedResponse)
 	})
 
 	t.Run("test-flag-dupe", func(t *testing.T) {

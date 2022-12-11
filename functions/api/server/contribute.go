@@ -93,7 +93,7 @@ func (s Server) Contribute(w http.ResponseWriter, r *http.Request) (err error) {
 		default:
 			w.WriteHeader(http.StatusCreated)
 			resp := ContributeResponse{Link: "https://github.com/raymonstah/asianamericanswiki/pulls/1"}
-			_ = json.NewEncoder(w).Encode(resp)
+			s.WriteData(w, http.StatusOK, resp)
 			return nil
 		}
 	}
