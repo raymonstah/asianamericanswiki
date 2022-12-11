@@ -2,7 +2,7 @@
   push:
     branches:
       - main
-      - raymond/deploy-api
+      - raymond/consolidate-contributor-fn
     paths:
       # only run when the source code changes or this file changes
       - "functions/api/**"
@@ -58,12 +58,15 @@ jobs:
         name: Deploy
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
-          timeout: 10
+          timeout: 45
           service: "api"
           region: "us-central1"
           labels: githash=${{ steps.vars.outputs.sha_short }}
           image: ${{ env.IMAGE_NAME }}:latest
           env_vars: |
             GIT_HASH=${{ steps.vars.outputs.sha_short }}
+          secrets: |-
+            GITHUB_AUTH_TOKEN=projects/424340922093/secrets/asianamericanswiki-contributer-pat
+            OPEN_AI_TOKEN=projects/424340922093/secrets/asianamericanswiki-openai-token
       - name: "Use output"
         run: 'curl "${{ steps.deploy.outputs.url }}"/version'
