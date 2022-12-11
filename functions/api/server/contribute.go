@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-chi/httplog"
+
 	"github.com/raymonstah/asianamericanswiki/internal/contributor"
 	"github.com/raymonstah/asianamericanswiki/internal/openai"
 )
@@ -64,8 +66,18 @@ func validateContributeRequest(r io.Reader) (contributor.Post, error) {
 	}, nil
 }
 
-func (s Server) Contribute(w http.ResponseWriter, r *http.Request) error {
-	ctx := r.Context()
+func (s Server) Contribute(w http.ResponseWriter, r *http.Request) (err error) {
+	var (
+		ctx   = r.Context()
+		oplog = httplog.LogEntry(r.Context())
+	)
+	defer func(start time.Time) {
+		oplog.Err(err).
+			Str("request", "Contribute").
+			Dur("duration", time.Since(start).Round(time.Millisecond)).
+			Msg("completed request")
+	}(time.Now())
+
 	post, err := validateContributeRequest(r.Body)
 	if err != nil {
 		return NewBadRequestError(err)
