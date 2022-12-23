@@ -31,8 +31,8 @@ written, and directed for both the big and small screens, receiving numerous
 awards and nominations for her work. She starred in the comedy film Late Night
 (2019).
 
-In 2021, Kaling co-created HBO Max comedy-drama "The Sex Lives of College Girls",
-which has been renewed for its third season.
+In 2021, Kaling co-created HBO Max comedy-drama "The Sex Lives of College
+Girls", which has been renewed for its third season.
 
 Kaling has written two New York Times Bestsellers and is releasing a third book
 in 2021, co-written with her mother, Swati Chokalingam.
