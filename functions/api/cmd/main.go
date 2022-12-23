@@ -46,8 +46,9 @@ func run(c *cli.Context) error {
 	}
 
 	logger := httplog.NewLogger(api.ProjectID, httplog.Options{
-		Concise: true,
-		JSON:    true,
+		Concise:         true,
+		JSON:            true,
+		TimeFieldFormat: time.RFC3339,
 	})
 
 	app, err := firebase.NewApp(c.Context, &firebase.Config{
@@ -94,6 +95,7 @@ func run(c *cli.Context) error {
 		IdleTimeout:       5 * time.Second,
 	}
 
+	logger.Info().Str("port", c.String("port")).Msg("starting server")
 	return s.ListenAndServe()
 }
 

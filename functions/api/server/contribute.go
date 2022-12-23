@@ -93,7 +93,7 @@ func (s Server) Contribute(w http.ResponseWriter, r *http.Request) (err error) {
 		default:
 			w.WriteHeader(http.StatusCreated)
 			resp := ContributeResponse{Link: "https://github.com/raymonstah/asianamericanswiki/pulls/1"}
-			s.WriteData(w, http.StatusOK, resp)
+			s.writeData(w, http.StatusOK, resp)
 			return nil
 		}
 	}
@@ -136,7 +136,7 @@ func (s Server) Contribute(w http.ResponseWriter, r *http.Request) (err error) {
 	}
 
 	resp := ContributeResponse{Link: url}
-	s.WriteData(w, http.StatusCreated, resp)
+	s.writeData(w, http.StatusCreated, resp)
 	return nil
 }
 
