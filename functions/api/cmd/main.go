@@ -91,8 +91,7 @@ func run(c *cli.Context) error {
 		Handler:           mux,
 		ReadTimeout:       5 * time.Second,
 		ReadHeaderTimeout: 5 * time.Second,
-		WriteTimeout:      5 * time.Second,
-		IdleTimeout:       5 * time.Second,
+		WriteTimeout:      90 * time.Second,
 	}
 
 	logger.Info().Str("port", c.String("port")).Msg("starting server")
