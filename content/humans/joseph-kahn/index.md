@@ -44,9 +44,3 @@ movie, Aliens in the Attic, for Fox. In 2011, Kahn released Detention, a teen
 comedy starring Josh Hutcherson, Dane Cook, and Shakeelah Adam. The film, set in
 a high school, centers around a group of students trying to survive their final
 year, which has been thrown off-course by a slasher movie killer.
-
-Recent works
-
-Kahn executive produced and co-directed the action-adventure movie Power/Rangers
-(2015) alongside Adi Shankar,starring James Van Der Beek and Katee Sackhoff. The
-short film was a reimagining of the 1990s Kids
