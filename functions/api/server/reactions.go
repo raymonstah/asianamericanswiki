@@ -62,7 +62,7 @@ func (s Server) ReactionsForHuman(w http.ResponseWriter, r *http.Request) (err e
 		return response[i].ReactionKind < response[j].ReactionKind
 	})
 
-	s.WriteData(w, http.StatusOK, response)
+	s.writeData(w, http.StatusOK, response)
 	return nil
 }
 
@@ -86,7 +86,7 @@ func (s Server) GetReactions(w http.ResponseWriter, r *http.Request) (err error)
 
 	reactionsResponse := toReactionsResponse(reactions)
 
-	s.WriteData(w, http.StatusOK, reactionsResponse)
+	s.writeData(w, http.StatusOK, reactionsResponse)
 	return nil
 }
 
@@ -127,7 +127,7 @@ func (s Server) PostReaction(w http.ResponseWriter, r *http.Request) (err error)
 	}
 
 	reactionResponse := toReactionResponse(reaction)
-	s.WriteData(w, http.StatusCreated, reactionResponse)
+	s.writeData(w, http.StatusCreated, reactionResponse)
 	return nil
 }
 

@@ -39,15 +39,6 @@ func (s Server) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 
 func NewServer(config Config) Server {
 	r := chi.NewRouter()
-	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
-	r.Use(httplog.RequestLogger(config.Logger))
-	r.Use(middleware.StripSlashes)
-	r.Use(middleware.Recoverer)
-	r.Use(cors.Handler(cors.Options{
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-	}))
 	s := Server{
 		authClient:  config.AuthClient,
 		router:      r,
@@ -57,8 +48,22 @@ func NewServer(config Config) Server {
 		contributor: config.Contributor,
 	}
 
+	s.setupMiddleware()
 	s.setupRoutes()
 	return s
+}
+
+func (s Server) setupMiddleware() {
+	s.router.Use(middleware.RequestID)
+	s.router.Use(middleware.RealIP)
+	s.router.Use(httplog.RequestLogger(s.logger))
+	s.router.Use(middleware.StripSlashes)
+	s.router.Use(middleware.Recoverer)
+	s.router.Use(cors.Handler(cors.Options{
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+	}))
+
 }
 
 func (s Server) setupRoutes() {
@@ -66,6 +71,10 @@ func (s Server) setupRoutes() {
 	s.router.Method(http.MethodPost, "/contribute", Handler(s.Contribute))
 
 	s.router.Method(http.MethodGet, "/humans/{humanID}/reactions", Handler(s.ReactionsForHuman))
+	s.router.Route("/humans", func(r chi.Router) {
+		r.Use(s.AuthMiddleware())
+		s.router.Method(http.MethodPost, "/", Handler(s.HumanCreate))
+	})
 	s.router.Route("/reactions", func(r chi.Router) {
 		r.Use(s.AuthMiddleware())
 		r.Method(http.MethodGet, "/", Handler(s.GetReactions))
@@ -79,11 +88,11 @@ func (s Server) Version(w http.ResponseWriter, r *http.Request) error {
 		"version": s.version,
 		"now":     time.Now().String(),
 	}
-	s.WriteData(w, http.StatusOK, data)
+	s.writeData(w, http.StatusOK, data)
 	return nil
 }
 
-func (s Server) WriteData(w http.ResponseWriter, status int, data any) {
+func (s Server) writeData(w http.ResponseWriter, status int, data any) {
 	w.WriteHeader(status)
 	dataResponse := struct {
 		Data any `json:"data"`
