@@ -13,14 +13,32 @@ draft: false
 ai_generated: true
 ---
 
-Mindy Kaling (born June 24, 1979) is an American actress, comedian, writer, director, and producer. She is best known for creating and starring in the comedy series The Mindy Project (2012–2017), for which she won a Primetime Emmy Award for Outstanding Writing in a Comedy Series.
+Mindy Kaling (born June 24, 1979) is an American actress, comedian, writer,
+director, and producer. She is best known for creating and starring in the
+comedy series The Mindy Project (2012–2017), for which she won a Primetime Emmy
+Award for Outstanding Writing in a Comedy Series.
 
-Kaling was born in Cambridge, Massachusetts, to immigrant Hindu parents from India. She earned a BA in playwriting from Dartmouth College in 2001 and moved to New York City to pursue a career in comedy. Her first major break was writing and acting in the NBC comedy series The Office (2005–2013), on which she also served as a producer and occasional director. She won a Primetime Emmy Award for Outstanding Writing in a Comedy Series for the episode "Niagara".
+Kaling was born in Cambridge, Massachusetts, to immigrant Hindu parents from
+India. She earned a BA in playwriting from Dartmouth College in 2001 and moved
+to New York City to pursue a career in comedy. Her first major break was writing
+and acting in the NBC comedy series The Office (2005–2013), on which she also
+served as a producer and occasional director. She won a Primetime Emmy Award for
+Outstanding Writing in a Comedy Series for the episode "Niagara".
 
-Kaling has since become an established actress, appearing in a wide range of comedic and dramatic roles both on television and in film. She has produced, written, and directed for both the big and small screens, receiving numerous awards and nominations for her work. She starred in the comedy film Late Night (2019). 
+Kaling has since become an established actress, appearing in a wide range of
+comedic and dramatic roles both on television and in film. She has produced,
+written, and directed for both the big and small screens, receiving numerous
+awards and nominations for her work. She starred in the comedy film Late Night
+(2019).
 
-In 2021, Kaling became the first South Asian woman to be nominated for a Primetime Emmy Award for Outstanding Lead Actress in a Comedy Series, for her starring role in the Netflix series Never Have I Ever (2020).
+In 2021, Kaling became the first South Asian woman to be nominated for a
+Primetime Emmy Award for Outstanding Lead Actress in a Comedy Series, for her
+starring role in the Netflix series Never Have I Ever (2020).
 
-Kaling has written two New York Times Bestsellers and is releasing a third book in 2021, co-written with her mother, Swati Chokalingam. 
+Kaling has written two New York Times Bestsellers and is releasing a third book
+in 2021, co-written with her mother, Swati Chokalingam.
 
-Outside of her work in television and film, Kaling has lent her voice to various animated projects, including Inside Out (2015) and Wreck-It Ralph Breaks the Internet (2018). She is a board member at The Moth, a non-profit storytelling organization.
+Outside of her work in television and film, Kaling has lent her voice to various
+animated projects, including Inside Out (2015) and Wreck-It Ralph Breaks the
+Internet (2018). She is a board member at The Moth, a non-profit storytelling
+organization.
