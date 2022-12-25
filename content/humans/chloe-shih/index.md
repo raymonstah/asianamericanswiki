@@ -7,42 +7,15 @@ tags: [tech, product]
 website: https://www.youtube.com/c/ColorsofChloe
 ethnicity: [Taiwanese]
 birthLocation: ""
-location: [San Francisco]
+location: [San Francisco, Los Angeles]
 twitter: https://twitter.com/colorsofchloe
 draft: false
-ai_generated: true
+ai_generated: false
 ---
 
-Chloe Shih (born 1970) is an American technology entrepreneur, product designer,
-and business consultant. She is best known for her work pioneering user
-experience design for early internet products and platforms, as well as for her
-current role as the founder and CEO of Innovize, a business and digital
-transformation consultancy.
+Chloe Shih is a Taiwanese American Product Lead. She is an advocate for diversity in tech, offering career coaching resources for people from underprivileged backgrounds, and is fighting for equality in the workplace. Currently, Shih works for Discord on the communities engagement team.
 
-Born in San Francisco, Shih grew up in a culturally diverse yet economically
-impoverished environment. She developed an early interest in computers and
-programming and earned a degree in Computer Science from Stanford University
-in 1992. After college, she began working as a software engineer at
-Hewlett-Packard (HP), where she quickly rose through the ranks and took on
-several product management roles.
 
-In 1997, Shih left HP to become a consultant with her own practice, focusing on
-user experience design and product management. She quickly earned a reputation
-as the go-to expert for many of the valley's largest tech companies and rising
-startups. She served as a product design consultant on projects ranging from
-financial tools to search engines and from web analytics to social networking
-products.
+Shih has a YouTube channel where she gives resume tips, career related Q&As, and talks generally about her life in tech. Her videos have garnered over millions of views.
 
-In 2012, Shih founded Innovize to deliver tailored strategies for companies
-looking to modernize their business processes and embrace digital
-transformation. Shih's ultimate goal is to help companies recognize and
-capitalize on their own potential for innovative change.
-
-At the same time, Shih is at the forefront of the Asian American tech product
-revolution. In 2016, she was named one of the 100 Most Influential Asian
-Americans by Gold House. Her accomplishments and continued success have made her
-a powerful voice in the Asian American tech and product community.
-
-Shih lives in San Francisco and remains an active philanthropist and mentor. She
-has served on the board of numerous non-profit organizations as well as in an
-advisory capacity for several startups and institutions.
+In 2022, Shih made it on the Forbes 30 Under 30 list.
