@@ -19,7 +19,24 @@ var (
 type Human struct {
 	ID            string               `firestore:"-"`
 	Name          string               `firestore:"name"`
+	Path          string               `firestore:"path"`
 	ReactionCount map[ReactionKind]int `firestore:"reactionCount"`
+	DOB           string               `firestore:"dob,omitempty"`
+	DOD           string               `firestore:"did,omitempty"`
+	Tags          []string             `firestore:"tags,omitempty"`
+	Website       string               `firestore:"website,omitempty"`
+	Ethnicity     []string             `firestore:"ethnicity,omitempty"`
+	BirthLocation string               `firestore:"birthLocation,omitempty"`
+	Location      []string             `firestore:"location,omitempty"`
+	InfluencedBy  []string             `firestore:"influencedBy,omitempty"`
+	Twitter       string               `firestore:"twitter,omitempty"`
+	FeaturedImage string               `firestore:"featured_image,omitempty"`
+	Draft         bool                 `firestore:"draft,omitempty"`
+	AIGenerated   bool                 `firestore:"ai_generated,omitempty"`
+	Description   string               `firestore:"description,omitempty"`
+
+	CreatedAt time.Time `firestore:"created_at"`
+	UpdatedAt time.Time `firestore:"updated_at"`
 }
 
 type Reaction struct {
@@ -96,6 +113,18 @@ func convertHuman(m map[string]interface{}) Human {
 type AddHumanInput struct {
 	HumanID string
 	Name    string
+}
+
+func (d *DAO) UpdateHuman(ctx context.Context, human Human) error {
+	human.UpdatedAt = time.Now()
+	_, err := d.client.Collection(d.humanCollection).
+		Doc(human.ID).
+		Set(ctx, human)
+	if err != nil {
+		return fmt.Errorf("unable to update human: %v (%v): %w", human.Name, human.ID, err)
+	}
+
+	return nil
 }
 
 func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) {

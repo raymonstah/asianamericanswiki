@@ -12,7 +12,6 @@ birthLocation: ""
 location: ["San Francisco"]
 influencedBy: []
 twitter: "https://twitter.com/russelljeung"
-twitter: "https://twitter.com/StopAAPIHate"
 featured_image: "stopaapihate.png"
 draft: false
 ---
