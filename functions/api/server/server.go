@@ -75,13 +75,13 @@ func (s Server) setupRoutes() {
 	s.router.Route("/humans", func(r chi.Router) {
 		r.Method(http.MethodGet, "/", Handler(s.HumansList))
 		r.Method(http.MethodGet, "/{path}", Handler(s.HumanGet))
-		r.With(s.AuthMiddleware()).Method(http.MethodPost, "/", Handler(s.HumanCreate))
+		r.With(s.AuthMiddleware).Method(http.MethodPost, "/", Handler(s.HumanCreate))
 	})
 
 	s.router.Route("/reactions", func(r chi.Router) {
 		r.Method(http.MethodGet, "/", Handler(s.GetReactions))
-		r.With(s.AuthMiddleware()).Method(http.MethodPost, "/", Handler(s.PostReaction))
-		r.With(s.AuthMiddleware()).Method(http.MethodDelete, "/{id}", Handler(s.DeleteReaction))
+		r.With(s.AuthMiddleware).Method(http.MethodPost, "/", Handler(s.PostReaction))
+		r.With(s.AuthMiddleware).Method(http.MethodDelete, "/{id}", Handler(s.DeleteReaction))
 	})
 }
 
