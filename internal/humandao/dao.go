@@ -16,24 +16,26 @@ var (
 	ErrHumanNotFound = errors.New("human not found")
 )
 
+type ReactionCount map[string]int
+
 type Human struct {
-	ID            string               `firestore:"-"`
-	Name          string               `firestore:"name"`
-	Path          string               `firestore:"path"`
-	ReactionCount map[ReactionKind]int `firestore:"reactionCount"`
-	DOB           string               `firestore:"dob,omitempty"`
-	DOD           string               `firestore:"did,omitempty"`
-	Tags          []string             `firestore:"tags,omitempty"`
-	Website       string               `firestore:"website,omitempty"`
-	Ethnicity     []string             `firestore:"ethnicity,omitempty"`
-	BirthLocation string               `firestore:"birthLocation,omitempty"`
-	Location      []string             `firestore:"location,omitempty"`
-	InfluencedBy  []string             `firestore:"influencedBy,omitempty"`
-	Twitter       string               `firestore:"twitter,omitempty"`
-	FeaturedImage string               `firestore:"featured_image,omitempty"`
-	Draft         bool                 `firestore:"draft,omitempty"`
-	AIGenerated   bool                 `firestore:"ai_generated,omitempty"`
-	Description   string               `firestore:"description,omitempty"`
+	ID            string        `firestore:"-"`
+	Name          string        `firestore:"name"`
+	Path          string        `firestore:"path"`
+	ReactionCount ReactionCount `firestore:"reactionCount"`
+	DOB           string        `firestore:"dob,omitempty"`
+	DOD           string        `firestore:"did,omitempty"`
+	Tags          []string      `firestore:"tags,omitempty"`
+	Website       string        `firestore:"website,omitempty"`
+	Ethnicity     []string      `firestore:"ethnicity,omitempty"`
+	BirthLocation string        `firestore:"birthLocation,omitempty"`
+	Location      []string      `firestore:"location,omitempty"`
+	InfluencedBy  []string      `firestore:"influencedBy,omitempty"`
+	Twitter       string        `firestore:"twitter,omitempty"`
+	FeaturedImage string        `firestore:"featured_image,omitempty"`
+	Draft         bool          `firestore:"draft,omitempty"`
+	AIGenerated   bool          `firestore:"ai_generated,omitempty"`
+	Description   string        `firestore:"description,omitempty"`
 
 	CreatedAt time.Time `firestore:"created_at"`
 	UpdatedAt time.Time `firestore:"updated_at"`
@@ -47,67 +49,39 @@ type Reaction struct {
 	CreatedAt    time.Time    `firestore:"created_at,omitempty"`
 }
 
-type DAO struct {
-	client             *firestore.Client
-	humanCollection    string
-	reactionCollection string
-}
-
-type Option func(d *DAO)
-
-func WithHumanCollectionName(name string) Option {
-	return func(d *DAO) {
-		d.humanCollection = name
-	}
-}
-
-func WithReactionCollectionName(name string) Option {
-	return func(d *DAO) {
-		d.reactionCollection = name
-	}
-}
-
-func NewDAO(client *firestore.Client, options ...Option) *DAO {
-	dao := &DAO{
-		client:             client,
-		humanCollection:    "humans",
-		reactionCollection: "reactions",
-	}
-
-	for _, opt := range options {
-		opt(dao)
-	}
-
-	return dao
-}
-
 type HumanInput struct {
 	HumanID string
+	Path    string
 }
 
-func (d *DAO) Human(ctx context.Context, input HumanInput) (Human, error) {
-	doc, err := d.client.Collection(d.humanCollection).Doc(input.HumanID).Get(ctx)
-	if err != nil {
-		if status.Code(err) == codes.NotFound {
-			return Human{}, ErrHumanNotFound
+func (d *DAO) Human(ctx context.Context, input HumanInput) (human Human, err error) {
+	var doc *firestore.DocumentSnapshot
+	if input.HumanID != "" {
+		doc, err = d.client.Collection(d.humanCollection).Doc(input.HumanID).Get(ctx)
+		if err != nil {
+			if status.Code(err) == codes.NotFound {
+				return Human{}, ErrHumanNotFound
+			}
+			return Human{}, fmt.Errorf("unable to get human: %w", err)
 		}
-		return Human{}, fmt.Errorf("unable to get human: %w", err)
+	} else if input.Path != "" {
+		doc, err = d.client.Collection(d.humanCollection).Where("path", "==", input.Path).
+			Documents(ctx).Next()
+		if err != nil {
+			if status.Code(err) == codes.NotFound {
+				return Human{}, ErrHumanNotFound
+			}
+			return Human{}, fmt.Errorf("unable to get human: %w", err)
+		}
 	}
-	m := doc.Data()
-	human := convertHuman(m)
+
+	human, err = convertHumanDoc(doc)
+	if err != nil {
+		return Human{}, fmt.Errorf("unable to convert human: %w", err)
+	}
 
 	human.ID = doc.Ref.ID
 	return human, nil
-}
-
-func convertHuman(m map[string]interface{}) Human {
-	var human Human
-	reactionCount := m["reactionCount"].(map[string]interface{})
-	human.ReactionCount = make(map[ReactionKind]int, len(reactionCount))
-	for k, v := range reactionCount {
-		human.ReactionCount[ReactionKind(k)] = int(v.(int64))
-	}
-	return human
 }
 
 type AddHumanInput struct {
@@ -219,7 +193,7 @@ func (d *DAO) ReactUndo(ctx context.Context, input ReactUndoInput) error {
 		}
 		return fmt.Errorf("unable to find reaction by id: %v: %w", input.ReactionID, err)
 	}
-	reaction, err := convertDoc(reactionRef)
+	reaction, err := convertReactionDoc(reactionRef)
 	if err != nil {
 		return err
 	}
@@ -259,27 +233,24 @@ func (d *DAO) GetReactions(ctx context.Context, input GetReactionsInput) ([]Reac
 		return nil, fmt.Errorf("unable to get reactions for user %s: %w", input.UserID, err)
 	}
 
-	return convertDocs(docs)
+	return convertReactionDocs(docs)
 }
 
-func convertDocs(docs []*firestore.DocumentSnapshot) ([]Reaction, error) {
-	reactions := make([]Reaction, 0, len(docs))
-	for _, doc := range docs {
-		reaction, err := convertDoc(doc)
-		if err != nil {
-			return nil, err
-		}
-		reactions = append(reactions, reaction)
-	}
-
-	return reactions, nil
+type ListHumansInput struct {
+	Limit  int
+	Offset int
 }
 
-func convertDoc(doc *firestore.DocumentSnapshot) (Reaction, error) {
-	var reaction Reaction
-	if err := doc.DataTo(&reaction); err != nil {
-		return Reaction{}, fmt.Errorf("unable to convert document to reaction: %w", err)
+func (d *DAO) ListHumans(ctx context.Context, input ListHumansInput) ([]Human, error) {
+	docs, err := d.client.Collection(d.humanCollection).
+		OrderBy("created_at", firestore.Desc).
+		Offset(input.Offset).
+		Limit(input.Limit).
+		Documents(ctx).
+		GetAll()
+	if err != nil {
+		return nil, fmt.Errorf("unable to get humans: %w", err)
 	}
-	reaction.ID = doc.Ref.ID
-	return reaction, nil
+
+	return convertHumansDocs(docs)
 }

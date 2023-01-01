@@ -20,8 +20,9 @@ import (
 )
 
 var opts struct {
-	Dry       bool
-	HumansDir string
+	Dry            bool
+	HumansDir      string
+	LocalFirestore bool
 }
 
 func main() {
@@ -30,6 +31,7 @@ func main() {
 		Flags: []cli.Flag{
 			&cli.BoolFlag{Name: "dry", Destination: &opts.Dry},
 			&cli.PathFlag{Name: "human-dir", Destination: &opts.HumansDir},
+			&cli.BoolFlag{Name: "local", Destination: &opts.LocalFirestore},
 		},
 		Action: run,
 	}
@@ -47,6 +49,12 @@ type Handler struct {
 
 func run(c *cli.Context) error {
 	ctx := c.Context
+	if opts.LocalFirestore {
+		if err := os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080"); err != nil {
+			log.Fatal("failed to set FIRESTORE_EMULATOR_HOST environment variable", err)
+		}
+	}
+
 	fsClient, err := firestore.NewClient(ctx, api.ProjectID)
 	if err != nil {
 		return fmt.Errorf("unable to create firestore client: %w", err)
