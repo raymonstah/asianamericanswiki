@@ -7,7 +7,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
+	"github.com/go-chi/httplog"
 	"github.com/segmentio/ksuid"
+	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -55,24 +57,21 @@ type HumanInput struct {
 }
 
 func (d *DAO) Human(ctx context.Context, input HumanInput) (human Human, err error) {
+	logger := httplog.LogEntry(ctx)
 	var doc *firestore.DocumentSnapshot
 	if input.HumanID != "" {
 		doc, err = d.client.Collection(d.humanCollection).Doc(input.HumanID).Get(ctx)
-		if err != nil {
-			if status.Code(err) == codes.NotFound {
-				return Human{}, ErrHumanNotFound
-			}
-			return Human{}, fmt.Errorf("unable to get human: %w", err)
-		}
 	} else if input.Path != "" {
 		doc, err = d.client.Collection(d.humanCollection).Where("path", "==", input.Path).
 			Documents(ctx).Next()
-		if err != nil {
-			if status.Code(err) == codes.NotFound {
-				return Human{}, ErrHumanNotFound
-			}
-			return Human{}, fmt.Errorf("unable to get human: %w", err)
+	}
+	if err != nil {
+		if status.Code(err) == codes.NotFound || err == iterator.Done {
+			logger.Error().Err(err).Interface("input", input).Msg("human not found")
+			return Human{}, ErrHumanNotFound
 		}
+		logger.Err(err).Interface("input", input).Msg("unable to get human")
+		return Human{}, fmt.Errorf("unable to get human: %w", err)
 	}
 
 	human, err = convertHumanDoc(doc)
