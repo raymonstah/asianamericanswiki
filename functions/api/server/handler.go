@@ -39,28 +39,25 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s Server) AuthMiddleware() func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		fn := func(w http.ResponseWriter, r *http.Request) error {
-			ctx := r.Context()
+func (s Server) AuthMiddleware(next http.Handler) http.Handler {
+	return Handler(func(w http.ResponseWriter, r *http.Request) error {
+		ctx := r.Context()
 
-			tokenString, err := parseBearerToken(r)
-			if err != nil {
-				return NewUnauthorizedError(err)
-			}
-
-			token, err := s.authClient.VerifyIDToken(ctx, tokenString)
-			if err != nil {
-				return NewUnauthorizedError(fmt.Errorf("unable to verify id token: %w", err))
-			}
-
-			ctx = WithToken(ctx, token)
-			next.ServeHTTP(w, r.WithContext(ctx))
-			return nil
+		tokenString, err := parseBearerToken(r)
+		if err != nil {
+			return NewUnauthorizedError(err)
 		}
 
-		return Handler(fn)
-	}
+		token, err := s.authClient.VerifyIDToken(ctx, tokenString)
+		if err != nil {
+			return NewUnauthorizedError(fmt.Errorf("unable to verify id token: %w", err))
+		}
+
+		ctx = WithToken(ctx, token)
+		next.ServeHTTP(w, r.WithContext(ctx))
+		return nil
+	})
+
 }
 
 func parseBearerToken(r *http.Request) (token string, err error) {

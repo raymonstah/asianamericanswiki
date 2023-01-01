@@ -39,7 +39,7 @@ func TestServer_AuthMiddleware_Unauthorized(t *testing.T) {
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/", nil)
 	r.Header.Set("Authorization", "Bearer fakeToken")
-	h := s.AuthMiddleware()(http.HandlerFunc(nil))
+	h := s.AuthMiddleware(http.HandlerFunc(nil))
 
 	h.ServeHTTP(w, r)
 	body, err := ioutil.ReadAll(w.Result().Body)
@@ -75,7 +75,7 @@ func TestServer_AuthMiddleware(t *testing.T) {
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/", nil)
 	r.Header.Set("Authorization", "Bearer "+idToken)
-	h := s.AuthMiddleware()(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	h := s.AuthMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := Token(r.Context())
 		assert.NotNil(t, token)
 		assert.Equal(t, userRecord.UID, token.UID)
