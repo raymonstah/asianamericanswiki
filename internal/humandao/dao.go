@@ -125,17 +125,19 @@ var (
 type ReactionKind string
 
 var (
-	ReactionKindHeart ReactionKind = "❤️"
-	ReactionKindFire  ReactionKind = "🔥"
-	ReactionKindJoy   ReactionKind = "😂"
+	ReactionKindLove   ReactionKind = "love"
+	ReactionKindFire   ReactionKind = "fire"
+	ReactionKindJoy    ReactionKind = "joy"
+	ReactionKindFlower ReactionKind = "flower"
 )
 var validReactionKinds = map[ReactionKind]struct{}{
-	ReactionKindHeart: {},
-	ReactionKindFire:  {},
-	ReactionKindJoy:   {},
+	ReactionKindLove:   {},
+	ReactionKindFire:   {},
+	ReactionKindJoy:    {},
+	ReactionKindFlower: {},
 }
 
-var AllReactionKinds = []ReactionKind{ReactionKindHeart, ReactionKindFire, ReactionKindJoy}
+var AllReactionKinds = []ReactionKind{ReactionKindLove, ReactionKindFire, ReactionKindJoy}
 
 func ToReactionKind(kind string) (ReactionKind, error) {
 	if _, ok := validReactionKinds[ReactionKind(kind)]; !ok {
@@ -159,23 +161,27 @@ func (d *DAO) React(ctx context.Context, input ReactInput) (Reaction, error) {
 		CreatedAt:    time.Now(),
 	}
 
-	batch := d.client.Batch()
-	reactionRef := d.client.Collection(d.reactionCollection).NewDoc()
-	batch.Create(reactionRef, data)
-	humanRef := d.client.Collection(d.humanCollection).Doc(input.HumanID)
-	batch = batch.Update(humanRef, []firestore.Update{
-		{
-			Path:  fmt.Sprintf("reactionCount.%v", input.ReactionKind),
-			Value: firestore.Increment(1),
-		},
+	err := d.client.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+		reactionRef := d.client.Collection(d.reactionCollection).NewDoc()
+		if err := tx.Create(reactionRef, data); err != nil {
+			return fmt.Errorf("unable to create reaction: %w", err)
+		}
+		humanRef := d.client.Collection(d.humanCollection).Doc(input.HumanID)
+		if err := tx.Update(humanRef, []firestore.Update{
+			{
+				Path:  fmt.Sprintf("reactionCount.%v", input.ReactionKind),
+				Value: firestore.Increment(1),
+			},
+		}); err != nil {
+			return fmt.Errorf("unable to update reaction count: %w", err)
+		}
+		data.ID = reactionRef.ID
+		return nil
 	})
-
-	_, err := batch.Commit(ctx)
 	if err != nil {
 		return Reaction{}, err
 	}
 
-	data.ID = reactionRef.ID
 	return data, nil
 }
 
@@ -202,19 +208,24 @@ func (d *DAO) ReactUndo(ctx context.Context, input ReactUndoInput) error {
 		return ErrUnauthorized
 	}
 
-	batch := d.client.Batch()
-	batch = batch.Delete(doc, firestore.Exists)
-	humanRef := d.client.Collection(d.humanCollection).Doc(reaction.HumanID)
-	batch = batch.Update(humanRef, []firestore.Update{
-		{
-			Path:  fmt.Sprintf("reactionCount.%v", reaction.ReactionKind),
-			Value: firestore.Increment(-1),
-		},
-	})
+	err = d.client.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+		if err := tx.Delete(doc, firestore.Exists); err != nil {
+			return fmt.Errorf("error deleting reaction: %w", err)
+		}
+		humanRef := d.client.Collection(d.humanCollection).Doc(reaction.HumanID)
+		if err := tx.Update(humanRef, []firestore.Update{
+			{
+				Path:  fmt.Sprintf("reactionCount.%v", reaction.ReactionKind),
+				Value: firestore.Increment(-1),
+			},
+		}); err != nil {
+			return fmt.Errorf("error decrementing reaction count: %w", err)
+		}
 
-	_, err = batch.Commit(ctx)
+		return nil
+	})
 	if err != nil {
-		return err
+		return fmt.Errorf("error running transaction: %w", err)
 	}
 
 	return nil
