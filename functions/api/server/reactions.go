@@ -54,7 +54,7 @@ func (s Server) ReactionsForHuman(w http.ResponseWriter, r *http.Request) (err e
 	for _, reactionKind := range humandao.AllReactionKinds {
 		response = append(response, reactionCountResponse{
 			ReactionKind: reactionKind,
-			Count:        human.ReactionCount[reactionKind],
+			Count:        human.ReactionCount[string(reactionKind)],
 		})
 	}
 

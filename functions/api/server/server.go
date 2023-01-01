@@ -71,15 +71,17 @@ func (s Server) setupRoutes() {
 	s.router.Method(http.MethodPost, "/contribute", Handler(s.Contribute))
 
 	s.router.Method(http.MethodGet, "/humans/{humanID}/reactions", Handler(s.ReactionsForHuman))
+
 	s.router.Route("/humans", func(r chi.Router) {
-		r.Use(s.AuthMiddleware())
-		s.router.Method(http.MethodPost, "/", Handler(s.HumanCreate))
+		r.Method(http.MethodGet, "/", Handler(s.HumansList))
+		r.Method(http.MethodGet, "/{path}", Handler(s.HumanGet))
+		r.With(s.AuthMiddleware()).Method(http.MethodPost, "/", Handler(s.HumanCreate))
 	})
+
 	s.router.Route("/reactions", func(r chi.Router) {
-		r.Use(s.AuthMiddleware())
 		r.Method(http.MethodGet, "/", Handler(s.GetReactions))
-		r.Method(http.MethodPost, "/", Handler(s.PostReaction))
-		r.Method(http.MethodDelete, "/{id}", Handler(s.DeleteReaction))
+		r.With(s.AuthMiddleware()).Method(http.MethodPost, "/", Handler(s.PostReaction))
+		r.With(s.AuthMiddleware()).Method(http.MethodDelete, "/{id}", Handler(s.DeleteReaction))
 	})
 }
 

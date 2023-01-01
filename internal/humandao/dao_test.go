@@ -64,7 +64,7 @@ func TestDAO(t *testing.T) {
 
 		human, err = dao.Human(ctx, HumanInput{HumanID: human.ID})
 		assert.NoError(t, err)
-		assert.Equal(t, n, human.ReactionCount[ReactionKindFire])
+		assert.Equal(t, n, human.ReactionCount[string(ReactionKindFire)])
 
 		for _, reaction := range reactions {
 			err = dao.ReactUndo(ctx, ReactUndoInput{UserID: "abc", ReactionID: reaction.ID})
@@ -73,7 +73,7 @@ func TestDAO(t *testing.T) {
 
 		human, err = dao.Human(ctx, HumanInput{HumanID: human.ID})
 		assert.NoError(t, err)
-		assert.Equal(t, 0, human.ReactionCount[ReactionKindFire])
+		assert.Equal(t, 0, human.ReactionCount[string(ReactionKindFire)])
 	})
 }
 
