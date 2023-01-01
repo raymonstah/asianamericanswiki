@@ -2,11 +2,14 @@ package server
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
+	"github.com/segmentio/ksuid"
 
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 )
@@ -81,9 +84,14 @@ type Human struct {
 
 func (s Server) HumansList(w http.ResponseWriter, r *http.Request) (err error) {
 	var (
-		ctx   = r.Context()
-		oplog = httplog.LogEntry(r.Context())
+		ctx       = r.Context()
+		oplog     = httplog.LogEntry(r.Context())
+		limitStr  = r.URL.Query().Get("limit")
+		limit     = numOrFallback(limitStr, 10)
+		offsetStr = r.URL.Query().Get("offset")
+		offset    = numOrFallback(offsetStr, 0)
 	)
+
 	defer func(start time.Time) {
 		oplog.Err(err).
 			Str("request", "HumansList").
@@ -92,8 +100,8 @@ func (s Server) HumansList(w http.ResponseWriter, r *http.Request) (err error) {
 	}(time.Now())
 
 	humans, err := s.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
-		Limit:  10,
-		Offset: 0,
+		Limit:  limit,
+		Offset: offset,
 	})
 	if err != nil {
 		return NewInternalServerError(err)
@@ -117,10 +125,19 @@ func (s Server) HumanGet(w http.ResponseWriter, r *http.Request) (err error) {
 			Msg("completed request")
 	}(time.Now())
 
+	id := ""
+	if _, err := ksuid.Parse(path); err == nil {
+		id = path
+	}
+
 	human, err := s.humanDAO.Human(ctx, humandao.HumanInput{
-		Path: path,
+		HumanID: id,
+		Path:    path,
 	})
 	if err != nil {
+		if errors.Is(err, humandao.ErrHumanNotFound) {
+			return NewNotFoundError(err)
+		}
 		return NewInternalServerError(err)
 	}
 
@@ -157,4 +174,12 @@ func convertHuman(human humandao.Human) Human {
 		CreatedAt:     human.CreatedAt,
 		UpdatedAt:     human.UpdatedAt,
 	}
+}
+
+func numOrFallback(num string, fallback int) int {
+	result, err := strconv.Atoi(num)
+	if err != nil {
+		return fallback
+	}
+	return result
 }
