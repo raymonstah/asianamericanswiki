@@ -1,0 +1,110 @@
+{
+  "AF": {
+    "name": "Afghanistan",
+    "emoji": "🇦🇫"
+  },
+  "BD": {
+    "name": "Bangladesh",
+    "emoji": "🇧🇩"
+  },
+  "BT": {
+    "name": "Bhutan",
+    "emoji": "🇧🇹"
+  },
+  "BN": {
+    "name": "Brunei",
+    "emoji": "🇧🇳"
+  },
+  "KH": {
+    "name": "Cambodia",
+    "emoji": "🇰🇭"
+  },
+  "CN": {
+    "name": "China",
+    "emoji": "🇨🇳"
+  },
+  "CX": {
+    "name": "Christmas Island",
+    "emoji": "🇨🇽"
+  },
+  "CC": {
+    "name": "Cocos (Keeling) Islands",
+    "emoji": "🇨🇨"
+  },
+  "IO": {
+    "name": "British Indian Ocean Territory",
+    "emoji": "🇮🇴"
+  },
+  "HK": {
+    "name": "Hong Kong",
+    "emoji": "🇭🇰"
+  },
+  "IN": {
+    "name": "India",
+    "emoji": "🇮🇳"
+  },
+  "ID": {
+    "name": "Indonesia",
+    "emoji": "🇮🇩"
+  },
+  "JP": {
+    "name": "Japan",
+    "emoji": "🇯🇵"
+  },
+  "LA": {
+    "name": "Laos",
+    "emoji": "🇱🇦"
+  },
+  "MO": {
+    "name": "Macao",
+    "emoji": "🇲🇴"
+  },
+  "MY": {
+    "name": "Malaysia",
+    "emoji": "🇲🇾"
+  },
+  "MV": {
+    "name": "Maldives",
+    "emoji": "🇲🇻"
+  },
+  "MN": {
+    "name": "Mongolia",
+    "emoji": "🇲🇳"
+  },
+  "MM": {
+    "name": "Myanmar (Burma)",
+    "emoji": "🇲🇲"
+  },
+  "NP": {
+    "name": "Nepal",
+    "emoji": "🇳🇵"
+  },
+  "PH": {
+    "name": "Philippines",
+    "emoji": "🇵🇭"
+  },
+  "SG": {
+    "name": "Singapore",
+    "emoji": "🇸🇬"
+  },
+  "KR": {
+    "name": "South Korea",
+    "emoji": "🇰🇷"
+  },
+  "LK": {
+    "name": "Sri Lanka",
+    "emoji": "🇱🇰"
+  },
+  "TW": {
+    "name": "Taiwan",
+    "emoji": "🇹🇼"
+  },
+  "TH": {
+    "name": "Thailand",
+    "emoji": "🇹🇭"
+  },
+  "VN": {
+    "name": "Vietnam",
+    "emoji": "🇻🇳"
+  }
+}
