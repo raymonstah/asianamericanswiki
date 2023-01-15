@@ -23,18 +23,6 @@
     "name": "China",
     "emoji": "🇨🇳"
   },
-  "CX": {
-    "name": "Christmas Island",
-    "emoji": "🇨🇽"
-  },
-  "CC": {
-    "name": "Cocos (Keeling) Islands",
-    "emoji": "🇨🇨"
-  },
-  "IO": {
-    "name": "British Indian Ocean Territory",
-    "emoji": "🇮🇴"
-  },
   "HK": {
     "name": "Hong Kong",
     "emoji": "🇭🇰"
@@ -88,7 +76,7 @@
     "emoji": "🇸🇬"
   },
   "KR": {
-    "name": "South Korea",
+    "name": "Korea",
     "emoji": "🇰🇷"
   },
   "LK": {

@@ -38,3 +38,7 @@ All source code should be formatted with prettier for consistency.
 ```shell
 npm run prettier
 ```
+
+## Search
+
+There is a Firestore -> Algolia extension used for the search index.
