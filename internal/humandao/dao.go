@@ -168,7 +168,7 @@ func (d *DAO) React(ctx context.Context, input ReactInput) (Reaction, error) {
 		humanRef := d.client.Collection(d.humanCollection).Doc(input.HumanID)
 		if err := tx.Update(humanRef, []firestore.Update{
 			{
-				Path:  fmt.Sprintf("reactionCount.%v", input.ReactionKind),
+				Path:  fmt.Sprintf("reaction_count.%v", input.ReactionKind),
 				Value: firestore.Increment(1),
 			},
 		}); err != nil {
@@ -214,7 +214,7 @@ func (d *DAO) ReactUndo(ctx context.Context, input ReactUndoInput) error {
 		humanRef := d.client.Collection(d.humanCollection).Doc(reaction.HumanID)
 		if err := tx.Update(humanRef, []firestore.Update{
 			{
-				Path:  fmt.Sprintf("reactionCount.%v", reaction.ReactionKind),
+				Path:  fmt.Sprintf("reaction_count.%v", reaction.ReactionKind),
 				Value: firestore.Increment(-1),
 			},
 		}); err != nil {
