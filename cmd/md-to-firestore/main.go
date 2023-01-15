@@ -176,7 +176,7 @@ func convert(path string, fileName string) (humandao.Human, error) {
 	return humandao.Human{
 		ID:            humanFrontMatter.ID,
 		Name:          humanFrontMatter.Title,
-		Path:          "humans/" + fileName,
+		Path:          fileName,
 		CreatedAt:     parseTime(humanFrontMatter.Date),
 		DOB:           humanFrontMatter.DOB,
 		DOD:           humanFrontMatter.DOD,
