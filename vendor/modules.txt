@@ -183,6 +183,7 @@ golang.org/x/oauth2/jws
 golang.org/x/oauth2/jwt
 # golang.org/x/sync v0.1.0
 ## explicit
+golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 # golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10
 ## explicit; go 1.17

@@ -23,16 +23,16 @@ type ReactionCount map[string]int
 type Human struct {
 	ID            string        `firestore:"-"`
 	Name          string        `firestore:"name"`
-	Path          string        `firestore:"path"`
-	ReactionCount ReactionCount `firestore:"reactionCount"`
+	Path          string        `firestore:"urn_path"`
+	ReactionCount ReactionCount `firestore:"reaction_count"`
 	DOB           string        `firestore:"dob,omitempty"`
 	DOD           string        `firestore:"did,omitempty"`
 	Tags          []string      `firestore:"tags,omitempty"`
 	Website       string        `firestore:"website,omitempty"`
 	Ethnicity     []string      `firestore:"ethnicity,omitempty"`
-	BirthLocation string        `firestore:"birthLocation,omitempty"`
+	BirthLocation string        `firestore:"birth_location,omitempty"`
 	Location      []string      `firestore:"location,omitempty"`
-	InfluencedBy  []string      `firestore:"influencedBy,omitempty"`
+	InfluencedBy  []string      `firestore:"influenced_by,omitempty"`
 	Twitter       string        `firestore:"twitter,omitempty"`
 	FeaturedImage string        `firestore:"featured_image,omitempty"`
 	Draft         bool          `firestore:"draft,omitempty"`

@@ -13,6 +13,7 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"github.com/urfave/cli/v2"
+	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v3"
 
 	"github.com/raymonstah/asianamericanswiki/functions/api"
@@ -93,15 +94,31 @@ func (h *Handler) Do(ctx context.Context) error {
 		return fmt.Errorf("unable to walk humans directory: %v: %w", h.HumansDir, err)
 	}
 
+	workers := make(chan struct{}, 16)
+	for i := 0; i < 16; i++ {
+		workers <- struct{}{}
+	}
+	group, ctx := errgroup.WithContext(ctx)
 	for i, human := range humans {
-		fmt.Printf("%v - Adding %q to firestore..\n", i, human.Name)
-		if !h.Dry {
-			if err := h.HumanDAO.UpdateHuman(ctx, human); err != nil {
-				return err
+		i := i
+		human := human
+		group.Go(func() error {
+			<-workers
+			defer func() { workers <- struct{}{} }()
+			fmt.Printf("%v - Adding %q to firestore..\n", i, human.Name)
+			if !h.Dry {
+				if err := h.HumanDAO.UpdateHuman(ctx, human); err != nil {
+					return err
+				}
+			} else {
+				fmt.Println("dry run -- skipping..")
 			}
-		} else {
-			fmt.Println("dry run -- skipping..")
-		}
+			return nil
+		})
+	}
+
+	if err := group.Wait(); err != nil {
+		return fmt.Errorf("unable to add to firestore: %w", err)
 	}
 
 	fmt.Println("done.")
@@ -159,7 +176,7 @@ func convert(path string, fileName string) (humandao.Human, error) {
 	return humandao.Human{
 		ID:            humanFrontMatter.ID,
 		Name:          humanFrontMatter.Title,
-		Path:          fileName,
+		Path:          "humans/" + fileName,
 		CreatedAt:     parseTime(humanFrontMatter.Date),
 		DOB:           humanFrontMatter.DOB,
 		DOD:           humanFrontMatter.DOD,
