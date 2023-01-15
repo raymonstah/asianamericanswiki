@@ -2,6 +2,7 @@
   import countries from "../lib/flags.json";
   import algoliasearch from "algoliasearch/lite";
   import { onMount } from "svelte";
+  import debounce from "../lib/debounce.js";
 
   let searchClient;
   let index;
@@ -45,10 +46,14 @@
 
 <h2>Search</h2>
 <div>
-  <input type="text" bind:value={query} on:keyup={search} />
+  <input
+    type="text"
+    bind:value={query}
+    use:debounce={{ query, func: search, duration: 300 }}
+  />
 </div>
 {#each hits as hit}
-  <h2><a href={hit.urn_path}>{hit.name}</a></h2>
+  <h2><a href={"humans/" + hit.urn_path}>{hit.name}</a></h2>
 {/each}
 
 <style>
