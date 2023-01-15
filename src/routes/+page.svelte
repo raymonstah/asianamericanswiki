@@ -48,7 +48,7 @@
   <input type="text" bind:value={query} on:keyup={search} />
 </div>
 {#each hits as hit}
-  <h2><a href={hit.path}>{hit.name}</a></h2>
+  <h2><a href={hit.urn_path}>{hit.name}</a></h2>
 {/each}
 
 <style>
