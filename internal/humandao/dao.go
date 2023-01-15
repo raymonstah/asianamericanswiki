@@ -62,7 +62,7 @@ func (d *DAO) Human(ctx context.Context, input HumanInput) (human Human, err err
 	if input.HumanID != "" {
 		doc, err = d.client.Collection(d.humanCollection).Doc(input.HumanID).Get(ctx)
 	} else if input.Path != "" {
-		doc, err = d.client.Collection(d.humanCollection).Where("path", "==", input.Path).
+		doc, err = d.client.Collection(d.humanCollection).Where("urn_path", "==", input.Path).
 			Documents(ctx).Next()
 	}
 	if err != nil {
