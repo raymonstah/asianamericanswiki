@@ -14,11 +14,7 @@
       .then(() => {
         const provider = new GoogleAuthProvider();
         signInWithPopup(auth, provider).then(() => {
-          console.log(window.location.href);
-          if (window.location.href.endsWith("/login")) {
-            console.log("redirect user to home");
-            goto(`/`);
-          }
+          goto(`/`);
         });
       })
       .catch((error) => {
