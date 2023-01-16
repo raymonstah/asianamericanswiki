@@ -76,7 +76,7 @@ type Human struct {
 	Twitter       string                 `json:"twitter,omitempty"`
 	FeaturedImage string                 `json:"featuredImage,omitempty"`
 	Draft         bool                   `json:"draft,omitempty"`
-	AIGenerated   bool                   `json:"AIGenerated,omitempty"`
+	AIGenerated   bool                   `json:"aIGenerated,omitempty"`
 	Description   string                 `json:"description,omitempty"`
 	CreatedAt     time.Time              `json:"createdAt"`
 	UpdatedAt     time.Time              `json:"updatedAt"`
