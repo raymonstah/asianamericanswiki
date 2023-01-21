@@ -1,34 +1,5 @@
 <script>
   import countries from "../lib/flags.json";
-  import algoliasearch from "algoliasearch/lite";
-  import { onMount } from "svelte";
-  import debounce from "../lib/debounce.js";
-
-  let searchClient;
-  let index;
-
-  let query = "";
-  let hits = [];
-
-  onMount(() => {
-    searchClient = algoliasearch(
-      "I3Z39HZCDT",
-      "bcefca03d36ddd83a0f2bcb91b8990e7"
-    );
-
-    index = searchClient.initIndex("humans");
-  });
-
-  // Fires on each keyup in form
-  async function search() {
-    if (query === "") {
-      hits = [];
-      return;
-    }
-    const result = await index.search(query);
-    hits = result.hits;
-    console.log(hits);
-  }
 </script>
 
 <svelte:head>
@@ -39,31 +10,18 @@
 <div class="flags">
   {#each Object.entries(countries) as [code, country]}
     <div class="country">
-      <span title={country.name} class="emoji">{country.emoji}</span>
+      <span title={country.name} class="emoji"
+        ><a class="flagLink" href="/search?query={country.ethnicity}"
+          >{country.emoji}</a
+        ></span
+      >
     </div>
   {/each}
 </div>
 
-<h2>Search</h2>
-<div>
-  <input
-    type="text"
-    bind:value={query}
-    use:debounce={{ query, func: search, duration: 300 }}
-  />
-</div>
-{#each hits as hit}
-  <h2><a href={"humans/" + hit.urn_path}>{hit.name}</a></h2>
-{/each}
-
 <style>
   h1 {
     text-align: center;
-  }
-
-  body {
-    font-family: sans-serif;
-    padding: 1em;
   }
 
   .flags {
@@ -79,5 +37,9 @@
 
   .emoji {
     font-size: 100px;
+  }
+
+  .flagLink {
+    text-decoration: none;
   }
 </style>

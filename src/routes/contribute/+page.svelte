@@ -43,77 +43,99 @@
     "producer",
   ];
   import Tags from "svelte-tags-input";
+
+  function contribute() {
+    console.log("Form received");
+  }
 </script>
 
 <svelte:head>
   <title>Contribute | AsianAmericans.wiki</title>
 </svelte:head>
 
-<h1>Contribute</h1>
-<p>Contribute an influential Asian American</p>
-<form>
-  <label for="name">Name</label>
-  <input id="name" type="text" bind:value={human.name} />
+<article>
+  <h1>Contribute an influential Asian American.</h1>
+  <form on:submit|preventDefault={contribute}>
+    <label for="name">Name</label>
+    <input id="name" type="text" bind:value={human.name} />
 
-  <label for="dob">Date of Birth</label>
-  <input id="dob" type="date" bind:value={human.dob} />
+    <label for="dob">Date of Birth (YYYY-MM-DD)</label>
+    <input id="dob" type="text" maxlength="10" bind:value={human.dob} />
 
-  <label for="dod">Date of Death</label>
-  <input id="dod" type="date" bind:value={human.dod} />
+    <label for="dod">Date of Death</label>
+    <input id="dod" type="date" bind:value={human.dod} />
 
-  <label for="ethnicity">Ethnicity</label>
-  <Tags
-    id="ethnicity"
-    name="ethnicity"
-    bind:tags={human.ethnicity}
-    onlyUnique="true"
-    maxTags={7}
-    autoComplete={ethnicityList}
-  />
-  <label for="description">Description</label>
-  <textarea
-    id="description"
-    bind:value={human.description}
-    rows="5"
-    cols="33"
-  />
+    <label for="ethnicity">Ethnicity</label>
+    <Tags
+      id="ethnicity"
+      name="ethnicity"
+      bind:tags={human.ethnicity}
+      onlyUnique="true"
+      maxTags={7}
+      autoComplete={ethnicityList}
+    />
+    <label for="description">Description</label>
+    <textarea
+      id="description"
+      bind:value={human.description}
+      rows="5"
+      cols="33"
+    />
 
-  <label for="location">Location</label>
-  <input id="location" type="text" bind:value={human.location} />
+    <label for="location">Location</label>
+    <input id="location" type="text" bind:value={human.location} />
 
-  <label for="website">Website</label>
-  <input id="website" type="text" bind:value={human.website} />
+    <label for="website">Website</label>
+    <input id="website" type="url" bind:value={human.website} />
 
-  <label for="twitter">Twitter</label>
-  <input id="twitter" type="text" bind:value={human.twitter} />
+    <label for="twitter">Twitter</label>
+    <input id="twitter" type="url" bind:value={human.twitter} />
 
-  <label for="tags">Tags</label>
-  <Tags
-    id="tags"
-    name="tags"
-    bind:tags={human.tags}
-    onlyUnique="true"
-    maxTags={7}
-    autoComplete={tagsList}
-    placeholder={"musician comedian engineer actress"}
-  />
-  <button>Submit</button>
-</form>
-<p>
-  {JSON.stringify(human)}
-</p>
+    <label for="tags">Tags</label>
+    <Tags
+      id="tags"
+      name="tags"
+      bind:tags={human.tags}
+      onlyUnique="true"
+      maxTags={7}
+      autoComplete={tagsList}
+      placeholder={"musician comedian engineer actress"}
+    />
+    <button class="submit" type="submit">Submit</button>
+  </form>
+  <p>
+    {JSON.stringify(human)}
+  </p>
+</article>
 
 <style>
   form {
     display: flex;
     flex-direction: column;
   }
+
   label {
     font-weight: bold;
+    font-size: 12px;
+    margin-top: 20px;
+    letter-spacing: 0.1rem;
+    text-transform: uppercase;
+    margin-bottom: 2px;
   }
 
-  input,
   textarea {
-    margin-bottom: 10px;
+    resize: none;
+  }
+
+  .submit {
+    margin-top: 10px;
+    font-weight: bold;
+    letter-spacing: 0.1rem;
+    text-transform: uppercase;
+    height: 30px;
+  }
+  .submit:hover {
+    cursor: pointer;
+    background-color: #ffe700;
   }
 </style>

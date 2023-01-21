@@ -1,98 +1,122 @@
 {
   "AF": {
     "name": "Afghanistan",
-    "emoji": "🇦🇫"
+    "emoji": "🇦🇫",
+    "ethnicity": "afghan"
   },
   "BD": {
     "name": "Bangladesh",
-    "emoji": "🇧🇩"
+    "emoji": "🇧🇩",
+    "ethnicity": "bengalis"
   },
   "BT": {
     "name": "Bhutan",
-    "emoji": "🇧🇹"
+    "emoji": "🇧🇹",
+    "ethnicity": "bhutanese"
   },
   "BN": {
     "name": "Brunei",
-    "emoji": "🇧🇳"
+    "emoji": "🇧🇳",
+    "ethnicity": "bruneian"
   },
   "KH": {
     "name": "Cambodia",
-    "emoji": "🇰🇭"
+    "emoji": "🇰🇭",
+    "ethnicity": "cambodian"
   },
   "CN": {
     "name": "China",
-    "emoji": "🇨🇳"
+    "emoji": "🇨🇳",
+    "ethnicity": "chinese"
   },
   "HK": {
     "name": "Hong Kong",
-    "emoji": "🇭🇰"
+    "emoji": "🇭🇰",
+    "ethnicity": "hongkonger"
   },
   "IN": {
     "name": "India",
-    "emoji": "🇮🇳"
+    "emoji": "🇮🇳",
+    "ethnicity": "indian"
   },
   "ID": {
     "name": "Indonesia",
-    "emoji": "🇮🇩"
+    "emoji": "🇮🇩",
+    "ethnicity": "indonesian"
   },
   "JP": {
     "name": "Japan",
-    "emoji": "🇯🇵"
+    "emoji": "🇯🇵",
+    "ethnicity": "japanese"
   },
   "LA": {
     "name": "Laos",
-    "emoji": "🇱🇦"
+    "emoji": "🇱🇦",
+    "ethnicity": "laotian"
   },
   "MO": {
     "name": "Macao",
-    "emoji": "🇲🇴"
+    "emoji": "🇲🇴",
+    "ethnicity": "macanese"
   },
   "MY": {
     "name": "Malaysia",
-    "emoji": "🇲🇾"
+    "emoji": "🇲🇾",
+    "ethnicity": "malaysian"
   },
   "MV": {
     "name": "Maldives",
-    "emoji": "🇲🇻"
+    "emoji": "🇲🇻",
+    "ethnicity": "maldivian"
   },
   "MN": {
     "name": "Mongolia",
-    "emoji": "🇲🇳"
+    "emoji": "🇲🇳",
+    "ethnicity": "mongolian"
   },
   "MM": {
     "name": "Myanmar (Burma)",
-    "emoji": "🇲🇲"
+    "emoji": "🇲🇲",
+    "ethnicity": "burmese"
   },
   "NP": {
     "name": "Nepal",
-    "emoji": "🇳🇵"
+    "emoji": "🇳🇵",
+    "ethnicity": "burmese"
   },
   "PH": {
     "name": "Philippines",
-    "emoji": "🇵🇭"
+    "emoji": "🇵🇭",
+    "ethnicity": "filipino"
   },
   "SG": {
     "name": "Singapore",
-    "emoji": "🇸🇬"
+    "emoji": "🇸🇬",
+    "ethnicity": "singaporean"
   },
   "KR": {
     "name": "Korea",
-    "emoji": "🇰🇷"
+    "emoji": "🇰🇷",
+    "ethnicity": "korean"
   },
   "LK": {
     "name": "Sri Lanka",
-    "emoji": "🇱🇰"
+    "emoji": "🇱🇰",
+    "ethnicity": "sri lankan"
   },
   "TW": {
     "name": "Taiwan",
-    "emoji": "🇹🇼"
+    "emoji": "🇹🇼",
+    "ethnicity": "taiwanese"
   },
   "TH": {
     "name": "Thailand",
-    "emoji": "🇹🇭"
+    "emoji": "🇹🇭",
+    "ethnicity": "thai"
   },
   "VN": {
     "name": "Vietnam",
-    "emoji": "🇻🇳"
+    "emoji": "🇻🇳",
+    "ethnicity": "vietnamese"
   }
 }
