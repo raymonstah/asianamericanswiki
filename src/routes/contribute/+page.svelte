@@ -1,5 +1,8 @@
 <script>
+  import BirthdayInput from "../../lib/components/BirthdayInput.svelte";
+
   let human = {};
+  let errors = {};
   const ethnicityList = [
     "Chinese",
     "Vietnamese",
@@ -45,6 +48,14 @@
   import Tags from "svelte-tags-input";
 
   function contribute() {
+    Object.entries(errors);
+    for (const key in errors) {
+      let val = errors[key];
+      if (val) {
+        console.log(`${key} is invalid`);
+        return;
+      }
+    }
     console.log("Form received");
   }
 </script>
@@ -54,13 +65,13 @@
 </svelte:head>
 
 <article>
-  <h1>Contribute an influential Asian American.</h1>
+  <h1>Contribute an influential Asian American</h1>
   <form on:submit|preventDefault={contribute}>
     <label for="name">Name</label>
     <input id="name" type="text" bind:value={human.name} />
 
-    <label for="dob">Date of Birth (YYYY-MM-DD)</label>
-    <input id="dob" type="text" maxlength="10" bind:value={human.dob} />
+    <label for="dob">Date of Birth</label>
+    <BirthdayInput bind:invalid={errors.dob} bind:dob={human.dob} />
 
     <label for="dod">Date of Death</label>
     <input id="dod" type="date" bind:value={human.dod} />
