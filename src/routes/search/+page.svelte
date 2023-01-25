@@ -95,7 +95,6 @@
 
   #searchBar {
     margin: 20px;
-    width: 100%;
     height: 50px;
     font-size: 30px;
   }
