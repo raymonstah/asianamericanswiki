@@ -1,15 +1,16 @@
-html,
-body {
-  height: 100%;
-  flex-direction: column;
+html {
+  display: flex;
+  background-color: red;
+  margin: 0;
 }
 
 body {
-  margin: 0;
+  display: flex;
+  flex-direction: column;
   background: #eee;
+  margin: 0;
   color: #333;
   font-family: sans-serif;
-  display: flex;
   align-items: stretch;
 }
 
@@ -25,5 +26,5 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  flex-direction: column;
 }

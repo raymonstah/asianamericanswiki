@@ -50,6 +50,7 @@
 <article>
   <h1>Search</h1>
   <div>
+    <!-- svelte-ignore a11y-autofocus -->
     <input
       id="searchBar"
       type="text"

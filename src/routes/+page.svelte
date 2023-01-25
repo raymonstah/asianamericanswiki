@@ -6,7 +6,7 @@
   <title>AsianAmericans.wiki</title>
 </svelte:head>
 
-<h1>AsianAmericans.wiki</h1>
+<h1 class="text-3xl font-bold">AsianAmericans.wiki</h1>
 <div class="flags">
   {#each Object.entries(countries) as [code, country]}
     <div class="country">
@@ -20,10 +20,6 @@
 </div>
 
 <style>
-  h1 {
-    text-align: center;
-  }
-
   .flags {
     display: flex;
     flex-wrap: wrap;

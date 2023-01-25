@@ -34,13 +34,16 @@
   <nav class="links">
     <ul>
       <li>
-        <a href="/about">Our Story</a>
+        <a href="/contribute">Contribute</a>
       </li>
       <li>
         <a href="/humans">Humans</a>
       </li>
       <li>
-        <a href="/contribute">Contribute</a>
+        <a href="/about">Our Story</a>
+      </li>
+      <li>
+        <a href="/search">Search</a>
       </li>
       <li>
         {#if loggedInValue}
@@ -61,12 +64,14 @@
     color: #eeeeee;
     flex-wrap: wrap;
     justify-content: space-between;
+    flex-direction: column;
   }
 
   ul {
     margin: 0;
     list-style-type: none;
     display: flex;
+    flex-direction: row;
     gap: 1rem;
   }
 

@@ -3,9 +3,6 @@
 </script>
 
 <footer>
-  <a href={"#"}
-    ><img src="/scalable.svg" alt="smaller logo" width="30" height="30" /></a
-  >
   <span id="copyright">&copy; AsianAmericans.wiki {year}</span>
   <ul class="links">
     <li>
@@ -39,13 +36,8 @@
   footer {
     /*pushes footer to bottom*/
     margin-top: auto;
-
     padding: 1rem 2rem;
     background: black;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    justify-items: center;
     color: #eeeeee;
   }
 
@@ -55,7 +47,7 @@
   }
 
   ul {
-    margin: 0;
+    margin: 0.5rem 0 0;
     list-style-type: none;
     display: flex;
     gap: 1rem;
