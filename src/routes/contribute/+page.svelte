@@ -65,7 +65,7 @@
 </svelte:head>
 
 <article>
-  <h1>Contribute an influential Asian American</h1>
+  <h1 class="text-2xl">Contribute an influential Asian American</h1>
   <form on:submit|preventDefault={contribute}>
     <label for="name">Name</label>
     <input id="name" type="text" bind:value={human.name} />
@@ -112,7 +112,10 @@
       autoComplete={tagsList}
       placeholder={"musician comedian engineer actress"}
     />
-    <button class="submit" type="submit">Submit</button>
+    <button
+      class="bg-transparent hover:bg-yellow-500 text-yellow-600 font-semibold hover:text-white my-4 py-2 px-4 border border-yellow-500 hover:border-transparent"
+      type="submit">Submit</button
+    >
   </form>
   <p>
     {JSON.stringify(human)}
@@ -136,17 +139,5 @@
 
   textarea {
     resize: none;
-  }
-
-  .submit {
-    margin-top: 10px;
-    font-weight: bold;
-    letter-spacing: 0.1rem;
-    text-transform: uppercase;
-    height: 30px;
-  }
-  .submit:hover {
-    cursor: pointer;
-    background-color: #ffe700;
   }
 </style>
