@@ -1,5 +1,6 @@
 <script>
   import SvelteMarkdown from "svelte-markdown";
+  import Chip from "../../../lib/components/Chip.svelte";
 
   export let data;
 </script>
@@ -8,8 +9,8 @@
   <title>{data.human.name} | AsianAmericans.wiki</title>
 </svelte:head>
 
-<article>
-  <h1>{data.human.name}</h1>
+<article class="max-w-2xl">
+  <h1 class="text-2xl">{data.human.name}</h1>
   <table>
     {#if data.human.aliases}
       <tr>
@@ -65,12 +66,6 @@
         <td>{data.human.location}</td>
       </tr>
     {/if}
-    {#if data.human.tags}
-      <tr>
-        <th>Tags</th>
-        <td>{data.human.tags}</td>
-      </tr>
-    {/if}
     <tr>
       <th>Created At</th>
       <td>{data.human.createdAt}</td>
@@ -80,7 +75,18 @@
       <td>{data.human.updatedAt}</td>
     </tr>
   </table>
-  <SvelteMarkdown source={data.human.description} />
+  <div class="text-left py-4">
+    <SvelteMarkdown source={data.human.description} />
+  </div>
+  <div class="py-4">
+    <ul class="flex flex-row">
+      {#each data.human.tags as tag}
+        <li>
+          <Chip>{tag}</Chip>
+        </li>
+      {/each}
+    </ul>
+  </div>
 </article>
 
 <style>

@@ -22,18 +22,20 @@
   <title>Humans | AsianAmericans.wiki</title>
 </svelte:head>
 
-<h1>Humans</h1>
-<ul>
-  {#each humans as human}
-    <div class="human">
-      <h2><a class="name" href={human.path}>{human.name}</a></h2>
-      <p>{truncate(human.description, 300)}</p>
-    </div>
-  {:else}
-    <!-- this block renders when photos.length === 0 -->
-    <p>loading...</p>
-  {/each}
-</ul>
+<article class="max-w-2xl">
+  <h1 class="text-2xl">Humans</h1>
+  <ul>
+    {#each humans as human}
+      <div class="human">
+        <h2><a class="name" href={human.path}>{human.name}</a></h2>
+        <p>{truncate(human.description, 300)}</p>
+      </div>
+    {:else}
+      <!-- this block renders when photos.length === 0 -->
+      <p>loading...</p>
+    {/each}
+  </ul>
+</article>
 
 <style>
   .human {
