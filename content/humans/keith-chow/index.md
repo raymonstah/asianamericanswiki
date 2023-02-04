@@ -9,7 +9,7 @@ website: https://thenerdsofcolor.org
 ethnicity: [Chinese]
 birthLocation: ""
 location: []
-twitter: "@the_real_chow"
+twitter: "https://twitter.com/the_real_chow"
 draft: false
 ai_generated: false
 ---
