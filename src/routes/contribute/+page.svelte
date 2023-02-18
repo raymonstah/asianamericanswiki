@@ -47,7 +47,8 @@
   ];
   import Tags from "svelte-tags-input";
 
-  function contribute() {
+  import { loggedIn } from "../../store.js";
+  async function contribute() {
     Object.entries(errors);
     for (const key in errors) {
       let val = errors[key];
@@ -57,7 +58,30 @@
       }
     }
     console.log("Form received");
+    let token = await getAuth().currentUser.getIdToken();
+    const headers = new Headers({
+      Authorization: `Bearer ${token}`,
+    });
+    fetch(`${PUBLIC_BASE_URL}/humans/`, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(human),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    // clear form
+    human = {};
   }
+
+  import { PUBLIC_BASE_URL } from "$env/static/public";
+  import { getAuth } from "firebase/auth";
+  let userLoggedIn = false;
+  loggedIn.subscribe((v) => (userLoggedIn = v));
 </script>
 
 <svelte:head>
@@ -66,60 +90,64 @@
 
 <article>
   <h1 class="text-2xl">Contribute an influential Asian American</h1>
-  <form on:submit|preventDefault={contribute}>
-    <label for="name">Name</label>
-    <input id="name" type="text" bind:value={human.name} />
+  {#if userLoggedIn}
+    <form on:submit|preventDefault={contribute}>
+      <label for="name">Name</label>
+      <input required id="name" type="text" bind:value={human.name} />
 
-    <label for="dob">Date of Birth</label>
-    <BirthdayInput bind:invalid={errors.dob} bind:dob={human.dob} />
+      <label for="dob">Date of Birth</label>
+      <BirthdayInput bind:invalid={errors.dob} bind:dob={human.dob} />
 
-    <label for="dod">Date of Death</label>
-    <input id="dod" type="date" bind:value={human.dod} />
+      <label for="dod">Date of Death</label>
+      <input id="dod" type="date" bind:value={human.dod} />
 
-    <label for="ethnicity">Ethnicity</label>
-    <Tags
-      id="ethnicity"
-      name="ethnicity"
-      bind:tags={human.ethnicity}
-      onlyUnique="true"
-      maxTags={7}
-      autoComplete={ethnicityList}
-    />
-    <label for="description">Description</label>
-    <textarea
-      id="description"
-      bind:value={human.description}
-      rows="5"
-      cols="33"
-    />
+      <label for="ethnicity">Ethnicity</label>
+      <Tags
+        id="ethnicity"
+        name="ethnicity"
+        bind:tags={human.ethnicity}
+        onlyUnique="true"
+        maxTags={7}
+        autoComplete={ethnicityList}
+      />
+      <label for="description">Description</label>
+      <textarea
+        id="description"
+        bind:value={human.description}
+        rows="5"
+        cols="33"
+      />
 
-    <label for="location">Location</label>
-    <input id="location" type="text" bind:value={human.location} />
+      <label for="location">Location</label>
+      <input id="location" type="text" bind:value={human.location} />
 
-    <label for="website">Website</label>
-    <input id="website" type="url" bind:value={human.website} />
+      <label for="website">Website</label>
+      <input id="website" type="url" bind:value={human.website} />
 
-    <label for="twitter">Twitter</label>
-    <input id="twitter" type="url" bind:value={human.twitter} />
+      <label for="twitter">Twitter</label>
+      <input id="twitter" type="url" bind:value={human.twitter} />
 
-    <label for="tags">Tags</label>
-    <Tags
-      id="tags"
-      name="tags"
-      bind:tags={human.tags}
-      onlyUnique="true"
-      maxTags={7}
-      autoComplete={tagsList}
-      placeholder={"musician comedian engineer actress"}
-    />
-    <button
-      class="bg-transparent hover:bg-yellow-500 text-yellow-600 font-semibold hover:text-white my-4 py-2 px-4 border border-yellow-500 hover:border-transparent"
-      type="submit">Submit</button
-    >
-  </form>
-  <p>
-    {JSON.stringify(human)}
-  </p>
+      <label for="tags">Tags</label>
+      <Tags
+        id="tags"
+        name="tags"
+        bind:tags={human.tags}
+        onlyUnique="true"
+        maxTags={7}
+        autoComplete={tagsList}
+        placeholder={"musician comedian engineer actress"}
+      />
+      <button
+        class="bg-transparent hover:bg-yellow-500 text-yellow-600 font-semibold hover:text-white my-4 py-2 px-4 border border-yellow-500 hover:border-transparent"
+        type="submit">Submit</button
+      >
+    </form>
+    <p>
+      {JSON.stringify(human)}
+    </p>
+  {:else}
+    <h1>Please log in first.</h1>
+  {/if}
 </article>
 
 <style>

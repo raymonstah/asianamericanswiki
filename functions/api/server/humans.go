@@ -15,7 +15,15 @@ import (
 )
 
 type HumanCreateRequest struct {
-	Name string
+	Name        string   `json:"name,omitempty"`
+	DOB         string   `json:"dob,omitempty"`
+	DOD         string   `json:"dod,omitempty"`
+	Ethnicity   []string `json:"ethnicity,omitempty"`
+	Description string   `json:"description,omitempty"`
+	Location    []string `json:"location,omitempty"`
+	Website     string   `json:"website,omitempty"`
+	Twitter     string   `json:"twitter,omitempty"`
+	Tags        []string `json:"tags,omitempty"`
 }
 
 type HumanCreateResponse struct {
@@ -27,10 +35,13 @@ func (s Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error) 
 	var (
 		ctx   = r.Context()
 		oplog = httplog.LogEntry(r.Context())
+		token = Token(ctx)
 	)
+
 	defer func(start time.Time) {
 		oplog.Err(err).
 			Str("request", "HumanCreate").
+			Str("token", token.UID).
 			Dur("duration", time.Since(start).Round(time.Millisecond)).
 			Msg("completed request")
 	}(time.Now())
@@ -41,9 +52,22 @@ func (s Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error) 
 	}
 
 	human, err := s.humanDAO.AddHuman(ctx, humandao.AddHumanInput{
-		Name: request.Name,
+		Name:        request.Name,
+		DOB:         request.DOB,
+		DOD:         request.DOD,
+		Ethnicity:   request.Ethnicity,
+		Description: request.Description,
+		Location:    request.Location,
+		Website:     request.Website,
+		Twitter:     request.Twitter,
+		Tags:        request.Tags,
+		CreatedBy:   token.UID,
+		Draft:       true,
 	})
 	if err != nil {
+		if errors.Is(err, humandao.ErrHumanAlreadyExists) {
+			return NewBadRequestError(err)
+		}
 		return NewInternalServerError(err)
 	}
 
@@ -76,7 +100,7 @@ type Human struct {
 	Twitter       string                 `json:"twitter,omitempty"`
 	FeaturedImage string                 `json:"featuredImage,omitempty"`
 	Draft         bool                   `json:"draft,omitempty"`
-	AIGenerated   bool                   `json:"aIGenerated,omitempty"`
+	AIGenerated   bool                   `json:"ai_generated,omitempty"`
 	Description   string                 `json:"description,omitempty"`
 	CreatedAt     time.Time              `json:"createdAt"`
 	UpdatedAt     time.Time              `json:"updatedAt"`

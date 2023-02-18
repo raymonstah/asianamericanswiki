@@ -1,8 +1,9 @@
 /** @type {import('./$types').PageLoad} */
+import { PUBLIC_BASE_URL } from "$env/static/public";
 
 export async function load({ fetch, params }) {
   let human = {};
-  await fetch(`https://api-5cwffcuiba-uc.a.run.app/humans/${params.id}`)
+  await fetch(`${PUBLIC_BASE_URL}/humans/${params.id}`)
     .then((response) => response.json())
     .then((data) => {
       human = data.data;

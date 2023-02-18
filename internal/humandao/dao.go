@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -15,7 +16,8 @@ import (
 )
 
 var (
-	ErrHumanNotFound = errors.New("human not found")
+	ErrHumanNotFound      = errors.New("human not found")
+	ErrHumanAlreadyExists = errors.New("human already exists")
 )
 
 type ReactionCount map[string]int
@@ -41,6 +43,7 @@ type Human struct {
 
 	CreatedAt time.Time `firestore:"created_at"`
 	UpdatedAt time.Time `firestore:"updated_at"`
+	CreatedBy string    `firestore:"created_by"`
 }
 
 type Reaction struct {
@@ -83,11 +86,6 @@ func (d *DAO) Human(ctx context.Context, input HumanInput) (human Human, err err
 	return human, nil
 }
 
-type AddHumanInput struct {
-	HumanID string
-	Name    string
-}
-
 func (d *DAO) UpdateHuman(ctx context.Context, human Human) error {
 	human.UpdatedAt = time.Now()
 	_, err := d.client.Collection(d.humanCollection).
@@ -100,15 +98,57 @@ func (d *DAO) UpdateHuman(ctx context.Context, human Human) error {
 	return nil
 }
 
+type AddHumanInput struct {
+	HumanID     string
+	Name        string
+	DOB         string
+	DOD         string
+	Ethnicity   []string
+	Description string
+	Location    []string
+	Website     string
+	Twitter     string
+	Tags        []string
+	Draft       bool
+	CreatedBy   string
+}
+
 func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) {
-	human := Human{
-		Name: input.Name,
+	path := strings.ToLower(strings.ReplaceAll(input.Name, " ", "-"))
+	if input.Name == "" {
+		return Human{}, fmt.Errorf("name must be provided")
 	}
+
+	_, err := d.Human(ctx, HumanInput{Path: path})
+	if err != nil {
+		if err != ErrHumanNotFound {
+			return Human{}, fmt.Errorf("error checking if human (%v) exists: %w", path, err)
+		}
+	}
+	if err == nil {
+		return Human{}, ErrHumanAlreadyExists
+	}
+
+	human := Human{
+		Name:        input.Name,
+		DOB:         input.DOB,
+		DOD:         input.DOD,
+		Ethnicity:   input.Ethnicity,
+		Description: input.Description,
+		Location:    input.Location,
+		Website:     input.Website,
+		Twitter:     input.Twitter,
+		Tags:        input.Tags,
+		Draft:       input.Draft,
+		CreatedBy:   input.CreatedBy,
+		Path:        path,
+	}
+
 	if input.HumanID == "" {
 		input.HumanID = ksuid.New().String()
 	}
 
-	_, err := d.client.Collection(d.humanCollection).Doc(input.HumanID).Create(ctx, human)
+	_, err = d.client.Collection(d.humanCollection).Doc(input.HumanID).Create(ctx, human)
 	if err != nil {
 		return Human{}, fmt.Errorf("unable to create human: %w", err)
 	}

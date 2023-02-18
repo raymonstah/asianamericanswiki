@@ -68,6 +68,7 @@ func parseBearerToken(r *http.Request) (token string, err error) {
 	return "", fmt.Errorf("invalid authorization token")
 }
 
+// Token pulls the auth.Token out of the context.
 func Token(ctx context.Context) *auth.Token {
 	token, ok := ctx.Value(tokenKey).(*auth.Token)
 	if !ok {
@@ -76,6 +77,7 @@ func Token(ctx context.Context) *auth.Token {
 	return token
 }
 
+// WithToken takes a token and sticks it in the context.
 func WithToken(ctx context.Context, token *auth.Token) context.Context {
 	return context.WithValue(ctx, tokenKey, token)
 }

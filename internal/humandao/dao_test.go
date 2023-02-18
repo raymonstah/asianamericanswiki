@@ -51,7 +51,7 @@ func WithDAO(t *testing.T, do func(ctx context.Context, dao *DAO)) {
 
 func TestDAO(t *testing.T) {
 	WithDAO(t, func(ctx context.Context, dao *DAO) {
-		human, err := dao.AddHuman(ctx, AddHumanInput{})
+		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond"})
 		assert.NoError(t, err)
 
 		n := 100
@@ -79,7 +79,7 @@ func TestDAO(t *testing.T) {
 
 func TestDAOReactions(t *testing.T) {
 	WithDAO(t, func(ctx context.Context, dao *DAO) {
-		human, err := dao.AddHuman(ctx, AddHumanInput{})
+		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond"})
 		assert.NoError(t, err)
 
 		userID := "user123"
@@ -121,7 +121,7 @@ func TestDAO_ReactionNotFound(t *testing.T) {
 
 func TestDAO_ReactionUndo_Unauthorized(t *testing.T) {
 	WithDAO(t, func(ctx context.Context, dao *DAO) {
-		human, err := dao.AddHuman(ctx, AddHumanInput{})
+		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond"})
 		assert.NoError(t, err)
 
 		userID := "user123"

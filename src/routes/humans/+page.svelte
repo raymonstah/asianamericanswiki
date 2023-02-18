@@ -1,9 +1,9 @@
 <script>
   import { onMount } from "svelte";
-
+  import { PUBLIC_BASE_URL } from "$env/static/public";
   let humans = [];
   onMount(async () => {
-    fetch("https://api-5cwffcuiba-uc.a.run.app/humans/")
+    fetch(`${PUBLIC_BASE_URL}/humans/`)
       .then((response) => response.json())
       .then((data) => {
         humans = data.data;

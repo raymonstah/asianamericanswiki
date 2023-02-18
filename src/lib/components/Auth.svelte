@@ -3,10 +3,12 @@
   import { getApps, initializeApp } from "firebase/app";
   import {
     browserLocalPersistence,
+    connectAuthEmulator,
     getAuth,
     setPersistence,
   } from "firebase/auth";
   import { loggedIn } from "../../store.js";
+  import { PUBLIC_USE_AUTH_EMULATOR } from "$env/static/public";
   onMount(() => {
     if (!getApps().length) {
       initializeApp({
@@ -20,6 +22,9 @@
       });
     }
     const auth = getAuth();
+    if (PUBLIC_USE_AUTH_EMULATOR) {
+      connectAuthEmulator(auth, "http://localhost:8081");
+    }
     setPersistence(auth, browserLocalPersistence);
     auth.onAuthStateChanged((user) => {
       if (!user) {
