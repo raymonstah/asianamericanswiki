@@ -28,6 +28,7 @@
     const url = new URL(window.location.toString());
     url.searchParams.set("query", query);
     history.replaceState({}, "", url);
+
     // perform the query
     if (query === "") {
       hits = [];
