@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -49,6 +50,18 @@ func (s Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error) 
 	var request HumanCreateRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return NewBadRequestError(err)
+	}
+
+	drafts, err := s.humanDAO.UserDrafts(ctx, humandao.UserDraftsInput{
+		UserID: token.UID,
+		Limit:  10,
+		Offset: 0,
+	})
+	if err != nil {
+		return NewInternalServerError(fmt.Errorf("unable to find user drafts: %w", err))
+	}
+	if len(drafts) > 10 {
+		return NewBadRequestError(fmt.Errorf("too many contributions, please try again later"))
 	}
 
 	human, err := s.humanDAO.AddHuman(ctx, humandao.AddHumanInput{

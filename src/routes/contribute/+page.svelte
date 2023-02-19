@@ -58,7 +58,8 @@
         return;
       }
     }
-    console.log("Form received");
+    // clear out the previous response.
+    response = {};
     let token = await getAuth().currentUser.getIdToken();
     const headers = new Headers({
       Authorization: `Bearer ${token}`,
