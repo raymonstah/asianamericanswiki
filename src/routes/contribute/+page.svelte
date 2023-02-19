@@ -48,6 +48,7 @@
   import Tags from "svelte-tags-input";
 
   import { loggedIn } from "../../store.js";
+  let response = {};
   async function contribute() {
     Object.entries(errors);
     for (const key in errors) {
@@ -69,13 +70,23 @@
     })
       .then((response) => response.json())
       .then((data) => {
+        if (data.error) {
+          response.hasError = true;
+          response.error = data.error;
+          return;
+        }
+        response.success = true;
+        response.data = data;
         console.log(data);
       })
       .catch((error) => {
+        response.hasError = true;
+        response.error = error.error;
         console.log(error);
       });
     // clear form
     human = {};
+    console.log(response);
   }
 
   import { PUBLIC_BASE_URL } from "$env/static/public";
@@ -91,6 +102,26 @@
 <article>
   <h1 class="text-2xl">Contribute an influential Asian American</h1>
   {#if userLoggedIn}
+    {#if response.hasError === true}
+      <div
+        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+        role="alert"
+      >
+        <strong class="font-bold">Uh oh!</strong>
+        <span class="block sm:inline">{response.error}</span>
+      </div>
+    {:else if response.success === true}
+      <div
+        class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+        role="alert"
+      >
+        <strong class="font-bold">Success!</strong>
+        <span class="block sm:inline"
+          >Thanks for your contribution. A moderator will review your submission
+          shortly.</span
+        >
+      </div>
+    {/if}
     <form on:submit|preventDefault={contribute}>
       <label for="name">Name</label>
       <input required id="name" type="text" bind:value={human.name} />
