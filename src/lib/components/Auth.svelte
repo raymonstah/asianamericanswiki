@@ -22,7 +22,7 @@
       });
     }
     const auth = getAuth();
-    if (PUBLIC_USE_AUTH_EMULATOR) {
+    if (PUBLIC_USE_AUTH_EMULATOR === "true") {
       connectAuthEmulator(auth, "http://localhost:8081");
     }
     setPersistence(auth, browserLocalPersistence);
