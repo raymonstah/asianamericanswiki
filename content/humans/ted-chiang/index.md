@@ -7,7 +7,7 @@ tags: [author, writer]
 website: ""
 ethnicity: [Chinese]
 birthLocation: ""
-location: [New YOrk]
+location: [New York]
 twitter: ""
 draft: false
 ai_generated: true
