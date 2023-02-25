@@ -13,4 +13,6 @@ draft: false
 ai_generated: false
 ---
 
-Soleil Ho is a restaurant critic for the SF Chronicle. In 2023, Ho transitioned to a new role in the Opinion department, where they will serve as a columnist and cultural critic.
+Soleil Ho is a restaurant critic for the SF Chronicle. In 2023, Ho transitioned
+to a new role in the Opinion department, where they will serve as a columnist
+and cultural critic.
