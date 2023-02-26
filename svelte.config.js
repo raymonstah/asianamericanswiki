@@ -13,14 +13,6 @@ const config = {
       precompress: false,
       strict: true,
     }),
-    prerender: {
-      default: true,
-    },
-    browser: {
-      hydrate: true,
-      router: true,
-    },
-    trailingSlash: "always",
   },
   preprocess: [
     preprocess({

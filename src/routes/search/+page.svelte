@@ -1,10 +1,13 @@
 <script>
   // used to get the query parameter
+  import HumanListCard from "../../lib/components/HumanListCard.svelte";
+
   export let data;
 
   import algoliasearch from "algoliasearch/lite";
   import { onMount } from "svelte";
   import debounce from "../../lib/debounce.js";
+  import truncate from "../../lib/truncate.js";
 
   let searchClient;
   let index;
@@ -36,11 +39,6 @@
     }
     const result = await index.search(query);
     hits = result.hits;
-    console.log(hits);
-  }
-
-  function truncate(str, n) {
-    return str.length > n ? str.slice(0, n - 1) + "..." : str;
   }
 </script>
 
@@ -82,20 +80,12 @@
   </div>
   <div class="humans">
     {#each hits as hit}
-      <div class="human">
-        <h1 class="text-xl hover:underline">
-          <a class="name" href={"/humans/" + hit.urn_path}>{hit.name}</a>
-        </h1>
-        <p>{truncate(hit.description, 300)}</p>
-      </div>
+      <HumanListCard
+        class="my-4"
+        path={"/humans/" + hit.urn_path}
+        description={hit.description}
+        name={hit.name}
+      />
     {/each}
   </div>
 </article>
-
-<style>
-  .human {
-    padding: 20px 30px 20px 30px;
-    margin: 20px;
-    background-color: white;
-  }
-</style>

@@ -1,21 +1,31 @@
 <script>
   import { onMount } from "svelte";
   import { PUBLIC_BASE_URL } from "$env/static/public";
+  import HumanListCard from "../../lib/components/HumanListCard.svelte";
+  import InfiniteScroll from "svelte-infinite-scroll";
+
+  let offset = 0;
+  let pageSize = 10;
   let humans = [];
-  onMount(async () => {
-    fetch(`${PUBLIC_BASE_URL}/humans/`)
+  let newBatch = [];
+  async function fetchData() {
+    await fetch(
+      `${PUBLIC_BASE_URL}/humans?offset=${offset}&pageSize=${pageSize}`
+    )
       .then((response) => response.json())
       .then((data) => {
-        humans = data.data;
+        newBatch = data.data;
       })
       .catch((error) => {
         console.log(error);
       });
-  });
-
-  function truncate(str, n) {
-    return str.length > n ? str.slice(0, n - 1) + "..." : str;
   }
+
+  onMount(() => {
+    // load the first batch
+    fetchData();
+  });
+  $: humans = [...humans, ...newBatch];
 </script>
 
 <svelte:head>
@@ -26,30 +36,21 @@
   <h1 class="text-2xl">Humans</h1>
   <ul>
     {#each humans as human}
-      <div class="human">
-        <h2><a class="name" href={human.path}>{human.name}</a></h2>
-        <p>{truncate(human.description, 300)}</p>
-      </div>
-    {:else}
-      <!-- this block renders when photos.length === 0 -->
-      <p>loading...</p>
+      <HumanListCard
+        class="my-4"
+        path={"/humans/" + human.path}
+        description={human.description}
+        name={human.name}
+      />
     {/each}
   </ul>
+  <InfiniteScroll
+    hasMore={newBatch.length}
+    threshold={pageSize}
+    window={true}
+    on:loadMore={() => {
+      offset += pageSize;
+      fetchData();
+    }}
+  />
 </article>
-
-<style>
-  .human {
-    padding: 20px 30px 20px 30px;
-    margin: 20px;
-    background-color: white;
-  }
-
-  .name {
-    color: black;
-    text-decoration: none;
-  }
-
-  .name:hover {
-    text-decoration: underline;
-  }
-</style>

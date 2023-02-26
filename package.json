@@ -3,10 +3,11 @@
   "dependencies": {
     "@firebase/app": "^0.7.31",
     "@firebase/auth": "^0.20.5",
-    "@sveltejs/adapter-static": "^1.0.0-next.39",
+    "@sveltejs/adapter-static": "^2.0.1",
     "algoliasearch": "^4.14.3",
     "firebase": "^9.9.3",
     "instantsearch.js": "^4.49.3",
+    "svelte-infinite-scroll": "^2.0.1",
     "svelte-markdown": "^0.2.3",
     "svelte-tags-input": "^4.0.0"
   },
@@ -20,15 +21,15 @@
     "husky": "^8.0.1",
     "lint-staged": "^12.4.2",
     "postcss": "^8.4.14",
+    "postcss-load-config": "^4.0.1",
     "pre-commit": "^1.2.2",
     "prettier": "^2.6.2",
     "prettier-plugin-go-template": "0.0.13",
     "prettier-plugin-svelte": "^2.7.0",
     "svelte": "^3.44.0",
+    "svelte-preprocess": "^4.10.7",
     "tailwindcss": "^3.2.4",
-    "vite": "^3.0.0",
-    "postcss-load-config": "^4.0.1",
-    "svelte-preprocess": "^4.10.7"
+    "vite": "^4.1.4"
   },
   "scripts": {
     "dev": "vite dev",

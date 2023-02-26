@@ -9,6 +9,7 @@
       <a
         href="https://github.com/raymonstah/asianamericanswiki/"
         target="_blank"
+        rel="noreferrer"
         ><img
           class="social"
           src="/github.svg"
@@ -19,7 +20,7 @@
       >
     </li>
     <li>
-      <a href="https://twitter.com/aapiwiki" target="_blank"
+      <a href="https://twitter.com/aapiwiki" target="_blank" rel="noreferrer"
         ><img
           class="social"
           src="/twitter.svg"
