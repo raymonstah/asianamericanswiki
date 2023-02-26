@@ -1,5 +1,6 @@
 <script>
-  import truncate from "../truncate.js";
+  import truncateMarkdown from "markdown-truncate";
+  import SvelteMarkdown from "svelte-markdown";
   export let path;
   export let name;
   export let description;
@@ -14,7 +15,9 @@
   >
     <a class="name" href={path}>{name}</a>
   </h2>
-  <p class="font-normal text-gray-700 dark:text-gray-400">
-    {truncate(description, 300)}
+  <p class="font-normal text-gray-700 dark:text-gray-400 break-words">
+    <SvelteMarkdown
+      source={truncateMarkdown(description, { limit: 250, ellipsis: true })}
+    />
   </p>
 </div>

@@ -4,7 +4,6 @@
   import "$lib/styles/style.css";
   import Auth from "$lib/components/Auth.svelte";
   import "../app.postcss";
-  export const prerender = true;
   export const trailingSlash = "always";
 </script>
 

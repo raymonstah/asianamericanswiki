@@ -7,6 +7,7 @@
     "algoliasearch": "^4.14.3",
     "firebase": "^9.9.3",
     "instantsearch.js": "^4.49.3",
+    "markdown-truncate": "^1.0.4",
     "svelte-infinite-scroll": "^2.0.1",
     "svelte-markdown": "^0.2.3",
     "svelte-tags-input": "^4.0.0"
