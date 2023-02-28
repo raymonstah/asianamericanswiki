@@ -5,6 +5,7 @@
     "@firebase/auth": "^0.20.5",
     "@sveltejs/adapter-static": "^2.0.1",
     "algoliasearch": "^4.14.3",
+    "dayjs": "^1.11.7",
     "firebase": "^9.9.3",
     "instantsearch.js": "^4.49.3",
     "markdown-truncate": "^1.0.4",

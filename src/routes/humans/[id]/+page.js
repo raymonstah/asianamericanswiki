@@ -1,5 +1,6 @@
 /** @type {import('./$types').PageLoad} */
 import { PUBLIC_BASE_URL } from "$env/static/public";
+import { error } from "@sveltejs/kit";
 
 export async function load({ fetch, params }) {
   let human = {};
@@ -12,5 +13,10 @@ export async function load({ fetch, params }) {
       console.log(error);
     });
 
+  if (!human) {
+    throw error(404, {
+      message: "Human not found.. Are you sure you have the right path?",
+    });
+  }
   return { human: human };
 }
