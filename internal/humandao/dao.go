@@ -26,7 +26,7 @@ type Human struct {
 	Path          string        `firestore:"urn_path"`
 	ReactionCount ReactionCount `firestore:"reaction_count"`
 	DOB           string        `firestore:"dob,omitempty"`
-	DOD           string        `firestore:"did,omitempty"`
+	DOD           string        `firestore:"dod,omitempty"`
 	Tags          []string      `firestore:"tags,omitempty"`
 	Website       string        `firestore:"website,omitempty"`
 	Ethnicity     []string      `firestore:"ethnicity,omitempty"`
