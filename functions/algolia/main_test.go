@@ -64,7 +64,7 @@ func TestGetHumanID(t *testing.T) {
 	}
 }
 
-var updateEvent string = `{
+var updateEvent = `{
   "oldValue": {
     "createTime": "2022-08-13T22:07:01.241901Z",
     "fields": {},
