@@ -1,5 +1,12 @@
+<script>
+  import { html } from "./index.md";
+</script>
+
 <svelte:head>
   <title>Our Story | AsianAmericans.wiki</title>
 </svelte:head>
-<h1>Our Story</h1>
-<p>This is our story.</p>
+<article class="max-w-lg mx-auto prose dark:prose-invert">
+  <div class="text-left leading-relaxed">
+    {@html html}
+  </div>
+</article>
