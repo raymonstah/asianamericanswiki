@@ -2,7 +2,7 @@
   import { getAuth, signOut } from "firebase/auth";
   import { loggedIn } from "../../store.js";
   import { onDestroy } from "svelte";
-  import { browser } from "$app/env";
+  import { browser } from "$app/environment";
 
   let loggedInValue;
   const sub = loggedIn.subscribe((value) => {

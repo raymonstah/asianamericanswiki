@@ -18,7 +18,7 @@ Why did they assume I was of one ethnicity or another?
 Was my skin tone not dark enough, or was it my monolid eyes, or the way I
 dressed and walked?
 
-Why did any of this even matter?”
+Why did any of this even matter?
 
 Even in Asia, where I was surrounded by majority Asians, I didn’t feel like I
 fully fit in. You know the cliché: not Asian enough for Asia, not American

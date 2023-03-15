@@ -2,7 +2,7 @@ name: twitter-follower
 on:
   push:
     branches:
-      - main
+      - disabled # todo: update me!
     paths:
       # only run when the source code changes or this file changes
       - "content/humans/**"
