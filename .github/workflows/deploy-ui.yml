@@ -46,11 +46,11 @@ jobs:
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
           timeout: 90
-          service: "api"
+          service: "ui"
           region: "us-central1"
           labels: githash=${{ steps.vars.outputs.sha_short }}
           image: ${{ env.IMAGE_NAME }}:latest
           env_vars: |
             GIT_HASH=${{ steps.vars.outputs.sha_short }}
       - name: "Use output"
-        run: 'curl "${{ steps.deploy.outputs.url }}"/version'
+        run: 'curl "${{ steps.deploy.outputs.url }}"'
