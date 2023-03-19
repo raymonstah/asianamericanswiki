@@ -13,6 +13,6 @@ COPY --from=build /app/build ./
 COPY --from=build /app/node_modules ./node_modules
 ADD entry.js ./
 
-EXPOSE 3000
+ENV PORT 8080
 CMD ["node", "entry.js"]
 
