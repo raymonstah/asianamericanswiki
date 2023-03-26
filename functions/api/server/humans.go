@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -15,7 +16,15 @@ import (
 )
 
 type HumanCreateRequest struct {
-	Name string
+	Name        string   `json:"name,omitempty"`
+	DOB         string   `json:"dob,omitempty"`
+	DOD         string   `json:"dod,omitempty"`
+	Ethnicity   []string `json:"ethnicity,omitempty"`
+	Description string   `json:"description,omitempty"`
+	Location    []string `json:"location,omitempty"`
+	Website     string   `json:"website,omitempty"`
+	Twitter     string   `json:"twitter,omitempty"`
+	Tags        []string `json:"tags,omitempty"`
 }
 
 type HumanCreateResponse struct {
@@ -27,10 +36,13 @@ func (s Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error) 
 	var (
 		ctx   = r.Context()
 		oplog = httplog.LogEntry(r.Context())
+		token = Token(ctx)
 	)
+
 	defer func(start time.Time) {
 		oplog.Err(err).
 			Str("request", "HumanCreate").
+			Str("token", token.UID).
 			Dur("duration", time.Since(start).Round(time.Millisecond)).
 			Msg("completed request")
 	}(time.Now())
@@ -40,10 +52,35 @@ func (s Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error) 
 		return NewBadRequestError(err)
 	}
 
-	human, err := s.humanDAO.AddHuman(ctx, humandao.AddHumanInput{
-		Name: request.Name,
+	drafts, err := s.humanDAO.UserDrafts(ctx, humandao.UserDraftsInput{
+		UserID: token.UID,
+		Limit:  10,
+		Offset: 0,
 	})
 	if err != nil {
+		return NewInternalServerError(fmt.Errorf("unable to find user drafts: %w", err))
+	}
+	if len(drafts) > 5 {
+		return NewBadRequestError(fmt.Errorf("too many contributions, please try again later"))
+	}
+
+	human, err := s.humanDAO.AddHuman(ctx, humandao.AddHumanInput{
+		Name:        request.Name,
+		DOB:         request.DOB,
+		DOD:         request.DOD,
+		Ethnicity:   request.Ethnicity,
+		Description: request.Description,
+		Location:    request.Location,
+		Website:     request.Website,
+		Twitter:     request.Twitter,
+		Tags:        request.Tags,
+		CreatedBy:   token.UID,
+		Draft:       true,
+	})
+	if err != nil {
+		if errors.Is(err, humandao.ErrHumanAlreadyExists) {
+			return NewBadRequestError(err)
+		}
 		return NewInternalServerError(err)
 	}
 
@@ -76,7 +113,7 @@ type Human struct {
 	Twitter       string                 `json:"twitter,omitempty"`
 	FeaturedImage string                 `json:"featuredImage,omitempty"`
 	Draft         bool                   `json:"draft,omitempty"`
-	AIGenerated   bool                   `json:"AIGenerated,omitempty"`
+	AIGenerated   bool                   `json:"ai_generated,omitempty"`
 	Description   string                 `json:"description,omitempty"`
 	CreatedAt     time.Time              `json:"createdAt"`
 	UpdatedAt     time.Time              `json:"updatedAt"`
@@ -142,6 +179,35 @@ func (s Server) HumanGet(w http.ResponseWriter, r *http.Request) (err error) {
 	}
 
 	s.writeData(w, http.StatusOK, convertHuman(human))
+	return nil
+}
+
+func (s Server) HumansDraft(w http.ResponseWriter, r *http.Request) (err error) {
+	var (
+		ctx       = r.Context()
+		oplog     = httplog.LogEntry(r.Context())
+		limitStr  = r.URL.Query().Get("limit")
+		limit     = numOrFallback(limitStr, 10)
+		offsetStr = r.URL.Query().Get("offset")
+		offset    = numOrFallback(offsetStr, 0)
+	)
+	defer func(start time.Time) {
+		oplog.Err(err).
+			Str("request", "HumansDraft").
+			Dur("duration", time.Since(start).Round(time.Millisecond)).
+			Msg("completed request")
+	}(time.Now())
+
+	humans, err := s.humanDAO.Drafts(ctx, humandao.DraftsInput{
+		Limit:  limit,
+		Offset: offset,
+	})
+	if err != nil {
+		return NewInternalServerError(err)
+	}
+
+	humansResponse := convertHumans(humans)
+	s.writeData(w, http.StatusOK, humansResponse)
 	return nil
 }
 

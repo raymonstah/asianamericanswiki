@@ -5,32 +5,19 @@
       - raymond/svelte
     paths:
       # only run when the source code changes or this file changes
-      - "functions/api/**"
-      - ".github/workflows/deploy-api.yml"
-      - "internal/**"
-      - "Dockerfile"
+      - "src/**"
+      - ".github/workflows/deploy-ui.yml"
+      - "static/**"
+      - "ui.Dockerfile"
 
-name: Deploy cloud run api
+name: Deploy UI to cloud run
 jobs:
-  deploy-api:
+  deploy-ui:
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: us-central1-docker.pkg.dev/asianamericans-wiki/asianamericanswiki-api/api
+      IMAGE_NAME: us-central1-docker.pkg.dev/asianamericans-wiki/asianamericanswiki-ui/ui
     steps:
       - uses: actions/checkout@v3
-
-      - name: Cache firebase emulators
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/firebase/emulators
-          key:
-            ${{ runner.os }}-firebase-emulators-${{
-            hashFiles('~/.cache/firebase/emulators/**') }}
-
-      - name: Install emulators and Test
-        run: |
-          npm install -g firebase-tools
-          firebase emulators:exec --only "auth,firestore" 'go test ./...'
 
       - id: "auth"
         name: "Authenticate to Google Cloud"
@@ -49,7 +36,7 @@ jobs:
         run: gcloud auth configure-docker --quiet us-central1-docker.pkg.dev
 
       - name: Build Docker image
-        run: docker build -t $IMAGE_NAME .
+        run: docker build -f ui.Dockerfile -t $IMAGE_NAME .
 
       - name: Push Docker image
         run: docker push $IMAGE_NAME
@@ -59,11 +46,11 @@ jobs:
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
           timeout: 90
-          service: "api"
+          service: "ui"
           region: "us-central1"
           labels: githash=${{ steps.vars.outputs.sha_short }}
           image: ${{ env.IMAGE_NAME }}:latest
           env_vars: |
             GIT_HASH=${{ steps.vars.outputs.sha_short }}
       - name: "Use output"
-        run: 'curl "${{ steps.deploy.outputs.url }}"/version'
+        run: 'curl "${{ steps.deploy.outputs.url }}"'

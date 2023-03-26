@@ -76,6 +76,8 @@ func (s Server) setupRoutes() {
 		r.Method(http.MethodGet, "/", Handler(s.HumansList))
 		r.Method(http.MethodGet, "/{path}", Handler(s.HumanGet))
 		r.With(s.AuthMiddleware).Method(http.MethodPost, "/", Handler(s.HumanCreate))
+		r.With(s.AdminMiddleware).Method(http.MethodGet, "/drafts", Handler(s.HumansDraft))
+		r.With(s.AdminMiddleware).Method(http.MethodPost, "/{id}/publish", Handler(s.HumansDraft))
 	})
 
 	s.router.Route("/reactions", func(r chi.Router) {

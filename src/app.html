@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html class="h-full w-full" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%sveltekit.assets%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Check & apply theme here to avoid FOUC -->
+    <script>
+      localStorage.theme === "dark" ||
+      (!("theme" in localStorage) &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches)
+        ? document.documentElement.classList.add("dark")
+        : document.documentElement.classList.remove("dark");
+    </script>
+
+    %sveltekit.head%
+  </head>
+  <body class="h-full w-full bg-white dark:bg-slate-900 dark:text-slate-300">
+    %sveltekit.body%
+  </body>
+</html>

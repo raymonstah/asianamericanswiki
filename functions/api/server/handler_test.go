@@ -57,6 +57,7 @@ func TestServer_AuthMiddleware(t *testing.T) {
 	app, err := firebase.NewApp(ctx, &firebase.Config{ProjectID: api.ProjectID})
 	assert.NoError(t, err)
 	authClient, err := app.Auth(ctx)
+	assert.NoError(t, err)
 	s := NewServer(Config{
 		AuthClient: authClient,
 	})
@@ -83,6 +84,64 @@ func TestServer_AuthMiddleware(t *testing.T) {
 
 	h.ServeHTTP(w, r)
 	assert.Equal(t, http.StatusOK, w.Result().StatusCode)
+}
+
+func TestServer_AdminMiddleware(t *testing.T) {
+	ctx := context.Background()
+	app, err := firebase.NewApp(ctx, &firebase.Config{ProjectID: api.ProjectID})
+	assert.NoError(t, err)
+	authClient, err := app.Auth(ctx)
+	assert.NoError(t, err)
+	s := NewServer(Config{
+		AuthClient: authClient,
+	})
+
+	email := fmt.Sprintf("%v@test.com", ksuid.New().String())
+	password := ksuid.New().String()
+	userRecord, err := authClient.CreateUser(ctx, (&auth.UserToCreate{}).Email(email).Password(password))
+	assert.NoError(t, err)
+
+	// Give user the admin claim
+	claims := map[string]any{"admin": true}
+	err = authClient.SetCustomUserClaims(ctx, userRecord.UID, claims)
+	assert.NoError(t, err)
+
+	defer func() {
+		err := authClient.DeleteUser(ctx, userRecord.UID)
+		assert.NoError(t, err)
+	}()
+
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest(http.MethodGet, "/", nil)
+	h := s.AdminMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token := Token(r.Context())
+		assert.NotNil(t, token)
+		assert.Equal(t, userRecord.UID, token.UID)
+	}))
+
+	idToken, err := signIn(email, password)
+	assert.NoError(t, err)
+	r.Header.Set("Authorization", "Bearer "+idToken)
+	h.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusOK, w.Result().StatusCode)
+
+	t.Run("without-admin-claim", func(t *testing.T) {
+		// Remove the admin claim
+		err := authClient.SetCustomUserClaims(ctx, userRecord.UID, nil)
+		assert.NoError(t, err)
+
+		idToken, err = signIn(email, password)
+		assert.NoError(t, err)
+		r.Header.Set("Authorization", "Bearer "+idToken)
+
+		w := httptest.NewRecorder()
+		h.ServeHTTP(w, r)
+		assert.Equal(t, http.StatusForbidden, w.Result().StatusCode)
+		bodyRaw, err := ioutil.ReadAll(w.Result().Body)
+		assert.NoError(t, err)
+
+		assert.JSONEq(t, `{"error":"user is not an admin"}`, string(bodyRaw))
+	})
 }
 
 func signIn(email, password string) (string, error) {
