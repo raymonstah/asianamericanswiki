@@ -60,7 +60,7 @@ func (s Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error) 
 	if err != nil {
 		return NewInternalServerError(fmt.Errorf("unable to find user drafts: %w", err))
 	}
-	if len(drafts) > 10 {
+	if len(drafts) > 5 {
 		return NewBadRequestError(fmt.Errorf("too many contributions, please try again later"))
 	}
 
@@ -179,6 +179,35 @@ func (s Server) HumanGet(w http.ResponseWriter, r *http.Request) (err error) {
 	}
 
 	s.writeData(w, http.StatusOK, convertHuman(human))
+	return nil
+}
+
+func (s Server) HumansDraft(w http.ResponseWriter, r *http.Request) (err error) {
+	var (
+		ctx       = r.Context()
+		oplog     = httplog.LogEntry(r.Context())
+		limitStr  = r.URL.Query().Get("limit")
+		limit     = numOrFallback(limitStr, 10)
+		offsetStr = r.URL.Query().Get("offset")
+		offset    = numOrFallback(offsetStr, 0)
+	)
+	defer func(start time.Time) {
+		oplog.Err(err).
+			Str("request", "HumansDraft").
+			Dur("duration", time.Since(start).Round(time.Millisecond)).
+			Msg("completed request")
+	}(time.Now())
+
+	humans, err := s.humanDAO.Drafts(ctx, humandao.DraftsInput{
+		Limit:  limit,
+		Offset: offset,
+	})
+	if err != nil {
+		return NewInternalServerError(err)
+	}
+
+	humansResponse := convertHumans(humans)
+	s.writeData(w, http.StatusOK, humansResponse)
 	return nil
 }
 

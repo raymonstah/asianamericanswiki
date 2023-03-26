@@ -297,6 +297,7 @@ type ListHumansInput struct {
 func (d *DAO) ListHumans(ctx context.Context, input ListHumansInput) ([]Human, error) {
 	docs, err := d.client.Collection(d.humanCollection).
 		OrderBy("created_at", firestore.Desc).
+		Where("draft", "!=", true).
 		Offset(input.Offset).
 		Limit(input.Limit).
 		Documents(ctx).
