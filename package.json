@@ -1,14 +1,43 @@
 {
   "name": "asianamericanswiki",
-  "dependencies": {},
+  "dependencies": {
+    "@firebase/app": "^0.7.31",
+    "@firebase/auth": "^0.20.5",
+    "@tailwindcss/typography": "^0.5.9",
+    "algoliasearch": "^4.14.3",
+    "dayjs": "^1.11.7",
+    "firebase": "^9.9.3",
+    "instantsearch.js": "^4.49.3",
+    "markdown-truncate": "^1.0.4",
+    "svelte-infinite-scroll": "^2.0.1",
+    "svelte-markdown": "^0.2.3",
+    "svelte-tags-input": "^4.0.0"
+  },
   "devDependencies": {
+    "@sveltejs/adapter-node": "^1.2.2",
+    "@sveltejs/kit": "1.11.0",
+    "autoprefixer": "^10.4.7",
+    "eslint": "^8.16.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-svelte3": "^4.0.0",
     "husky": "^8.0.1",
     "lint-staged": "^12.4.2",
+    "postcss": "^8.4.14",
+    "postcss-load-config": "^4.0.1",
     "pre-commit": "^1.2.2",
     "prettier": "^2.6.2",
-    "prettier-plugin-go-template": "0.0.13"
+    "prettier-plugin-go-template": "0.0.13",
+    "prettier-plugin-svelte": "^2.7.0",
+    "svelte": "^3.44.0",
+    "svelte-preprocess": "^4.10.7",
+    "tailwindcss": "^3.2.4",
+    "vite-plugin-markdown": "v2.2.0-2"
   },
   "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "prettier --check --plugin-search-dir=. . && eslint .",
     "prettier": "prettier -w .",
     "pre-commit": "lint-staged",
     "prepare": "husky install",
@@ -28,5 +57,6 @@
   "bugs": {
     "url": "https://github.com/raymonstah/asianamericanswiki/issues"
   },
-  "homepage": "https://github.com/raymonstah/asianamericanswiki#readme"
+  "homepage": "https://github.com/raymonstah/asianamericanswiki#readme",
+  "type": "module"
 }

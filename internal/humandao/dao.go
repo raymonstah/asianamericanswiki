@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -15,7 +16,8 @@ import (
 )
 
 var (
-	ErrHumanNotFound = errors.New("human not found")
+	ErrHumanNotFound      = errors.New("human not found")
+	ErrHumanAlreadyExists = errors.New("human already exists")
 )
 
 type ReactionCount map[string]int
@@ -40,7 +42,11 @@ type Human struct {
 	Description   string        `firestore:"description,omitempty"`
 
 	CreatedAt time.Time `firestore:"created_at"`
-	UpdatedAt time.Time `firestore:"updated_at"`
+	CreatedBy string    `firestore:"created_by,omitempty"`
+
+	UpdatedAt   time.Time `firestore:"updated_at"`
+	PublishedBy string    `firestore:"published_by,omitempty"`
+	PublishedAt time.Time `firestore:"published_at,omitempty"`
 }
 
 type Reaction struct {
@@ -83,11 +89,6 @@ func (d *DAO) Human(ctx context.Context, input HumanInput) (human Human, err err
 	return human, nil
 }
 
-type AddHumanInput struct {
-	HumanID string
-	Name    string
-}
-
 func (d *DAO) UpdateHuman(ctx context.Context, human Human) error {
 	human.UpdatedAt = time.Now()
 	_, err := d.client.Collection(d.humanCollection).
@@ -100,15 +101,57 @@ func (d *DAO) UpdateHuman(ctx context.Context, human Human) error {
 	return nil
 }
 
+type AddHumanInput struct {
+	HumanID     string
+	Name        string
+	DOB         string
+	DOD         string
+	Ethnicity   []string
+	Description string
+	Location    []string
+	Website     string
+	Twitter     string
+	Tags        []string
+	Draft       bool
+	CreatedBy   string
+}
+
 func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) {
-	human := Human{
-		Name: input.Name,
+	path := strings.ToLower(strings.ReplaceAll(input.Name, " ", "-"))
+	if input.Name == "" {
+		return Human{}, fmt.Errorf("name must be provided")
 	}
+
+	_, err := d.Human(ctx, HumanInput{Path: path})
+	if err != nil {
+		if err != ErrHumanNotFound {
+			return Human{}, fmt.Errorf("error checking if human (%v) exists: %w", path, err)
+		}
+	}
+	if err == nil {
+		return Human{}, ErrHumanAlreadyExists
+	}
+
+	human := Human{
+		Name:        input.Name,
+		DOB:         input.DOB,
+		DOD:         input.DOD,
+		Ethnicity:   input.Ethnicity,
+		Description: input.Description,
+		Location:    input.Location,
+		Website:     input.Website,
+		Twitter:     input.Twitter,
+		Tags:        input.Tags,
+		Draft:       input.Draft,
+		CreatedBy:   input.CreatedBy,
+		Path:        path,
+	}
+
 	if input.HumanID == "" {
 		input.HumanID = ksuid.New().String()
 	}
 
-	_, err := d.client.Collection(d.humanCollection).Doc(input.HumanID).Create(ctx, human)
+	_, err = d.client.Collection(d.humanCollection).Doc(input.HumanID).Create(ctx, human)
 	if err != nil {
 		return Human{}, fmt.Errorf("unable to create human: %w", err)
 	}
@@ -254,6 +297,7 @@ type ListHumansInput struct {
 func (d *DAO) ListHumans(ctx context.Context, input ListHumansInput) ([]Human, error) {
 	docs, err := d.client.Collection(d.humanCollection).
 		OrderBy("created_at", firestore.Desc).
+		Where("draft", "!=", true).
 		Offset(input.Offset).
 		Limit(input.Limit).
 		Documents(ctx).
@@ -263,4 +307,91 @@ func (d *DAO) ListHumans(ctx context.Context, input ListHumansInput) ([]Human, e
 	}
 
 	return convertHumansDocs(docs)
+}
+
+type CreatedByInput struct {
+	CreatedBy string
+	Limit     int
+	Offset    int
+}
+
+func (d *DAO) CreatedBy(ctx context.Context, input CreatedByInput) ([]Human, error) {
+	docs, err := d.client.Collection(d.humanCollection).
+		Where("created_by", "==", input.CreatedBy).
+		OrderBy("created_at", firestore.Desc).
+		Offset(input.Offset).
+		Limit(input.Limit).
+		Documents(ctx).
+		GetAll()
+	if err != nil {
+		return nil, fmt.Errorf("unable to get humans: %w", err)
+	}
+
+	return convertHumansDocs(docs)
+}
+
+type UserDraftsInput struct {
+	Limit  int
+	Offset int
+	UserID string
+}
+
+func (d *DAO) UserDrafts(ctx context.Context, input UserDraftsInput) ([]Human, error) {
+	docs, err := d.client.Collection(d.humanCollection).
+		Where("draft", "==", true).
+		Where("created_by", "==", input.UserID).
+		OrderBy("created_at", firestore.Desc).
+		Offset(input.Offset).
+		Limit(input.Limit).
+		Documents(ctx).
+		GetAll()
+	if err != nil {
+		return nil, fmt.Errorf("unable to get humans: %w", err)
+	}
+
+	return convertHumansDocs(docs)
+}
+
+type DraftsInput struct {
+	Limit  int
+	Offset int
+}
+
+func (d *DAO) Drafts(ctx context.Context, input DraftsInput) ([]Human, error) {
+	docs, err := d.client.Collection(d.humanCollection).
+		Where("draft", "==", true).
+		OrderBy("created_at", firestore.Asc).
+		Offset(input.Offset).
+		Limit(input.Limit).
+		Documents(ctx).
+		GetAll()
+	if err != nil {
+		return nil, fmt.Errorf("unable to get humans: %w", err)
+	}
+
+	return convertHumansDocs(docs)
+}
+
+type PublishInput struct {
+	HumanID string
+	UserID  string
+}
+
+func (d *DAO) Publish(ctx context.Context, input PublishInput) error {
+	now := time.Now()
+	_, err := d.client.Collection(d.humanCollection).
+		Doc(input.HumanID).
+		Update(ctx, []firestore.Update{
+			{Path: "draft", Value: false},
+			{Path: "published_by", Value: input.UserID},
+			{Path: "published_at", Value: now},
+		})
+	if err != nil {
+		if status.Code(err) == codes.NotFound {
+			return ErrHumanNotFound
+		}
+		return fmt.Errorf("unable to update human: %v: %w", input.HumanID, err)
+	}
+
+	return nil
 }

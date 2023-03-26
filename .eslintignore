@@ -1,11 +1,3 @@
-public
-_vendor
-.idea/
-**/vendor/*
-*.min.js
-**/resources/_gen/*
-
-# from svelte
 .DS_Store
 node_modules
 /build
