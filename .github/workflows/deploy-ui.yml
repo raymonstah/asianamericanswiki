@@ -2,7 +2,6 @@
   push:
     branches:
       - main
-      - raymond/svelte
     paths:
       # only run when the source code changes or this file changes
       - "src/**"
