@@ -254,12 +254,19 @@ func TestDAO_List(t *testing.T) {
 			})
 			assert.NoError(t, err)
 		}
+		_, err := dao.AddHuman(ctx, AddHumanInput{
+			Name:      fmt.Sprintf("%v", ksuid.New().String()),
+			Draft:     true,
+			CreatedBy: userID,
+		})
+		assert.NoError(t, err)
+		n++
 
 		humans, err := dao.ListHumans(ctx, ListHumansInput{
 			Limit:  n,
 			Offset: 0,
 		})
 		assert.NoError(t, err)
-		assert.Len(t, humans, n)
+		assert.Len(t, humans, n-1)
 	})
 }
