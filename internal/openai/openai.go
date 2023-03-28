@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	gogpt "github.com/sashabaranov/go-gpt3"
+	openai "github.com/sashabaranov/go-openai"
 )
 
 type Client struct {
@@ -13,7 +13,7 @@ type Client struct {
 }
 
 func New(token string) *Client {
-	openAiClient := gogpt.NewClient(token)
+	openAiClient := openai.NewClient(token)
 	return &Client{
 		openAiClient: openAiClient,
 	}
