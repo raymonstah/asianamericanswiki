@@ -37,7 +37,7 @@ type Human struct {
 	InfluencedBy  []string      `firestore:"influenced_by,omitempty"`
 	Twitter       string        `firestore:"twitter,omitempty"`
 	FeaturedImage string        `firestore:"featured_image,omitempty"`
-	Draft         bool          `firestore:"draft,omitempty"`
+	Draft         bool          `firestore:"draft"`
 	AIGenerated   bool          `firestore:"ai_generated,omitempty"`
 	Description   string        `firestore:"description,omitempty"`
 
@@ -297,7 +297,8 @@ type ListHumansInput struct {
 func (d *DAO) ListHumans(ctx context.Context, input ListHumansInput) ([]Human, error) {
 	docs, err := d.client.Collection(d.humanCollection).
 		OrderBy("created_at", firestore.Desc).
-		Where("draft", "!=", true).
+		OrderBy("draft", firestore.Asc).
+		Where("draft", "==", false).
 		Offset(input.Offset).
 		Limit(input.Limit).
 		Documents(ctx).

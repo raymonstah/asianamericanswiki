@@ -2,6 +2,7 @@ package humandao
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"testing"
@@ -238,5 +239,27 @@ func TestDAO_Publish(t *testing.T) {
 		assert.NoError(t, err)
 		assert.False(t, human.Draft)
 		assert.Equal(t, userID, human.PublishedBy)
+	})
+}
+
+func TestDAO_List(t *testing.T) {
+	WithDAO(t, func(ctx context.Context, dao *DAO) {
+		userID := "user123"
+		n := 10
+		for i := 0; i < n; i++ {
+			_, err := dao.AddHuman(ctx, AddHumanInput{
+				Name:      fmt.Sprintf("%v", ksuid.New().String()),
+				Draft:     false,
+				CreatedBy: userID,
+			})
+			assert.NoError(t, err)
+		}
+
+		humans, err := dao.ListHumans(ctx, ListHumansInput{
+			Limit:  n,
+			Offset: 0,
+		})
+		assert.NoError(t, err)
+		assert.Len(t, humans, n)
 	})
 }
