@@ -9,7 +9,7 @@ import (
 )
 
 type Client struct {
-	openAiClient *gogpt.Client
+	openAiClient *openai.Client
 }
 
 func New(token string) *Client {
@@ -27,8 +27,8 @@ type GenerateInput struct {
 func (c *Client) Generate(ctx context.Context, input GenerateInput) (string, error) {
 	tagWithCommas := strings.Join(input.Tags, ", ")
 	prompt := fmt.Sprintf("Write a wikipedia entry about Asian American %v, %v", tagWithCommas, input.Name)
-	req := gogpt.CompletionRequest{
-		Model:     "text-davinci-003",
+	req := openai.CompletionRequest{
+		Model:     openai.GPT4,
 		MaxTokens: 500,
 		Prompt:    prompt,
 		BestOf:    3,
