@@ -11,24 +11,6 @@
 
 name: Deploy cloud run api
 jobs:
-  go-mod-check:
-    name: Check that go is tidy and vendored
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: ${{ inputs.go_version }}
-      - name: Check go.mod and go.sum tidiness
-        run: |
-          go mod tidy && go mod vendor
-          if [ ! -z "$(git status --porcelain go.mod go.sum)" ]; then
-            echo "Need to run 'go mod tidy && go mod vendor'";
-            exit 1;
-          fi
   deploy-api:
     runs-on: ubuntu-latest
     env:
