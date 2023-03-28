@@ -7,7 +7,7 @@ Source code for AsianAmericans.wiki.
 ## Contributing
 
 I could use some UI help. If you have experience in Tailwind or Svelte.js, feel
-free to make changes an open up a pull request.
+free to make changes and open up a pull request.
 
 ## Running Locally
 
