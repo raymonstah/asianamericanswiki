@@ -21,7 +21,7 @@ type ReactionResponse struct {
 	CreatedAt    time.Time `json:"created_at,omitempty"`
 }
 
-func (s Server) ReactionsForHuman(w http.ResponseWriter, r *http.Request) (err error) {
+func (s *Server) ReactionsForHuman(w http.ResponseWriter, r *http.Request) (err error) {
 	var (
 		ctx     = r.Context()
 		oplog   = httplog.LogEntry(r.Context())
@@ -66,7 +66,7 @@ func (s Server) ReactionsForHuman(w http.ResponseWriter, r *http.Request) (err e
 	return nil
 }
 
-func (s Server) GetReactions(w http.ResponseWriter, r *http.Request) (err error) {
+func (s *Server) GetReactions(w http.ResponseWriter, r *http.Request) (err error) {
 	var (
 		ctx   = r.Context()
 		oplog = httplog.LogEntry(r.Context())
@@ -90,7 +90,7 @@ func (s Server) GetReactions(w http.ResponseWriter, r *http.Request) (err error)
 	return nil
 }
 
-func (s Server) PostReaction(w http.ResponseWriter, r *http.Request) (err error) {
+func (s *Server) PostReaction(w http.ResponseWriter, r *http.Request) (err error) {
 	var (
 		ctx   = r.Context()
 		oplog = httplog.LogEntry(r.Context())
@@ -131,7 +131,7 @@ func (s Server) PostReaction(w http.ResponseWriter, r *http.Request) (err error)
 	return nil
 }
 
-func (s Server) DeleteReaction(w http.ResponseWriter, r *http.Request) (err error) {
+func (s *Server) DeleteReaction(w http.ResponseWriter, r *http.Request) (err error) {
 	var (
 		ctx        = r.Context()
 		oplog      = httplog.LogEntry(r.Context())

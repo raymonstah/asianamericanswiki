@@ -32,7 +32,7 @@ type HumanCreateResponse struct {
 	Name string `json:"name"`
 }
 
-func (s Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error) {
+func (s *Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error) {
 	var (
 		ctx   = r.Context()
 		oplog = httplog.LogEntry(r.Context())
@@ -119,7 +119,7 @@ type Human struct {
 	UpdatedAt     time.Time              `json:"updatedAt"`
 }
 
-func (s Server) HumansList(w http.ResponseWriter, r *http.Request) (err error) {
+func (s *Server) HumansList(w http.ResponseWriter, r *http.Request) (err error) {
 	var (
 		ctx       = r.Context()
 		oplog     = httplog.LogEntry(r.Context())
@@ -136,12 +136,21 @@ func (s Server) HumansList(w http.ResponseWriter, r *http.Request) (err error) {
 			Msg("completed request")
 	}(time.Now())
 
-	humans, err := s.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
-		Limit:  limit,
-		Offset: offset,
-	})
-	if err != nil {
-		return NewInternalServerError(err)
+	key := fmt.Sprintf("%d-%d", limit, offset)
+	raw, ok := s.humanCache.Get(key)
+	var humans []humandao.Human
+	if ok {
+		humans = raw.([]humandao.Human)
+		s.logger.Info().Msg("HumansList cache hit")
+	} else {
+		humans, err = s.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
+			Limit:  limit,
+			Offset: offset,
+		})
+		if err != nil {
+			return NewInternalServerError(err)
+		}
+		s.humanCache.SetDefault(key, humans)
 	}
 
 	humansResponse := convertHumans(humans)
@@ -149,7 +158,7 @@ func (s Server) HumansList(w http.ResponseWriter, r *http.Request) (err error) {
 	return nil
 }
 
-func (s Server) HumanGet(w http.ResponseWriter, r *http.Request) (err error) {
+func (s *Server) HumanGet(w http.ResponseWriter, r *http.Request) (err error) {
 	var (
 		ctx   = r.Context()
 		oplog = httplog.LogEntry(r.Context())
@@ -182,7 +191,7 @@ func (s Server) HumanGet(w http.ResponseWriter, r *http.Request) (err error) {
 	return nil
 }
 
-func (s Server) HumansDraft(w http.ResponseWriter, r *http.Request) (err error) {
+func (s *Server) HumansDraft(w http.ResponseWriter, r *http.Request) (err error) {
 	var (
 		ctx       = r.Context()
 		oplog     = httplog.LogEntry(r.Context())

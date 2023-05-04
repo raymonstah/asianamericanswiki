@@ -39,7 +39,7 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s Server) AuthMiddleware(next http.Handler) http.Handler {
+func (s *Server) AuthMiddleware(next http.Handler) http.Handler {
 	return Handler(func(w http.ResponseWriter, r *http.Request) error {
 		ctx := r.Context()
 
@@ -60,7 +60,7 @@ func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 
 }
 
-func (s Server) AdminMiddleware(next http.Handler) http.Handler {
+func (s *Server) AdminMiddleware(next http.Handler) http.Handler {
 	return Handler(func(w http.ResponseWriter, r *http.Request) error {
 		ctx := r.Context()
 

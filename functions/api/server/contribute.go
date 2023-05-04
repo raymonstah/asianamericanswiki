@@ -66,7 +66,7 @@ func validateContributeRequest(r io.Reader) (contributor.Post, error) {
 	}, nil
 }
 
-func (s Server) Contribute(w http.ResponseWriter, r *http.Request) (err error) {
+func (s *Server) Contribute(w http.ResponseWriter, r *http.Request) (err error) {
 	var (
 		ctx   = r.Context()
 		oplog = httplog.LogEntry(r.Context())
