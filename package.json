@@ -16,13 +16,13 @@
   "devDependencies": {
     "@sveltejs/adapter-node": "^1.2.2",
     "@sveltejs/kit": "1.11.0",
-    "autoprefixer": "^10.4.7",
+    "autoprefixer": "^10.4.14",
     "eslint": "^8.16.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-svelte3": "^4.0.0",
     "husky": "^8.0.1",
     "lint-staged": "^12.4.2",
-    "postcss": "^8.4.14",
+    "postcss": "^8.4.23",
     "postcss-load-config": "^4.0.1",
     "pre-commit": "^1.2.2",
     "prettier": "^2.6.2",
@@ -30,7 +30,7 @@
     "prettier-plugin-svelte": "^2.7.0",
     "svelte": "^3.44.0",
     "svelte-preprocess": "^4.10.7",
-    "tailwindcss": "^3.2.4",
+    "tailwindcss": "^3.3.2",
     "vite-plugin-markdown": "v2.2.0-2"
   },
   "scripts": {
