@@ -160,7 +160,7 @@
       >
     </tr>
   </table>
-  <div class="text-left py-4">
+  <div class="text-left px-4 py-4">
     {#if data.human.description}
       <SvelteMarkdown source={data.human.description} />
     {/if}
