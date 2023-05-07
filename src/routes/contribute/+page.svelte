@@ -174,9 +174,10 @@
         type="submit">Submit</button
       >
     </form>
-    <p>
+    <!-- Uncomment below to preview form JSON. -->
+    <!-- <p>
       {JSON.stringify(human)}
-    </p>
+    </p> -->
   {:else}
     <h1>Please log in first.</h1>
   {/if}
