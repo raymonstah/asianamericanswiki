@@ -60,6 +60,9 @@
     }
     // clear out the previous response.
     response = {};
+    if (human.location) {
+      human.location = human.location.split(",");
+    }
     let token = await getAuth().currentUser.getIdToken();
     const headers = new Headers({
       Authorization: `Bearer ${token}`,
