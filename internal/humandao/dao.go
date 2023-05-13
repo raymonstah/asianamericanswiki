@@ -132,6 +132,7 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 		return Human{}, ErrHumanAlreadyExists
 	}
 
+	now := time.Now().In(time.UTC)
 	human := Human{
 		Name:        input.Name,
 		DOB:         input.DOB,
@@ -143,8 +144,10 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 		Twitter:     input.Twitter,
 		Tags:        input.Tags,
 		Draft:       input.Draft,
+		CreatedAt:   now,
 		CreatedBy:   input.CreatedBy,
 		Path:        path,
+		UpdatedAt:   now,
 	}
 
 	if input.HumanID == "" {
