@@ -128,16 +128,32 @@
     {/if}
     <form on:submit|preventDefault={contribute}>
       <label for="name">Name</label>
-      <input required id="name" type="text" bind:value={human.name} />
+      <input
+        class="bg-gray-100 dark:bg-slate-950 dark:text-slate-300"
+        required
+        id="name"
+        type="text"
+        bind:value={human.name}
+      />
 
       <label for="dob">Date of Birth</label>
-      <BirthdayInput bind:invalid={errors.dob} bind:dob={human.dob} />
+      <BirthdayInput
+        class="bg-gray-100 dark:bg-slate-950 dark:text-slate-300"
+        bind:invalid={errors.dob}
+        bind:dob={human.dob}
+      />
 
       <label for="dod">Date of Death</label>
-      <input id="dod" type="date" bind:value={human.dod} />
+      <input
+        class="bg-gray-100 dark:bg-slate-950 dark:text-slate-300"
+        id="dod"
+        type="date"
+        bind:value={human.dod}
+      />
 
       <label for="ethnicity">Ethnicity</label>
       <Tags
+        class="bg-gray-100 dark:bg-slate-950 dark:text-slate-300"
         id="ethnicity"
         name="ethnicity"
         bind:tags={human.ethnicity}
@@ -148,19 +164,35 @@
       <label for="description">Description</label>
       <textarea
         id="description"
+        class="bg-gray-100 dark:bg-slate-950 dark:text-slate-300"
         bind:value={human.description}
         rows="5"
         cols="33"
       />
 
       <label for="location">Location</label>
-      <input id="location" type="text" bind:value={human.location} />
+      <input
+        id="location"
+        class="bg-gray-100 dark:bg-slate-950 dark:text-slate-300"
+        type="text"
+        bind:value={human.location}
+      />
 
       <label for="website">Website</label>
-      <input id="website" type="url" bind:value={human.website} />
+      <input
+        id="website"
+        class="bg-gray-100 dark:bg-slate-950 dark:text-slate-300"
+        type="url"
+        bind:value={human.website}
+      />
 
       <label for="twitter">Twitter</label>
-      <input id="twitter" type="url" bind:value={human.twitter} />
+      <input
+        id="twitter"
+        class="bg-gray-100 dark:bg-slate-950 dark:text-slate-300"
+        type="url"
+        bind:value={human.twitter}
+      />
 
       <label for="tags">Tags</label>
       <Tags

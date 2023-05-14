@@ -398,3 +398,18 @@ func (d *DAO) Publish(ctx context.Context, input PublishInput) error {
 
 	return nil
 }
+
+type DeleteInput struct {
+	HumanID string
+}
+
+func (d *DAO) Delete(ctx context.Context, input DeleteInput) error {
+	_, err := d.client.Collection(d.humanCollection).
+		Doc(input.HumanID).
+		Delete(ctx)
+	if err != nil {
+		return fmt.Errorf("unable to delete human: %v: %w", input.HumanID, err)
+	}
+
+	return nil
+}

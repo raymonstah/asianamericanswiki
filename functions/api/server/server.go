@@ -81,7 +81,7 @@ func (s *Server) setupRoutes() {
 		r.Method(http.MethodGet, "/{path}", Handler(s.HumanGet))
 		r.With(s.AuthMiddleware).Method(http.MethodPost, "/", Handler(s.HumanCreate))
 		r.With(s.AdminMiddleware).Method(http.MethodGet, "/drafts", Handler(s.HumansDraft))
-		r.With(s.AdminMiddleware).Method(http.MethodPost, "/{id}/publish", Handler(s.HumansDraft))
+		r.With(s.AdminMiddleware).Method(http.MethodPost, "/{id}/review", Handler(s.HumansReview))
 	})
 
 	s.router.Route("/reactions", func(r chi.Router) {
@@ -102,12 +102,14 @@ func (s *Server) Version(w http.ResponseWriter, r *http.Request) error {
 
 func (s *Server) writeData(w http.ResponseWriter, status int, data any) {
 	w.WriteHeader(status)
-	dataResponse := struct {
-		Data any `json:"data"`
-	}{
-		Data: data,
-	}
-	if err := json.NewEncoder(w).Encode(dataResponse); err != nil {
-		s.logger.Err(err).Msg("error encoding json data response")
+	if status != http.StatusNoContent {
+		dataResponse := struct {
+			Data any `json:"data"`
+		}{
+			Data: data,
+		}
+		if err := json.NewEncoder(w).Encode(dataResponse); err != nil {
+			s.logger.Err(err).Msg("error encoding json data response")
+		}
 	}
 }

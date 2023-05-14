@@ -270,3 +270,19 @@ func TestDAO_List(t *testing.T) {
 		assert.Len(t, humans, n-1)
 	})
 }
+
+func TestDAO_Delete(t *testing.T) {
+	WithDAO(t, func(ctx context.Context, dao *DAO) {
+		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Foo Bar"})
+		assert.NoError(t, err)
+		gotHuman, err := dao.Human(ctx, HumanInput{HumanID: human.ID})
+		assert.NoError(t, err)
+		assert.Equal(t, human.ID, gotHuman.ID)
+
+		err = dao.Delete(ctx, DeleteInput{HumanID: human.ID})
+		assert.NoError(t, err)
+
+		_, err = dao.Human(ctx, HumanInput{HumanID: human.ID})
+		assert.EqualError(t, err, "human not found")
+	})
+}
