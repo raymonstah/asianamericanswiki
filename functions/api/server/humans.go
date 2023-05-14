@@ -191,38 +191,13 @@ func (s *Server) HumanGet(w http.ResponseWriter, r *http.Request) (err error) {
 	return nil
 }
 
-func (s *Server) HumansDraft(w http.ResponseWriter, r *http.Request) (err error) {
-	var (
-		ctx       = r.Context()
-		oplog     = httplog.LogEntry(r.Context())
-		limitStr  = r.URL.Query().Get("limit")
-		limit     = numOrFallback(limitStr, 10)
-		offsetStr = r.URL.Query().Get("offset")
-		offset    = numOrFallback(offsetStr, 0)
-	)
-	defer func(start time.Time) {
-		oplog.Err(err).
-			Str("request", "HumansDraft").
-			Dur("duration", time.Since(start).Round(time.Millisecond)).
-			Msg("completed request")
-	}(time.Now())
-
-	humans, err := s.humanDAO.Drafts(ctx, humandao.DraftsInput{
-		Limit:  limit,
-		Offset: offset,
-	})
-	if err != nil {
-		return NewInternalServerError(err)
-	}
-
-	humansResponse := convertHumans(humans)
-	s.writeData(w, http.StatusOK, humansResponse)
-	return nil
-}
 
 func convertHumans(humans []humandao.Human) (response []Human) {
 	for _, human := range humans {
 		response = append(response, convertHuman(human))
+	}
+	if response == nil {
+		response = []Human{}
 	}
 	return response
 }

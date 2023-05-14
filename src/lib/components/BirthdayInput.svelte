@@ -28,6 +28,7 @@
 </script>
 
 <input
+  class={`${$$props.class}`}
   type="text"
   minlength="4"
   maxlength="10"
