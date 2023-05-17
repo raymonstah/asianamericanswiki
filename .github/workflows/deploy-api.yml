@@ -9,7 +9,7 @@
       - "internal/**"
       - "Dockerfile"
 
-name: Deploy cloud run api
+name: Deploy API to cloud run
 jobs:
   deploy-api:
     runs-on: ubuntu-latest
