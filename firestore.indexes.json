@@ -43,10 +43,6 @@
         {
           "fieldPath": "created_at",
           "order": "DESCENDING"
-        },
-        {
-          "fieldPath": "__name__",
-          "order": "DESCENDING"
         }
       ]
     },
@@ -55,15 +51,11 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "created_at",
-          "order": "ASCENDING"
-        },
-        {
           "fieldPath": "draft",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "__name__",
+          "fieldPath": "created_at",
           "order": "ASCENDING"
         }
       ]
