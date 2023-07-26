@@ -80,7 +80,8 @@
         >
         <td
           class="dark:text-white px-4 py-4 w-2/3 font-medium text-gray-900 whitespace-nowrap"
-          ><a href={data.human.website}>{data.human.website}</a></td
+          ><a target="_blank" href={data.human.website}>{data.human.website}</a
+          ></td
         >
       </tr>
     {/if}
@@ -92,7 +93,8 @@
         >
         <td
           class="dark:text-white px-4 py-4 w-2/3 font-medium text-gray-900 whitespace-nowrap"
-          ><a href={data.human.twitter}>{data.human.twitter}</a></td
+          ><a target="_blank" href={data.human.twitter}>{data.human.twitter}</a
+          ></td
         >
       </tr>
     {/if}
