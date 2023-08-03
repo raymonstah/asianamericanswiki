@@ -19,7 +19,7 @@
 </svelte:head>
 
 <h1 class="text-3xl font-bold">Professions</h1>
-<div class="my-4 grid grid-cols-3 gap-3">
+<div class="my-4 grid grid-cols-2 md:grid-cols-3 gap-3">
   {#each professions as profession}
     <div class="max-w-sm rounded overflow-hidden shadow-lg">
       <div class="px-6 py-4">
