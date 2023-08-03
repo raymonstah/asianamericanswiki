@@ -52,11 +52,15 @@
 </script>
 
 <nav
-  class="bg-white w-full border-gray-200 px-2 sm:px-4 py-2.5 dark:bg-gray-900"
+  class="w-full border-gray-200 px-2 sm:px-4 py-2.5  bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
 >
   <div class="container flex flex-wrap items-center justify-between mx-auto">
     <a href="/" class="flex items-center">
-      <img src="/scalable.svg" class="h-6 mr-3 sm:h-9" alt="Flowbite Logo" />
+      <img
+        src="/scalable.svg"
+        class="h-6 mr-3 sm:h-9"
+        alt="AsianAmericans.wiki Logo"
+      />
       <span
         class="self-center text-xl font-semibold whitespace-nowrap dark:text-white"
         >AsianAmericans.wiki</span
@@ -89,7 +93,7 @@
       id="navbar-default"
     >
       <ul
-        class="flex flex-col p-4 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row items-center md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700"
+        class="flex flex-col p-4 mt-4 border border-gray-100 rounded-lg  md:flex-row items-center md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0"
       >
         <li>
           <a

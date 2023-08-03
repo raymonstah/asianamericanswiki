@@ -38,8 +38,6 @@
     /*pushes footer to bottom*/
     margin-top: auto;
     padding: 1rem 2rem;
-    background: black;
-    color: #eeeeee;
   }
 
   .social {
