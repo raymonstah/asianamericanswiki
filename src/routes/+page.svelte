@@ -31,35 +31,12 @@
   {/each}
 </div>
 <h1 class="text-3xl font-bold">Ethnic Backgrounds</h1>
-<div class="section">
+<div class="my-4 grid grid-cols-3 md:grid-cols-6 gap-3">
   {#each Object.entries(countries) as [code, country]}
-    <div class="inner-section">
-      <span title={country.name} class="emoji"
-        ><a class="flagLink" href="/search?query={country.ethnicity}"
-          >{country.emoji}</a
-        ></span
+    <div>
+      <span title={country.name} class="text-9xl"
+        ><a href="/search?query={country.ethnicity}">{country.emoji}</a></span
       >
     </div>
   {/each}
 </div>
-
-<style>
-  .section {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    grid-template-columns: repeat(5, 1fr);
-  }
-
-  .inner-section {
-    flex: 0 0 calc(16.66% - 20px);
-  }
-
-  .emoji {
-    font-size: 100px;
-  }
-
-  .flagLink {
-    text-decoration: none;
-  }
-</style>
