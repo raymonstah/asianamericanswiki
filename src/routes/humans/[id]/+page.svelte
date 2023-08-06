@@ -72,32 +72,6 @@
         >
       </tr>
     {/if}
-    {#if data.human.website}
-      <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-        <th
-          class="dark:text-white px-4 py-4 w-1/3 font-medium text-gray-900 whitespace-nowrap"
-          >Website</th
-        >
-        <td
-          class="dark:text-white px-4 py-4 w-2/3 font-medium text-gray-900 whitespace-nowrap"
-          ><a target="_blank" href={data.human.website}>{data.human.website}</a
-          ></td
-        >
-      </tr>
-    {/if}
-    {#if data.human.twitter}
-      <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-        <th
-          class="dark:text-white px-4 py-4 w-1/3 font-medium text-gray-900 whitespace-nowrap"
-          >Twitter</th
-        >
-        <td
-          class="dark:text-white px-4 py-4 w-2/3 font-medium text-gray-900 whitespace-nowrap"
-          ><a target="_blank" href={data.human.twitter}>{data.human.twitter}</a
-          ></td
-        >
-      </tr>
-    {/if}
     {#if data.human.aiGenerated}
       <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
         <th
@@ -160,6 +134,42 @@
         class="dark:text-white px-4 py-4 w-2/3 font-medium text-gray-900 whitespace-nowrap"
         title={data.human.updatedAt}>{dayjs(data.human.updatedAt).fromNow()}</td
       >
+    </tr>
+    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+      <th
+        class="dark:text-white px-4 py-4 w-1/3 font-medium text-gray-900 whitespace-nowrap"
+        >Socials</th
+      >
+      <td
+        class="flex justify-start space-x-4 dark:text-white px-4 py-4 w-2/3 font-medium text-gray-900 whitespace-nowrap"
+      >
+        {#if data.human.twitter}
+          <a target="_blank" href={data.human.twitter}
+            ><svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              height="1.5em"
+              viewBox="0 0 512 512"
+              ><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path
+                d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"
+              /></svg
+            ></a
+          >
+        {/if}
+        {#if data.human.website}
+          <a target="_blank" href={data.human.website}
+            ><svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="1.5em"
+              fill="currentColor"
+              viewBox="0 0 576 512"
+              ><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path
+                d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"
+              /></svg
+            ></a
+          >
+        {/if}
+      </td>
     </tr>
   </table>
   <div class="text-left px-4 py-4">

@@ -1,26 +1,23 @@
 <script>
-  // used to get the query parameter
   import HumanListCard from "../../lib/components/HumanListCard.svelte";
-
-  export let data;
-
   import algoliasearch from "algoliasearch/lite";
   import { onMount } from "svelte";
   import debounce from "../../lib/debounce.js";
-  import truncate from "../../lib/truncate.js";
 
-  let searchClient;
+  // used to get the query parameter
+  export let data;
+
+  let searchClient = algoliasearch(
+    "I3Z39HZCDT",
+    "bcefca03d36ddd83a0f2bcb91b8990e7"
+  );
+
   let index;
 
   let query = data.query || "";
   let hits = [];
 
   onMount(() => {
-    searchClient = algoliasearch(
-      "I3Z39HZCDT",
-      "bcefca03d36ddd83a0f2bcb91b8990e7"
-    );
-
     index = searchClient.initIndex("humans");
     search();
   });
@@ -30,7 +27,7 @@
     // update the query parameter
     const url = new URL(window.location.toString());
     url.searchParams.set("query", query);
-    history.replaceState({}, "", url);
+    history.replaceState(history.state, "", url);
 
     // perform the query
     if (query === "") {
@@ -43,7 +40,7 @@
 </script>
 
 <svelte:head>
-  <title>AsianAmericans.wiki</title>
+  <title>Search | AsianAmericans.wiki</title>
 </svelte:head>
 
 <article class="max-w-2xl">
