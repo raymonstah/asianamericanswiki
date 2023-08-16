@@ -15,11 +15,13 @@ import (
 
 	"github.com/raymonstah/asianamericanswiki/internal/contributor"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
+	"github.com/raymonstah/asianamericanswiki/internal/userdao"
 )
 
 type Config struct {
 	AuthClient  *auth.Client
 	HumansDAO   *humandao.DAO
+	UsersDAO    *userdao.DAO
 	Logger      zerolog.Logger
 	Version     string
 	Contributor contributor.Client
@@ -31,6 +33,7 @@ type Server struct {
 	logger      zerolog.Logger
 	humanCache  *cache.Cache
 	humanDAO    *humandao.DAO
+	userDAO     *userdao.DAO
 	version     string
 	contributor contributor.Client
 }
@@ -48,6 +51,7 @@ func NewServer(config Config) *Server {
 		logger:      config.Logger,
 		humanCache:  humanCache,
 		humanDAO:    config.HumansDAO,
+		userDAO:     config.UsersDAO,
 		version:     config.Version,
 		contributor: config.Contributor,
 	}
@@ -89,6 +93,10 @@ func (s *Server) setupRoutes() {
 		r.With(s.AuthMiddleware).Method(http.MethodPost, "/", Handler(s.PostReaction))
 		r.With(s.AuthMiddleware).Method(http.MethodDelete, "/{id}", Handler(s.DeleteReaction))
 	})
+
+	s.router.With(s.AuthMiddleware).Method(http.MethodGet, "/user", Handler(s.User))
+	s.router.With(s.AuthMiddleware).Method(http.MethodPost, "/humans/{humanID}/save", Handler(s.SaveHuman))
+	s.router.With(s.AuthMiddleware).Method(http.MethodPost, "/humans/{humanID}/view", Handler(s.ViewHuman))
 }
 
 func (s *Server) Version(w http.ResponseWriter, r *http.Request) error {
