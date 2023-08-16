@@ -17,6 +17,7 @@ import (
 	"github.com/raymonstah/asianamericanswiki/internal/contributor"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/raymonstah/asianamericanswiki/internal/openai"
+	"github.com/raymonstah/asianamericanswiki/internal/userdao"
 )
 
 func main() {
@@ -69,6 +70,7 @@ func run(c *cli.Context) error {
 	}
 
 	humansDAO := humandao.NewDAO(fsClient)
+	userDAO := userdao.NewDAO(fsClient)
 	openAiClient := openai.New(c.String("open-ai-token"))
 	contributorHandler := contributor.Client{
 		PullRequestService: contributor.NewPullRequestService(ctx, c.String("github-auth-token")),
@@ -79,6 +81,7 @@ func run(c *cli.Context) error {
 		Contributor: contributorHandler,
 		AuthClient:  authClient,
 		HumansDAO:   humansDAO,
+		UsersDAO:    userDAO,
 		Logger:      logger,
 		Version:     c.String("git-hash"),
 	}

@@ -24,6 +24,10 @@ func TestMain(m *testing.M) {
 	if err := os.Setenv("FIREBASE_AUTH_EMULATOR_HOST", "localhost:8081"); err != nil {
 		log.Fatal("failed to set FIREBASE_AUTH_EMULATOR_HOST environment variable", err)
 	}
+
+	if err := os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080"); err != nil {
+		log.Fatal("failed to set FIRESTORE_EMULATOR_HOST environment variable", err)
+	}
 	m.Run()
 }
 
@@ -32,6 +36,8 @@ func TestServer_AuthMiddleware_Unauthorized(t *testing.T) {
 	app, err := firebase.NewApp(ctx, &firebase.Config{ProjectID: api.ProjectID})
 	assert.NoError(t, err)
 	authClient, err := app.Auth(ctx)
+	assert.NoError(t, err)
+
 	s := NewServer(Config{
 		AuthClient: authClient,
 	})
