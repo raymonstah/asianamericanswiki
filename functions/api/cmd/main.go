@@ -26,6 +26,7 @@ func main() {
 		Flags: []cli.Flag{
 			&cli.IntFlag{Name: "port", EnvVars: []string{"PORT"}, Value: 3000},
 			&cli.BoolFlag{Name: "local"},
+			&cli.BoolFlag{Name: "no-auth"},
 			&cli.StringFlag{Name: "git-hash", EnvVars: []string{"GIT_HASH"}, Value: "latest"},
 			&cli.StringFlag{Name: "github-auth-token", EnvVars: []string{"GITHUB_AUTH_TOKEN"}},
 			&cli.StringFlag{Name: "open-ai-token", EnvVars: []string{"OPEN_AI_TOKEN"}},
@@ -59,9 +60,15 @@ func run(c *cli.Context) error {
 		return fmt.Errorf("unable to create firestore app: %w", err)
 	}
 
-	authClient, err := app.Auth(c.Context)
-	if err != nil {
-		return fmt.Errorf("unable to create auth client: %w", err)
+	var authClient server.Authorizer
+	if c.Bool("no-auth") {
+		logger.Info().Msg("using no-op authorizer")
+		authClient = server.NoOpAuthorizer{}
+	} else {
+		authClient, err = app.Auth(c.Context)
+		if err != nil {
+			return fmt.Errorf("unable to create auth client: %w", err)
+		}
 	}
 
 	fsClient, err := firestore.NewClient(c.Context, api.ProjectID)

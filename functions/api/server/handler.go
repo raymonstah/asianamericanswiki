@@ -20,6 +20,19 @@ var (
 
 type Handler func(w http.ResponseWriter, r *http.Request) error
 
+type Authorizer interface {
+	VerifyIDToken(ctx context.Context, idToken string) (*auth.Token, error)
+}
+
+type NoOpAuthorizer struct{}
+
+func (n NoOpAuthorizer) VerifyIDToken(ctx context.Context, idToken string) (*auth.Token, error) {
+	return &auth.Token{
+		UID:    "test-user",
+		Claims: map[string]interface{}{"admin": true},
+	}, nil
+}
+
 func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	if err := h(w, r); err != nil {
