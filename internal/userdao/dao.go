@@ -169,8 +169,26 @@ type ViewHumanInput struct {
 
 // ViewHuman indicates that the user has viewed a given human.
 func (d *DAO) ViewHuman(ctx context.Context, input ViewHumanInput) error {
+	// Get the last human viewed.
+	docs, err := d.client.Collection(d.userCollectionName).Doc(input.UserID).
+		Collection("recently_viewed").OrderBy("viewed_at", firestore.Desc).Limit(1).Documents(ctx).GetAll()
+	if err != nil {
+		return fmt.Errorf("unable to check if human %v has already been saved by user %v: %w", input.HumanID, input.UserID, err)
+	}
+
+	if len(docs) > 0 {
+		var recentlyViewed RecentlyViewed
+		if err := docs[0].DataTo(&recentlyViewed); err != nil {
+			return fmt.Errorf("unable to convert recently viewed human for user %v: %w", input.UserID, err)
+		}
+		// Same as the last one viewed, so ignore
+		if recentlyViewed.HumanID == input.HumanID {
+			return nil
+		}
+	}
+
 	now := time.Now().UTC()
-	_, err := d.client.Collection(d.userCollectionName).Doc(input.UserID).
+	_, err = d.client.Collection(d.userCollectionName).Doc(input.UserID).
 		Collection("recently_viewed").NewDoc().
 		Create(ctx, RecentlyViewed{
 			HumanID:  input.HumanID,

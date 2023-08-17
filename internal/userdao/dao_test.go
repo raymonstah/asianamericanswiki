@@ -151,3 +151,30 @@ func TestDAO_SaveHuman_IgnoreDupe(t *testing.T) {
 		assert.Equal(t, human1ID, user.Saved[0].HumanID)
 	})
 }
+
+func TestDAO_ViewHuman_IgnoreDupes(t *testing.T) {
+	var (
+		userID  = ksuid.New().String()
+		humanID = ksuid.New().String()
+	)
+
+	WithDAO(t, func(ctx context.Context, dao *DAO) {
+		// Create an empty user
+		_, err := dao.client.Collection(dao.userCollectionName).Doc(userID).Create(ctx, map[string]interface{}{})
+		assert.NoError(t, err)
+
+		user, err := dao.User(ctx, userID, WithRecentlyViewed())
+		assert.NoError(t, err)
+		assert.Empty(t, user.Saved)
+
+		for i := 0; i < 10; i++ {
+			err := dao.ViewHuman(ctx, ViewHumanInput{UserID: userID, HumanID: humanID})
+			assert.NoError(t, err)
+		}
+
+		user, err = dao.User(ctx, userID, WithRecentlyViewed())
+		assert.NoError(t, err)
+		assert.Len(t, user.RecentlyViewed, 1)
+
+	})
+}
