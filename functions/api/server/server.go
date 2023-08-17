@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"firebase.google.com/go/v4/auth"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -19,7 +18,7 @@ import (
 )
 
 type Config struct {
-	AuthClient  *auth.Client
+	AuthClient  Authorizer
 	HumansDAO   *humandao.DAO
 	UsersDAO    *userdao.DAO
 	Logger      zerolog.Logger
@@ -28,7 +27,7 @@ type Config struct {
 }
 
 type Server struct {
-	authClient  *auth.Client
+	authClient  Authorizer
 	router      chi.Router
 	logger      zerolog.Logger
 	humanCache  *cache.Cache
