@@ -125,7 +125,7 @@ func (d *DAO) HumansByID(ctx context.Context, input HumansByIDInput) ([]Human, e
 	}
 
 	if err := group.Wait(); err != nil {
-		return nil, fmt.Errorf("unable to get humans by id: %w", err)
+		return nil, err
 	}
 
 	// Preserve ordering
