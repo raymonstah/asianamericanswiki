@@ -54,19 +54,12 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) AuthMiddleware(next http.Handler) http.Handler {
 	return Handler(func(w http.ResponseWriter, r *http.Request) error {
-		ctx := r.Context()
-
-		tokenString, err := parseBearerToken(r)
+		token, err := s.parseToken(r)
 		if err != nil {
-			return NewUnauthorizedError(err)
+			return err
 		}
 
-		token, err := s.authClient.VerifyIDToken(ctx, tokenString)
-		if err != nil {
-			return NewUnauthorizedError(fmt.Errorf("unable to verify id token: %w", err))
-		}
-
-		ctx = WithToken(ctx, token)
+		ctx := WithToken(r.Context(), token)
 		next.ServeHTTP(w, r.WithContext(ctx))
 		return nil
 	})
@@ -75,16 +68,9 @@ func (s *Server) AuthMiddleware(next http.Handler) http.Handler {
 
 func (s *Server) AdminMiddleware(next http.Handler) http.Handler {
 	return Handler(func(w http.ResponseWriter, r *http.Request) error {
-		ctx := r.Context()
-
-		tokenString, err := parseBearerToken(r)
+		token, err := s.parseToken(r)
 		if err != nil {
-			return NewUnauthorizedError(err)
-		}
-
-		token, err := s.authClient.VerifyIDToken(ctx, tokenString)
-		if err != nil {
-			return NewUnauthorizedError(fmt.Errorf("unable to verify id token: %w", err))
+			return err
 		}
 
 		admin, ok := token.Claims["admin"]
@@ -92,11 +78,27 @@ func (s *Server) AdminMiddleware(next http.Handler) http.Handler {
 			return NewForbiddenError(fmt.Errorf("user is not an admin"))
 		}
 
-		ctx = WithToken(ctx, token)
+		ctx := WithToken(r.Context(), token)
 		next.ServeHTTP(w, r.WithContext(ctx))
 		return nil
 	})
 
+}
+
+func (s *Server) parseToken(r *http.Request) (*auth.Token, error) {
+	ctx := r.Context()
+
+	tokenString, err := parseBearerToken(r)
+	if err != nil {
+		return nil, NewUnauthorizedError(err)
+	}
+
+	token, err := s.authClient.VerifyIDToken(ctx, tokenString)
+	if err != nil {
+		return nil, NewUnauthorizedError(fmt.Errorf("unable to verify id token: %w", err))
+	}
+
+	return token, nil
 }
 
 func parseBearerToken(r *http.Request) (token string, err error) {
