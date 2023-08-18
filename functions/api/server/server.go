@@ -81,6 +81,7 @@ func (s *Server) setupRoutes() {
 
 	s.router.Route("/humans", func(r chi.Router) {
 		r.Method(http.MethodGet, "/", Handler(s.HumansList))
+		r.With(s.AuthMiddleware).Method(http.MethodPost, "/", Handler(s.HumansByID))
 		r.Method(http.MethodGet, "/{path}", Handler(s.HumanGet))
 		r.With(s.AuthMiddleware).Method(http.MethodPost, "/", Handler(s.HumanCreate))
 		r.With(s.AdminMiddleware).Method(http.MethodGet, "/drafts", Handler(s.HumansDraft))

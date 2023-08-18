@@ -286,3 +286,26 @@ func TestDAO_Delete(t *testing.T) {
 		assert.EqualError(t, err, "human not found")
 	})
 }
+
+func TestDAO_HumansByID(t *testing.T) {
+	WithDAO(t, func(ctx context.Context, dao *DAO) {
+		var ids []string
+		numHumans := 10
+		for i := 0; i < numHumans; i++ {
+			human, err := dao.AddHuman(ctx, AddHumanInput{Name: fmt.Sprintf("Human-%v", i)})
+			assert.NoError(t, err)
+			ids = append(ids, human.ID)
+		}
+
+		humans, err := dao.HumansByID(ctx, HumansByIDInput{HumanIDs: ids})
+		assert.NoError(t, err)
+		assert.Len(t, humans, numHumans)
+		gotIDs := make([]string, 0, len(humans))
+
+		for _, human := range humans {
+			gotIDs = append(gotIDs, human.ID)
+		}
+
+		assert.Equal(t, ids, gotIDs)
+	})
+}
