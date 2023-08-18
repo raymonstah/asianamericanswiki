@@ -199,6 +199,10 @@ func (s *Server) HumansByID(w http.ResponseWriter, r *http.Request) (err error) 
 		return NewBadRequestError(err)
 	}
 
+	if len(humanIDs) > 100 {
+		return NewBadRequestError(fmt.Errorf("too many humanIDs, max is 100"))
+	}
+
 	humans, err := s.GetHumansFromCache(ctx, humanIDs...)
 	if err != nil {
 		return err

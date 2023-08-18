@@ -108,7 +108,7 @@ func TestDAOReactions(t *testing.T) {
 func TestDAO_HumanNotFound(t *testing.T) {
 	WithDAO(t, func(ctx context.Context, dao *DAO) {
 		human, err := dao.Human(ctx, HumanInput{HumanID: "human123"})
-		assert.EqualError(t, err, "human not found")
+		assert.EqualError(t, err, "human not found: human123")
 		assert.Zero(t, human)
 	})
 }
@@ -283,7 +283,7 @@ func TestDAO_Delete(t *testing.T) {
 		assert.NoError(t, err)
 
 		_, err = dao.Human(ctx, HumanInput{HumanID: human.ID})
-		assert.EqualError(t, err, "human not found")
+		assert.EqualError(t, err, fmt.Sprintf("human not found: %v", human.ID))
 	})
 }
 
