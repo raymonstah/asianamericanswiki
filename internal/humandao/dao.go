@@ -75,8 +75,15 @@ func (d *DAO) Human(ctx context.Context, input HumanInput) (human Human, err err
 	}
 	if err != nil {
 		if status.Code(err) == codes.NotFound || err == iterator.Done {
-			logger.Error().Err(err).Interface("input", input).Msg("human not found")
-			return Human{}, ErrHumanNotFound
+			logger.Warn().Err(err).Interface("input", input).
+				Str("humanID", input.HumanID).
+				Str("path", input.Path).
+				Msg("human not found")
+			identifier := input.HumanID
+			if input.Path != "" {
+				identifier = input.Path
+			}
+			return Human{}, fmt.Errorf("%w: %v", ErrHumanNotFound, identifier)
 		}
 		logger.Err(err).Interface("input", input).Msg("unable to get human")
 		return Human{}, fmt.Errorf("unable to get human: %w", err)
@@ -170,7 +177,7 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 
 	_, err := d.Human(ctx, HumanInput{Path: path})
 	if err != nil {
-		if err != ErrHumanNotFound {
+		if !errors.Is(err, ErrHumanNotFound) {
 			return Human{}, fmt.Errorf("error checking if human (%v) exists: %w", path, err)
 		}
 	}
