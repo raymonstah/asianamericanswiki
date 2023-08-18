@@ -1,15 +1,11 @@
 package server
 
 import (
-	"context"
-	"errors"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
-	"github.com/patrickmn/go-cache"
-	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/raymonstah/asianamericanswiki/internal/userdao"
 )
 
@@ -70,7 +66,7 @@ func (s *Server) ViewHuman(w http.ResponseWriter, r *http.Request) (err error) {
 			Msg("completed request")
 	}(time.Now())
 
-	_, err = s.checkHumanCache(ctx, humanID)
+	_, err = s.GetHumanFromCache(ctx, humanID)
 	if err != nil {
 		return err
 	}
@@ -103,7 +99,7 @@ func (s *Server) SaveHuman(w http.ResponseWriter, r *http.Request) (err error) {
 			Msg("completed request")
 	}(time.Now())
 
-	_, err = s.checkHumanCache(ctx, humanID)
+	_, err = s.GetHumanFromCache(ctx, humanID)
 	if err != nil {
 		return err
 	}
@@ -118,25 +114,6 @@ func (s *Server) SaveHuman(w http.ResponseWriter, r *http.Request) (err error) {
 
 	s.writeData(w, http.StatusNoContent, nil)
 	return nil
-}
-
-func (s *Server) checkHumanCache(ctx context.Context, humanID string) (human humandao.Human, err error) {
-	humanRaw, found := s.humanCache.Get(humanID)
-	if !found {
-		human, err := s.humanDAO.Human(ctx, humandao.HumanInput{
-			HumanID: humanID,
-		})
-		if err != nil {
-			if errors.Is(err, humandao.ErrHumanNotFound) {
-				return humandao.Human{}, NewNotFoundError(err)
-			}
-			return humandao.Human{}, NewInternalServerError(err)
-		}
-		s.humanCache.Set(humanID, human, cache.DefaultExpiration)
-		return human, nil
-	}
-
-	return humanRaw.(humandao.Human), nil
 }
 
 func toUserResponse(user userdao.User) User {

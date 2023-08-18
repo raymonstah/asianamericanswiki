@@ -30,7 +30,7 @@ func TestServer_User(t *testing.T) {
 	authClient, err := app.Auth(ctx)
 	assert.NoError(t, err)
 
-	humanID := "human-" + ksuid.New().String()
+	humanID := ksuid.New().String()
 	_, err = humanDAO.AddHuman(ctx, humandao.AddHumanInput{HumanID: humanID, Name: "Test Human"})
 	assert.NoError(t, err)
 

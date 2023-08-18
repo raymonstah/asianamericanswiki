@@ -10,7 +10,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
-	"github.com/segmentio/ksuid"
 
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 )
@@ -171,26 +170,43 @@ func (s *Server) HumanGet(w http.ResponseWriter, r *http.Request) (err error) {
 			Msg("completed request")
 	}(time.Now())
 
-	id := ""
-	if _, err := ksuid.Parse(path); err == nil {
-		id = path
-	}
-
-	human, err := s.humanDAO.Human(ctx, humandao.HumanInput{
-		HumanID: id,
-		Path:    path,
-	})
+	human, err := s.GetHumanFromCache(ctx, path)
 	if err != nil {
-		if errors.Is(err, humandao.ErrHumanNotFound) {
-			return NewNotFoundError(err)
-		}
-		return NewInternalServerError(err)
+		return err
 	}
 
 	s.writeData(w, http.StatusOK, convertHuman(human))
 	return nil
 }
 
+// HumansByID finds all humans given a list of IDs, preserves order.
+// All IDs must be valid, or a HTTP 404 will be returned.
+func (s *Server) HumansByID(w http.ResponseWriter, r *http.Request) (err error) {
+	var (
+		ctx   = r.Context()
+		oplog = httplog.LogEntry(r.Context())
+	)
+
+	defer func(start time.Time) {
+		oplog.Err(err).
+			Str("request", "HumansByID").
+			Dur("duration", time.Since(start).Round(time.Millisecond)).
+			Msg("completed request")
+	}(time.Now())
+
+	var humanIDs []string
+	if err := json.NewDecoder(r.Body).Decode(&humanIDs); err != nil {
+		return NewBadRequestError(err)
+	}
+
+	humans, err := s.GetHumansFromCache(ctx, humanIDs...)
+	if err != nil {
+		return err
+	}
+
+	s.writeData(w, http.StatusOK, convertHumans(humans))
+	return nil
+}
 
 func convertHumans(humans []humandao.Human) (response []Human) {
 	for _, human := range humans {

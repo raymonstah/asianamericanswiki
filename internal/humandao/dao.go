@@ -5,11 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/firestore"
 	"github.com/go-chi/httplog"
 	"github.com/segmentio/ksuid"
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -87,6 +89,50 @@ func (d *DAO) Human(ctx context.Context, input HumanInput) (human Human, err err
 
 	human.ID = doc.Ref.ID
 	return human, nil
+}
+
+type HumansByIDInput struct {
+	HumanIDs []string
+}
+
+func (d *DAO) HumansByID(ctx context.Context, input HumansByIDInput) ([]Human, error) {
+	group, ctx := errgroup.WithContext(ctx)
+	group.SetLimit(10)
+	var mutex sync.Mutex
+	humans := make([]Human, 0, len(input.HumanIDs))
+
+	for _, id := range input.HumanIDs {
+		id := id
+		group.Go(func() error {
+			human, err := d.Human(ctx, HumanInput{HumanID: id})
+			if err != nil {
+				return err
+			}
+
+			mutex.Lock()
+			humans = append(humans, human)
+			mutex.Unlock()
+
+			return nil
+		})
+	}
+
+	if err := group.Wait(); err != nil {
+		return nil, fmt.Errorf("unable to get humans by id: %w", err)
+	}
+
+	// Preserve ordering
+	idToHuman := make(map[string]Human)
+	for _, human := range humans {
+		idToHuman[human.ID] = human
+	}
+
+	orderedHumans := make([]Human, 0, len(humans))
+	for _, id := range input.HumanIDs {
+		orderedHumans = append(orderedHumans, idToHuman[id])
+	}
+
+	return orderedHumans, nil
 }
 
 func (d *DAO) UpdateHuman(ctx context.Context, human Human) error {
