@@ -1,8 +1,10 @@
 <script>
+  import { PUBLIC_BASE_URL } from "$env/static/public";
   import SvelteMarkdown from "svelte-markdown";
   import Chip from "../../../lib/components/Chip.svelte";
   import dayjs from "dayjs";
   import relativeTime from "dayjs/plugin/relativeTime";
+  import { getAuth, onAuthStateChanged } from "firebase/auth";
   dayjs.extend(relativeTime);
 
   export let data;
@@ -34,12 +36,48 @@
       return "";
     }
   }
+
+  let isHumanSaved = false;
+  function saveHuman() {
+    isHumanSaved = !isHumanSaved;
+    if (isHumanSaved) {
+      const auth = getAuth();
+      onAuthStateChanged(auth, function (user) {
+        if (user) {
+          user.getIdToken().then(function (token) {
+            const headers = new Headers({
+              Authorization: `Bearer ${token}`,
+            });
+            fetch(`${PUBLIC_BASE_URL}/humans/${data.human.id}/save`, {
+              method: "POST",
+              headers: headers,
+            }).catch((error) => {
+              console.error("Error:", error);
+            });
+          });
+        } else {
+          alert("You must be logged in to save a human.");
+        }
+      });
+    }
+  }
 </script>
 
 <article class="max-w-2xl">
   <!-- Header -->
   <h1 class="text-2xl my-4">{data.human.name}</h1>
-
+  <button class="cursor-pointer" on:click={saveHuman}>
+    <svg
+      fill="currentColor"
+      class={isHumanSaved ? "text-amber-300 " : "text-gray-500 "}
+      xmlns="http://www.w3.org/2000/svg"
+      height="2em"
+      viewBox="0 0 512 512"
+      ><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path
+        d="M47.6 300.4L228.3 469.1c7.5 7 17.4 10.9 27.7 10.9s20.2-3.9 27.7-10.9L464.4 300.4c30.4-28.3 47.6-68 47.6-109.5v-5.8c0-69.9-50.5-129.5-119.4-141C347 36.5 300.6 51.4 268 84L256 96 244 84c-32.6-32.6-79-47.5-124.6-39.9C50.5 55.6 0 115.2 0 185.1v5.8c0 41.5 17.2 81.2 47.6 109.5z"
+      /></svg
+    >
+  </button>
   <!-- Table -->
   <table
     class="table-fixed w-full text-sm text-left text-gray-500 dark:text-gray-400"
