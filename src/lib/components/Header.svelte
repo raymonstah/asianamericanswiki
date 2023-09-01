@@ -52,7 +52,7 @@
 </script>
 
 <nav
-  class="w-full border-gray-200 px-2 sm:px-4 py-2.5  bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+  class="w-full border-gray-200 px-2 sm:px-4 py-2.5 bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
 >
   <div class="container flex flex-wrap items-center justify-between mx-auto">
     <a href="/" class="flex items-center">
@@ -93,7 +93,7 @@
       id="navbar-default"
     >
       <ul
-        class="flex flex-col p-4 mt-4 border border-gray-100 rounded-lg  md:flex-row items-center md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0"
+        class="flex flex-col p-4 mt-4 border border-gray-100 rounded-lg md:flex-row items-center md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0"
       >
         <li>
           <a
