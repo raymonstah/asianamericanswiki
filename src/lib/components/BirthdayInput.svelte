@@ -15,11 +15,9 @@
     }
     let match = false;
     Object.entries(DATE_FORMAT).find((entry) => {
-      let format = entry[0];
+      // let format = entry[0];
       let regex = entry[1];
-      // console.log(`testing ${dob} against ${format}`);
       if (regex.test(dob)) {
-        // console.log(`${format} matches`);
         match = true;
       }
     });
