@@ -105,7 +105,7 @@
     <h1 class="text-4xl font-extrabold mb-4">Draft Requests</h1>
     {#each drafts as draft}
       <div
-        class="max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 
+        class="max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100
         flex flex-row space-x-4 items-center
         dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
       >
@@ -130,7 +130,7 @@
       {#each currentUser.saved as savedHuman}
         <a href="humans/{humans[savedHuman.human_id]?.path}">
           <div
-            class="max-w-sm px-1 py-2 my-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 
+            class="max-w-sm px-1 py-2 my-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100
         flex flex-col space-x-4 items-center
         dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
           >
