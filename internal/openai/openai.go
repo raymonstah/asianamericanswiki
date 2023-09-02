@@ -26,18 +26,17 @@ type GenerateInput struct {
 
 func (c *Client) Generate(ctx context.Context, input GenerateInput) (string, error) {
 	tagWithCommas := strings.Join(input.Tags, ", ")
-	prompt := fmt.Sprintf("Write a wikipedia entry about Asian American %v, %v", tagWithCommas, input.Name)
-	req := openai.CompletionRequest{
-		Model:     openai.GPT4,
+	prompt := fmt.Sprintf("Write a two paragraph summary about Asian American %v, %v", tagWithCommas, input.Name)
+	resp, err := c.openAiClient.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
+		Model:     openai.GPT3Dot5Turbo,
 		MaxTokens: 500,
-		Prompt:    prompt,
-		BestOf:    3,
-	}
-
-	resp, err := c.openAiClient.CreateCompletion(ctx, req)
+		Messages: []openai.ChatCompletionMessage{
+			{Role: openai.ChatMessageRoleUser, Content: prompt},
+		},
+	})
 	if err != nil {
-		return "", fmt.Errorf("unable to create completion: %w", err)
+		return "", fmt.Errorf("unable to create chat completion: %w", err)
 	}
 
-	return strings.TrimSpace(resp.Choices[0].Text), nil
+	return strings.TrimSpace(resp.Choices[0].Message.Content), nil
 }

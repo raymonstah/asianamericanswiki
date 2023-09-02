@@ -10,7 +10,7 @@ require (
 	github.com/go-chi/httplog v0.2.5
 	github.com/google/go-github/v40 v40.0.0
 	github.com/rs/zerolog v1.27.0
-	github.com/sashabaranov/go-openai v1.5.7
+	github.com/sashabaranov/go-openai v1.15.1
 	github.com/segmentio/ksuid v1.0.4
 	github.com/tj/assert v0.0.3
 	github.com/urfave/cli/v2 v2.25.1
