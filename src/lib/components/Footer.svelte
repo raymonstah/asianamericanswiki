@@ -1,8 +1,11 @@
 <script>
+  import BannerAd from "./BannerAd.svelte";
+
   const year = new Date().getFullYear();
 </script>
 
 <footer class="my-auto p-2">
+  <BannerAd />
   <span class="flex justify-center content-center"
     >&copy; AsianAmericans.wiki {year}</span
   >
