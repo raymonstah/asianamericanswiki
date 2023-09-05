@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"strings"
 
@@ -21,6 +22,7 @@ func main() {
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "open-ai-token", EnvVars: []string{"OPEN_AI_TOKEN"}},
 			&cli.StringFlag{Name: "name", EnvVars: []string{"NAME"}},
+			&cli.BoolFlag{Name: "scan"},
 		},
 		Action: run,
 	}
@@ -33,7 +35,9 @@ func main() {
 type Handler struct {
 	FSClient *firestore.Client
 	OpenAI   *openai.Client
+	HumanDAO *humandao.DAO
 	Name     string
+	Scan     bool
 }
 
 func run(c *cli.Context) error {
@@ -44,37 +48,68 @@ func run(c *cli.Context) error {
 	}
 
 	client := openai.New(c.String("open-ai-token"))
+	humanDAO := humandao.NewDAO(fsClient)
 	h := Handler{
+		HumanDAO: humanDAO,
 		OpenAI:   client,
 		FSClient: fsClient,
 		Name:     c.String("name"),
+		Scan:     c.Bool("scan"),
 	}
 
-	if err := h.generate(ctx); err != nil {
+	if err := h.do(ctx); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (h *Handler) generate(ctx context.Context) error {
-	humanDAO := humandao.NewDAO(h.FSClient)
-	path := strings.ReplaceAll(h.Name, " ", "-")
-	path = strings.ToLower(path)
-	human, err := humanDAO.Human(ctx, humandao.HumanInput{Path: path})
-	if err != nil {
-		return err
+func (h *Handler) do(ctx context.Context) error {
+	var humans []humandao.Human
+	if h.Name != "" {
+		path := strings.ReplaceAll(h.Name, " ", "-")
+		path = strings.ToLower(path)
+		human, err := h.HumanDAO.Human(ctx, humandao.HumanInput{Path: path})
+		if err != nil {
+			return err
+		}
+		humans = append(humans, human)
 	}
+
+	if h.Scan {
+		log.Println("Scanning for humans with short descriptions...")
+		humansWithShortDescriptions, err := h.DoScan(ctx)
+		if err != nil {
+			return err
+		}
+		humans = append(humans, humansWithShortDescriptions...)
+
+	}
+
+	for _, human := range humans {
+		if err := h.generate(ctx, human); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (h *Handler) generate(ctx context.Context, human humandao.Human) error {
+	log.Println("Generating description for:", human.Name)
+	fmt.Println("Old description:", human.Description)
+	fmt.Println()
 
 	newDescription, err := h.OpenAI.Generate(ctx, openai.GenerateInput{
 		Tags: human.Tags,
-		Name: h.Name,
+		Name: human.Name,
 	})
 	if err != nil {
 		return fmt.Errorf("unable to generate description: %w", err)
 	}
 
 	fmt.Println("New description:", newDescription)
+	fmt.Println()
 	fmt.Println("Accept new description? (y/n)")
 
 	var userInput string
@@ -84,15 +119,55 @@ func (h *Handler) generate(ctx context.Context) error {
 	}
 
 	if strings.ToUpper(userInput) != "Y" {
-		fmt.Println("Aborting")
+		log.Println("Aborting")
 		return nil
 	}
 
 	human.Description = newDescription
-	if err := humanDAO.UpdateHuman(ctx, human); err != nil {
+	if err := h.HumanDAO.UpdateHuman(ctx, human); err != nil {
 		return err
 	}
 
-	fmt.Println("Successfully updated human")
+	log.Println("Successfully updated human")
 	return nil
+}
+
+func (h *Handler) DoScan(ctx context.Context) ([]humandao.Human, error) {
+	var humans []humandao.Human
+	offset := 0
+	for {
+		hs, err := h.HumanDAO.ListHumans(ctx, humandao.ListHumansInput{
+			Limit:  50,
+			Offset: offset,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		if len(hs) == 0 {
+			break
+		}
+		offset += 50
+
+		humans = append(humans, hs...)
+	}
+
+	var humansWithShortDescriptions []humandao.Human
+	for _, human := range humans {
+		// skip over humans with a long enough description
+		if len(human.Description) > 105 {
+			log.Println("skipping over:", human.Name)
+			continue
+		}
+
+		humansWithShortDescriptions = append(humansWithShortDescriptions, human)
+	}
+
+	// randomly shuffle the humansWithShortDescriptions
+	for i := range humansWithShortDescriptions {
+		j := i + int(rand.Int63())%(len(humansWithShortDescriptions)-i)
+		humansWithShortDescriptions[i], humansWithShortDescriptions[j] = humansWithShortDescriptions[j], humansWithShortDescriptions[i]
+	}
+
+	return humansWithShortDescriptions, nil
 }
