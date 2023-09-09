@@ -14,6 +14,7 @@ import (
 
 	"github.com/raymonstah/asianamericanswiki/functions/api"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
+	"golang.org/x/net/html"
 )
 
 func main() {
@@ -87,19 +88,40 @@ func (h *Handler) do(ctx context.Context) error {
 			return fmt.Errorf("name is required")
 		}
 
+		if strings.HasPrefix(h.Image, "<a") {
+			h.Image, err = parseImageURL(h.Image)
+			if err != nil {
+				return err
+			}
+		}
+
 		url, err := createAmazonAffiliateLink("asianameri0dc-20", h.Link)
 		if err != nil {
 			return err
 		}
 
-		log.Println("Generated affiliate link:", url)
-		human.Affiliates = append(human.Affiliates, humandao.Affiliate{
-			ID:    ksuid.New().String(),
-			URL:   url,
-			Name:  h.Name,
-			Image: h.Image,
-		})
+		found := false
+		for i, affiliate := range human.Affiliates {
+			if affiliate.Name == h.Name {
+				log.Printf("Updating existing affiliate for %v (%v)\n", affiliate.Name, affiliate.ID)
+				// overwrite the existing affiliate
+				human.Affiliates[i].URL = url
+				human.Affiliates[i].Image = h.Image
+				found = true
+			}
+		}
 
+		log.Println("Generated affiliate link:", url)
+		log.Println("Generated affiliate image:", h.Image)
+		if !found {
+			log.Printf("Creating new affiliate: %v\n", h.Name)
+			human.Affiliates = append(human.Affiliates, humandao.Affiliate{
+				ID:    ksuid.New().String(),
+				URL:   url,
+				Name:  h.Name,
+				Image: h.Image,
+			})
+		}
 		if err := h.HumanDAO.UpdateHuman(ctx, human); err != nil {
 			return err
 		}
@@ -185,4 +207,25 @@ func simplifyAmazonURL(amazonURL string) (string, error) {
 	smallestURL := fmt.Sprintf("https://www.amazon.com/dp/%s", dpIdentifier)
 
 	return smallestURL, nil
+}
+
+func parseImageURL(htmlSnippet string) (string, error) {
+	tokenizer := html.NewTokenizer(strings.NewReader(htmlSnippet))
+
+	for {
+		tokenType := tokenizer.Next()
+		switch tokenType {
+		case html.ErrorToken:
+			return "", tokenizer.Err()
+		case html.SelfClosingTagToken, html.StartTagToken:
+			token := tokenizer.Token()
+			if token.Data == "img" {
+				for _, attr := range token.Attr {
+					if attr.Key == "src" {
+						return attr.Val, nil
+					}
+				}
+			}
+		}
+	}
 }

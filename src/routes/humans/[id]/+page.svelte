@@ -192,7 +192,11 @@
     >
       {#each data.human.affiliates as affiliate}
         <div class="max-w-md mx-auto my-2 p-6 rounded shadow-lg">
-          <Affiliate url={affiliate.url} name={affiliate.name} />
+          <Affiliate
+            image={affiliate.image}
+            url={affiliate.url}
+            name={affiliate.name}
+          />
         </div>
       {/each}
     </div>
