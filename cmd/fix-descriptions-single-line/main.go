@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
 	"regexp"
 	"strings"
@@ -14,14 +13,15 @@ import (
 
 	"github.com/raymonstah/asianamericanswiki/functions/api"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
-	"github.com/raymonstah/asianamericanswiki/internal/openai"
 )
+
+// Define a regular expression pattern to match a single newline character
+var pattern = regexp.MustCompile(`(?m)([^\r\n])\r?\n`)
 
 func main() {
 	app := &cli.App{
-		Name: "cli app to generate descriptions for existing Asian Americans",
+		Name: "cli app to fix descriptions that contains single new lines for existing Asian Americans",
 		Flags: []cli.Flag{
-			&cli.StringFlag{Name: "open-ai-token", EnvVars: []string{"OPEN_AI_TOKEN"}},
 			&cli.StringFlag{Name: "name", EnvVars: []string{"NAME"}},
 			&cli.BoolFlag{Name: "scan"},
 		},
@@ -35,7 +35,6 @@ func main() {
 
 type Handler struct {
 	FSClient *firestore.Client
-	OpenAI   *openai.Client
 	HumanDAO *humandao.DAO
 	Name     string
 	Scan     bool
@@ -48,11 +47,9 @@ func run(c *cli.Context) error {
 		return fmt.Errorf("unable to create firestore client: %w", err)
 	}
 
-	client := openai.New(c.String("open-ai-token"))
 	humanDAO := humandao.NewDAO(fsClient)
 	h := Handler{
 		HumanDAO: humanDAO,
-		OpenAI:   client,
 		FSClient: fsClient,
 		Name:     c.String("name"),
 		Scan:     c.Bool("scan"),
@@ -101,21 +98,13 @@ func (h *Handler) generate(ctx context.Context, human humandao.Human) error {
 	fmt.Println("Old description:", human.Description)
 	fmt.Println()
 
-	newDescription, err := h.OpenAI.Generate(ctx, openai.GenerateInput{
-		Tags: human.Tags,
-		Name: human.Name,
-	})
-	if err != nil {
-		return fmt.Errorf("unable to generate description: %w", err)
-	}
-
-	newDescription = replaceSingleNewlineWithDoubleNewlines(newDescription)
+	newDescription := replaceSingleNewlineWithDoubleNewlines(human.Description)
 	fmt.Println("New description:", newDescription)
 	fmt.Println()
 	fmt.Println("Accept new description? (y/n)")
 
 	var userInput string
-	_, err = fmt.Scan(&userInput)
+	_, err := fmt.Scan(&userInput)
 	if err != nil {
 		return fmt.Errorf("unable to scan user input: %w", err)
 	}
@@ -154,32 +143,30 @@ func (h *Handler) DoScan(ctx context.Context) ([]humandao.Human, error) {
 		humans = append(humans, hs...)
 	}
 
-	var humansWithShortDescriptions []humandao.Human
+	var humansWithSingleLineDescriptions []humandao.Human
 	for _, human := range humans {
-		// skip over humans with a long enough description
-		if len(human.Description) > 105 {
-			log.Println("skipping over:", human.Name)
-			continue
+		if containsSingleNewlines(human.Description) {
+			humansWithSingleLineDescriptions = append(humansWithSingleLineDescriptions, human)
 		}
 
-		humansWithShortDescriptions = append(humansWithShortDescriptions, human)
 	}
 
-	// randomly shuffle the humansWithShortDescriptions
-	for i := range humansWithShortDescriptions {
-		j := i + int(rand.Int63())%(len(humansWithShortDescriptions)-i)
-		humansWithShortDescriptions[i], humansWithShortDescriptions[j] = humansWithShortDescriptions[j], humansWithShortDescriptions[i]
-	}
-
-	return humansWithShortDescriptions, nil
+	return humansWithSingleLineDescriptions, nil
 }
 
 func replaceSingleNewlineWithDoubleNewlines(input string) string {
-	// Define a regular expression pattern to match a single newline character
-	pattern := regexp.MustCompile(`(?m)([^\r\n])\r?\n`)
 
 	// Replace a single newline with double newlines
 	output := pattern.ReplaceAllString(input, "$1\n\n")
 
 	return output
+}
+
+func containsSingleNewlines(input string) bool {
+
+	// Use the pattern to find matches in the input string
+	matches := pattern.FindAllString(input, -1)
+
+	// If matches are found, it contains single newlines
+	return len(matches) > 0
 }

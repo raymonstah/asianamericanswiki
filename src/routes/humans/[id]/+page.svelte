@@ -160,7 +160,7 @@
   </table>
 
   <!-- Description -->
-  <div class="text-left px-4 py-4">
+  <div class="text-left px-4 py-4 space-y-4">
     {#if data.human.description}
       <SvelteMarkdown source={data.human.description} />
     {/if}
@@ -173,6 +173,20 @@
         {#each data.human.tags as tag}
           <li>
             <Chip><a href="/search?query={tag}">{tag}</a></Chip>
+          </li>
+        {/each}
+      {/if}
+    </ul>
+  </div>
+
+  <!-- Affiliate Links -->
+  <h2 class="mt-4 text-xl">Affiliate Links</h2>
+  <div class="py-4">
+    <ul class="flex flex-row">
+      {#if data.human.affiliates}
+        {#each data.human.affiliates as affiliate}
+          <li>
+            <Chip><a href={affiliate.url}>{affiliate.name}</a></Chip>
           </li>
         {/each}
       {/if}
