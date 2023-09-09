@@ -132,7 +132,7 @@
       <td
         class="dark:text-white px-4 py-4 w-2/3 font-medium text-gray-900 whitespace-nowrap"
       >
-        <ul class="flex flex-row">
+        <ul class="flex flex-row space-x-2">
           {#if data.human.twitter}
             <a target="_blank" href={data.human.twitter}
               ><svg
