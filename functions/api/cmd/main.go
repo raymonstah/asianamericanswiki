@@ -14,7 +14,6 @@ import (
 
 	"github.com/raymonstah/asianamericanswiki/functions/api"
 	"github.com/raymonstah/asianamericanswiki/functions/api/server"
-	"github.com/raymonstah/asianamericanswiki/internal/contributor"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/raymonstah/asianamericanswiki/internal/openai"
 	"github.com/raymonstah/asianamericanswiki/internal/userdao"
@@ -53,7 +52,7 @@ func run(c *cli.Context) error {
 		TimeFieldFormat: time.RFC3339,
 	})
 
-	app, err := firebase.NewApp(c.Context, &firebase.Config{
+	app, err := firebase.NewApp(ctx, &firebase.Config{
 		ProjectID: api.ProjectID,
 	})
 	if err != nil {
@@ -65,13 +64,13 @@ func run(c *cli.Context) error {
 		logger.Info().Msg("using no-op authorizer")
 		authClient = server.NoOpAuthorizer{}
 	} else {
-		authClient, err = app.Auth(c.Context)
+		authClient, err = app.Auth(ctx)
 		if err != nil {
 			return fmt.Errorf("unable to create auth client: %w", err)
 		}
 	}
 
-	fsClient, err := firestore.NewClient(c.Context, api.ProjectID)
+	fsClient, err := firestore.NewClient(ctx, api.ProjectID)
 	if err != nil {
 		return fmt.Errorf("unable to create firestore client: %w", err)
 	}
@@ -79,18 +78,14 @@ func run(c *cli.Context) error {
 	humansDAO := humandao.NewDAO(fsClient)
 	userDAO := userdao.NewDAO(fsClient)
 	openAiClient := openai.New(c.String("open-ai-token"))
-	contributorHandler := contributor.Client{
-		PullRequestService: contributor.NewPullRequestService(ctx, c.String("github-auth-token")),
-		OpenAI:             openAiClient,
-	}
 
 	config := server.Config{
-		Contributor: contributorHandler,
-		AuthClient:  authClient,
-		HumansDAO:   humansDAO,
-		UsersDAO:    userDAO,
-		Logger:      logger,
-		Version:     c.String("git-hash"),
+		OpenAIClient: openAiClient,
+		AuthClient:   authClient,
+		HumansDAO:    humansDAO,
+		UsersDAO:     userDAO,
+		Logger:       logger,
+		Version:      c.String("git-hash"),
 	}
 
 	mux := server.NewServer(config)

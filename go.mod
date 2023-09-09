@@ -8,16 +8,15 @@ require (
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-chi/cors v1.2.1
 	github.com/go-chi/httplog v0.2.5
-	github.com/google/go-github/v40 v40.0.0
 	github.com/rs/zerolog v1.27.0
 	github.com/sashabaranov/go-openai v1.15.1
 	github.com/segmentio/ksuid v1.0.4
 	github.com/tj/assert v0.0.3
 	github.com/urfave/cli/v2 v2.25.1
-	golang.org/x/oauth2 v0.6.0
+	golang.org/x/oauth2 v0.6.0 // indirect
 	google.golang.org/api v0.114.0
 	google.golang.org/grpc v1.53.0
-	gopkg.in/yaml.v3 v3.0.1
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 require gopkg.in/loremipsum.v1 v1.1.2
@@ -36,7 +35,6 @@ require (
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.7.1 // indirect
@@ -50,7 +48,6 @@ require (
 	github.com/stretchr/testify v1.8.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sync v0.3.0
 	golang.org/x/sys v0.6.0 // indirect
