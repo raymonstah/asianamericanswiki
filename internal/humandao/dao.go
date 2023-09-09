@@ -46,9 +46,16 @@ type Human struct {
 	CreatedAt time.Time `firestore:"created_at"`
 	CreatedBy string    `firestore:"created_by,omitempty"`
 
-	UpdatedAt   time.Time `firestore:"updated_at"`
-	PublishedBy string    `firestore:"published_by,omitempty"`
-	PublishedAt time.Time `firestore:"published_at,omitempty"`
+	UpdatedAt   time.Time   `firestore:"updated_at"`
+	PublishedBy string      `firestore:"published_by,omitempty"`
+	PublishedAt time.Time   `firestore:"published_at,omitempty"`
+	Affiliates  []Affiliate `firestore:"affiliates,omitempty"`
+}
+
+type Affiliate struct {
+	ID   string `firestore:"id,omitempty"`
+	URL  string `firestore:"url,omitempty"`
+	Name string `firestore:"name,omitempty"`
 }
 
 type Reaction struct {
@@ -167,6 +174,7 @@ type AddHumanInput struct {
 	Tags        []string
 	Draft       bool
 	CreatedBy   string
+	Affiliates  []Affiliate
 }
 
 func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) {
@@ -185,6 +193,12 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 		return Human{}, ErrHumanAlreadyExists
 	}
 
+	for i, affiliate := range input.Affiliates {
+		if affiliate.ID == "" {
+			input.Affiliates[i].ID = ksuid.New().String()
+		}
+	}
+
 	now := time.Now().In(time.UTC)
 	human := Human{
 		Name:        input.Name,
@@ -201,6 +215,7 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 		CreatedBy:   input.CreatedBy,
 		Path:        path,
 		UpdatedAt:   now,
+		Affiliates:  input.Affiliates,
 	}
 
 	if input.HumanID == "" {
