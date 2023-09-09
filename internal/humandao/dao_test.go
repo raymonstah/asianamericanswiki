@@ -309,3 +309,30 @@ func TestDAO_HumansByID(t *testing.T) {
 		assert.Equal(t, ids, gotIDs)
 	})
 }
+
+func TestDAO_Affiliates(t *testing.T) {
+	WithDAO(t, func(ctx context.Context, dao *DAO) {
+		assertions := func(human Human, err error) {
+			assert.NoError(t, err)
+			assert.Len(t, human.Affiliates, 3)
+			assert.NotEmpty(t, human.Affiliates[0].ID)
+			assert.NotEqual(t, human.Affiliates[0].ID, human.Affiliates[1].ID)
+			assert.NotEqual(t, human.Affiliates[1].ID, human.Affiliates[2].ID)
+		}
+
+		human, err := dao.AddHuman(ctx, AddHumanInput{
+			Name: "Human",
+			Affiliates: []Affiliate{
+				{URL: "https://url.com/1"},
+				{URL: "https://url.com/2"},
+				{URL: "https://url.com/3"},
+			}})
+
+		assertions(human, err)
+
+		t.Run("find-should-include-affiliates-too", func(t *testing.T) {
+			human, err := dao.Human(ctx, HumanInput{HumanID: human.ID})
+			assertions(human, err)
+		})
+	})
+}

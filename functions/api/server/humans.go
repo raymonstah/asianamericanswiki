@@ -116,6 +116,13 @@ type Human struct {
 	Description   string                 `json:"description,omitempty"`
 	CreatedAt     time.Time              `json:"createdAt"`
 	UpdatedAt     time.Time              `json:"updatedAt"`
+	Affiliates    []Affiliate            `json:"affiliates"`
+}
+
+type Affiliate struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	URL  string `json:"url"`
 }
 
 func (s *Server) HumansList(w http.ResponseWriter, r *http.Request) (err error) {
@@ -223,6 +230,15 @@ func convertHumans(humans []humandao.Human) (response []Human) {
 }
 
 func convertHuman(human humandao.Human) Human {
+	var affiliates []Affiliate = []Affiliate{}
+	for _, affiliate := range human.Affiliates {
+		affiliates = append(affiliates, Affiliate{
+			ID:   affiliate.ID,
+			Name: affiliate.Name,
+			URL:  affiliate.URL,
+		})
+	}
+
 	return Human{
 		ID:            human.ID,
 		Name:          human.Name,
@@ -243,6 +259,7 @@ func convertHuman(human humandao.Human) Human {
 		Description:   human.Description,
 		CreatedAt:     human.CreatedAt,
 		UpdatedAt:     human.UpdatedAt,
+		Affiliates:    affiliates,
 	}
 }
 

@@ -99,3 +99,58 @@ func TestServer_HumansByID(t *testing.T) {
 		assert.Equal(t, humans[i].Name, human.Name)
 	}
 }
+
+func TestServer_HumanWithAffiliateLinks(t *testing.T) {
+	ctx := context.Background()
+	app, err := firebase.NewApp(ctx, &firebase.Config{ProjectID: api.ProjectID})
+	assert.NoError(t, err)
+	client, err := app.Firestore(ctx)
+	assert.NoError(t, err)
+
+	userDAO := userdao.NewDAO(client, userdao.WithUserCollectionName("users-"+ksuid.New().String()))
+	humanDAO := humandao.NewDAO(client, humandao.WithHumanCollectionName("humans-"+ksuid.New().String()))
+
+	n := 10
+	affiliates := make([]humandao.Affiliate, 0, n)
+	for i := 0; i < n; i++ {
+		affiliates = append(affiliates, humandao.Affiliate{
+			URL:  fmt.Sprintf("https://affiliate-link-%v.com", i),
+			Name: fmt.Sprintf("Affiliate Link %v", i),
+		})
+	}
+
+	human, err := humanDAO.AddHuman(ctx, humandao.AddHumanInput{Name: "Human Affiliate", Affiliates: affiliates})
+	assert.NoError(t, err)
+
+	s := NewServer(Config{
+		UsersDAO:   userDAO,
+		HumansDAO:  humanDAO,
+		AuthClient: NoOpAuthorizer{},
+		Logger:     zerolog.New(zerolog.NewTestWriter(t)),
+	})
+
+	httpserver := httptest.NewServer(s)
+	t.Cleanup(httpserver.Close)
+
+	req, err := http.NewRequest(http.MethodGet, httpserver.URL+fmt.Sprintf("/humans/%v", human.Path), nil)
+	req.Header.Set("Authorization", "Bearer XXXXXXXXXXXX")
+	assert.NoError(t, err)
+
+	resp, err := http.DefaultClient.Do(req)
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	// check response body
+	var respBody struct {
+		Human Human `json:"data"`
+	}
+	err = json.NewDecoder(resp.Body).Decode(&respBody)
+	assert.NoError(t, err)
+
+	assert.Len(t, respBody.Human.Affiliates, n)
+	for i := 0; i < n; i++ {
+		assert.NotEmpty(t, respBody.Human.Affiliates[i].ID)
+		assert.Equal(t, human.Affiliates[i].URL, respBody.Human.Affiliates[i].URL)
+		assert.Equal(t, human.Affiliates[i].Name, respBody.Human.Affiliates[i].Name)
+	}
+}
