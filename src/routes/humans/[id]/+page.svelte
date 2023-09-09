@@ -185,16 +185,16 @@
   </div>
 
   <!-- Affiliate Links -->
-  <h2 class="mt-4 text-xl">Affiliate Links</h2>
-  <div
-    class="md:flex md:flex-row md:justify-between dark:text-white bg-gray-200 dark:bg-gray-800"
-  >
-    {#if data.human.affiliates}
+  {#if data.human.affiliates.length > 0}
+    <h2 class="mt-4 text-xl">Affiliate Links</h2>
+    <div
+      class="md:flex md:flex-row md:justify-between dark:text-white bg-gray-200 dark:bg-gray-800"
+    >
       {#each data.human.affiliates as affiliate}
         <div class="max-w-md mx-auto my-2 p-6 rounded shadow-lg">
           <Affiliate url={affiliate.url} name={affiliate.name} />
         </div>
       {/each}
-    {/if}
-  </div>
+    </div>
+  {/if}
 </article>
