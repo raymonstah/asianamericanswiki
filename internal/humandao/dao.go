@@ -53,9 +53,10 @@ type Human struct {
 }
 
 type Affiliate struct {
-	ID   string `firestore:"id,omitempty"`
-	URL  string `firestore:"url,omitempty"`
-	Name string `firestore:"name,omitempty"`
+	ID    string `firestore:"id,omitempty"`
+	URL   string `firestore:"url,omitempty"`
+	Image string `firestore:"image,omitempty"`
+	Name  string `firestore:"name,omitempty"`
 }
 
 type Reaction struct {
