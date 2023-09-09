@@ -150,6 +150,12 @@ func (d *DAO) HumansByID(ctx context.Context, input HumansByIDInput) ([]Human, e
 }
 
 func (d *DAO) UpdateHuman(ctx context.Context, human Human) error {
+	for i, affiliate := range human.Affiliates {
+		if affiliate.ID == "" {
+			human.Affiliates[i].ID = ksuid.New().String()
+		}
+	}
+
 	human.UpdatedAt = time.Now()
 	_, err := d.client.Collection(d.humanCollection).
 		Doc(human.ID).
