@@ -12,29 +12,29 @@ import (
 	"github.com/patrickmn/go-cache"
 	"github.com/rs/zerolog"
 
-	"github.com/raymonstah/asianamericanswiki/internal/contributor"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
+	"github.com/raymonstah/asianamericanswiki/internal/openai"
 	"github.com/raymonstah/asianamericanswiki/internal/userdao"
 )
 
 type Config struct {
-	AuthClient  Authorizer
-	HumansDAO   *humandao.DAO
-	UsersDAO    *userdao.DAO
-	Logger      zerolog.Logger
-	Version     string
-	Contributor contributor.Client
+	AuthClient   Authorizer
+	HumansDAO    *humandao.DAO
+	UsersDAO     *userdao.DAO
+	Logger       zerolog.Logger
+	Version      string
+	OpenAIClient *openai.Client
 }
 
 type Server struct {
-	authClient  Authorizer
-	router      chi.Router
-	logger      zerolog.Logger
-	humanCache  *cache.Cache
-	humanDAO    *humandao.DAO
-	userDAO     *userdao.DAO
-	version     string
-	contributor contributor.Client
+	authClient   Authorizer
+	router       chi.Router
+	logger       zerolog.Logger
+	humanCache   *cache.Cache
+	humanDAO     *humandao.DAO
+	userDAO      *userdao.DAO
+	version      string
+	openAIClient *openai.Client
 }
 
 func (s *Server) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
@@ -45,14 +45,14 @@ func NewServer(config Config) *Server {
 	r := chi.NewRouter()
 	humanCache := cache.New(5*time.Minute, 10*time.Minute)
 	s := &Server{
-		authClient:  config.AuthClient,
-		router:      r,
-		logger:      config.Logger,
-		humanCache:  humanCache,
-		humanDAO:    config.HumansDAO,
-		userDAO:     config.UsersDAO,
-		version:     config.Version,
-		contributor: config.Contributor,
+		authClient:   config.AuthClient,
+		router:       r,
+		logger:       config.Logger,
+		humanCache:   humanCache,
+		humanDAO:     config.HumansDAO,
+		userDAO:      config.UsersDAO,
+		version:      config.Version,
+		openAIClient: config.OpenAIClient,
 	}
 
 	s.setupMiddleware()
