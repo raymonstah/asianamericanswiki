@@ -26,7 +26,7 @@ type GenerateInput struct {
 
 func (c *Client) Generate(ctx context.Context, input GenerateInput) (string, error) {
 	tagWithCommas := strings.Join(input.Tags, ", ")
-	prompt := fmt.Sprintf("Write a two paragraph summary about Asian American %v focusing on the factual information. Use the following tags:, %v", input.Name, tagWithCommas)
+	prompt := fmt.Sprintf("Write a two paragraph summary about Asian American %v %v focusing on the factual information with reliable sources.", tagWithCommas, input.Name)
 	resp, err := c.openAiClient.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
 		Model:     openai.GPT3Dot5Turbo,
 		MaxTokens: 500,
