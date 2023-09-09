@@ -2,6 +2,7 @@
   import { PUBLIC_BASE_URL } from "$env/static/public";
   import SvelteMarkdown from "svelte-markdown";
   import Chip from "../../../lib/components/Chip.svelte";
+  import Affiliate from "../../../lib/components/Affiliate.svelte";
   import dayjs from "dayjs";
   import relativeTime from "dayjs/plugin/relativeTime";
   import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -65,26 +66,30 @@
 
 <article class="max-w-2xl">
   <!-- Header -->
-  <h1 class="text-2xl my-4">{data.human.name}</h1>
+  <h1 class="text-2xl">{data.human.name}</h1>
   <button class="cursor-pointer" on:click={saveHuman}>
-    <svg
-      fill="currentColor"
-      class={isHumanSaved ? "text-amber-300 " : "text-gray-500 "}
-      xmlns="http://www.w3.org/2000/svg"
-      height="2em"
-      viewBox="0 0 512 512"
-      ><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path
-        d="M47.6 300.4L228.3 469.1c7.5 7 17.4 10.9 27.7 10.9s20.2-3.9 27.7-10.9L464.4 300.4c30.4-28.3 47.6-68 47.6-109.5v-5.8c0-69.9-50.5-129.5-119.4-141C347 36.5 300.6 51.4 268 84L256 96 244 84c-32.6-32.6-79-47.5-124.6-39.9C50.5 55.6 0 115.2 0 185.1v5.8c0 41.5 17.2 81.2 47.6 109.5z"
-      /></svg
-    >
+    <div class="my-2">
+      <svg
+        fill="currentColor"
+        class={isHumanSaved ? "text-amber-300 " : "text-gray-500 "}
+        xmlns="http://www.w3.org/2000/svg"
+        height="2em"
+        viewBox="0 0 512 512"
+        ><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path
+          d="M47.6 300.4L228.3 469.1c7.5 7 17.4 10.9 27.7 10.9s20.2-3.9 27.7-10.9L464.4 300.4c30.4-28.3 47.6-68 47.6-109.5v-5.8c0-69.9-50.5-129.5-119.4-141C347 36.5 300.6 51.4 268 84L256 96 244 84c-32.6-32.6-79-47.5-124.6-39.9C50.5 55.6 0 115.2 0 185.1v5.8c0 41.5 17.2 81.2 47.6 109.5z"
+        /></svg
+      >
+    </div>
   </button>
   <!-- Table -->
   <table
-    class="table-fixed w-full text-sm text-left text-gray-500 dark:text-gray-400"
+    class="table-fixed w-full text-sm text-left text-gray-500 dark:text-white bg-gray-200 dark:bg-gray-800"
   >
     {#each humanFields as field}
       {#if data.human[field.key]}
-        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+        <tr
+          class="border-b dark:bg-gray-800 border-gray-300 dark:border-gray-700"
+        >
           <th
             class="dark:text-white px-4 py-4 w-1/3 font-medium text-gray-900 whitespace-nowrap"
             >{field.label}</th
@@ -119,7 +124,7 @@
     {/each}
 
     <!-- Socials Row -->
-    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+    <tr class="dark:bg-gray-800">
       <th
         class="dark:text-white px-4 py-4 w-1/3 font-medium text-gray-900 whitespace-nowrap"
         >Socials</th
@@ -181,15 +186,15 @@
 
   <!-- Affiliate Links -->
   <h2 class="mt-4 text-xl">Affiliate Links</h2>
-  <div class="py-4">
-    <ul class="flex flex-row">
-      {#if data.human.affiliates}
-        {#each data.human.affiliates as affiliate}
-          <li>
-            <Chip><a href={affiliate.url}>{affiliate.name}</a></Chip>
-          </li>
-        {/each}
-      {/if}
-    </ul>
+  <div
+    class="md:flex md:flex-row md:justify-between dark:text-white bg-gray-200 dark:bg-gray-800"
+  >
+    {#if data.human.affiliates}
+      {#each data.human.affiliates as affiliate}
+        <div class="max-w-md mx-auto my-2 p-6 rounded shadow-lg">
+          <Affiliate url={affiliate.url} name={affiliate.name} />
+        </div>
+      {/each}
+    {/if}
   </div>
 </article>
