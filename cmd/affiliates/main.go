@@ -22,6 +22,7 @@ func main() {
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "link"},
 			&cli.StringFlag{Name: "name"},
+			&cli.StringFlag{Name: "image"},
 			&cli.StringFlag{Name: "human-name"},
 			&cli.BoolFlag{Name: "scan"},
 		},
@@ -39,6 +40,7 @@ type Handler struct {
 	HumanName string
 	Name      string
 	Link      string // raw amazon link to be converted
+	Image     string // raw amazon link to be converted
 	Scan      bool
 }
 
@@ -56,6 +58,7 @@ func run(c *cli.Context) error {
 		HumanName: c.String("human-name"),
 		Name:      c.String("name"),
 		Link:      c.String("link"),
+		Image:     c.String("image"),
 		Scan:      c.Bool("scan"),
 	}
 
@@ -91,9 +94,10 @@ func (h *Handler) do(ctx context.Context) error {
 
 		log.Println("Generated affiliate link:", url)
 		human.Affiliates = append(human.Affiliates, humandao.Affiliate{
-			ID:   ksuid.New().String(),
-			URL:  url,
-			Name: h.Name,
+			ID:    ksuid.New().String(),
+			URL:   url,
+			Name:  h.Name,
+			Image: h.Image,
 		})
 
 		if err := h.HumanDAO.UpdateHuman(ctx, human); err != nil {
@@ -113,6 +117,11 @@ func (h *Handler) do(ctx context.Context) error {
 }
 
 func createAmazonAffiliateLink(referralID, productURL string) (string, error) {
+	// already shortened, nothing to do.
+	if strings.HasPrefix(productURL, "https://amzn.to/") {
+		return productURL, nil
+	}
+
 	// Ensure the referral ID is not empty
 	if referralID == "" {
 		return "", fmt.Errorf("Referral ID cannot be empty")

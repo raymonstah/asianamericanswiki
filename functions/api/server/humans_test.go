@@ -114,8 +114,9 @@ func TestServer_HumanWithAffiliateLinks(t *testing.T) {
 	affiliates := make([]humandao.Affiliate, 0, n)
 	for i := 0; i < n; i++ {
 		affiliates = append(affiliates, humandao.Affiliate{
-			URL:  fmt.Sprintf("https://affiliate-link-%v.com", i),
-			Name: fmt.Sprintf("Affiliate Link %v", i),
+			URL:   fmt.Sprintf("https://affiliate-link-%v.com", i),
+			Name:  fmt.Sprintf("Affiliate Link %v", i),
+			Image: fmt.Sprintf("https://affiliate-link-image-%v.com", i),
 		})
 	}
 
@@ -152,5 +153,6 @@ func TestServer_HumanWithAffiliateLinks(t *testing.T) {
 		assert.NotEmpty(t, respBody.Human.Affiliates[i].ID)
 		assert.Equal(t, human.Affiliates[i].URL, respBody.Human.Affiliates[i].URL)
 		assert.Equal(t, human.Affiliates[i].Name, respBody.Human.Affiliates[i].Name)
+		assert.Equal(t, human.Affiliates[i].Image, respBody.Human.Affiliates[i].Image)
 	}
 }
