@@ -98,7 +98,7 @@
             class="dark:text-white px-4 py-4 w-2/3 font-medium text-gray-900 whitespace-nowrap"
           >
             {#if field.isArray}
-              <ul class="flex flex-row">
+              <ul class="flex flex-row flex-wrap space-y-4">
                 {#each data.human[field.key] as item}
                   <li>
                     <Chip><a href="/search?query={item}">{item}</a></Chip>
