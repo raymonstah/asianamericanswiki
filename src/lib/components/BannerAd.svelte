@@ -6,7 +6,7 @@
   });
 </script>
 
-<div class="ads-widget-container flex justify-center">
+<div class="ads-widget-container">
   <!-- Banner Ads -->
   <ins
     class="adsbygoogle"
