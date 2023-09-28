@@ -50,6 +50,11 @@ type Human struct {
 	PublishedBy string      `firestore:"published_by,omitempty"`
 	PublishedAt time.Time   `firestore:"published_at,omitempty"`
 	Affiliates  []Affiliate `firestore:"affiliates,omitempty"`
+	Socials     Socials     `firestore:"socials,omitempty"`
+}
+
+type Socials struct {
+	IMDB string `firestore:"imdb,omitempty"`
 }
 
 type Affiliate struct {

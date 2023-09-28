@@ -1,25 +1,20 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"io"
 	"log"
-	"mime/multipart"
-	"net/http"
 	"os"
-	"regexp"
 	"strings"
 
 	"cloud.google.com/go/firestore"
 	"cloud.google.com/go/storage"
 	"github.com/raymonstah/asianamericanswiki/functions/api"
+	"github.com/raymonstah/asianamericanswiki/internal/cartoonize"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/urfave/cli/v2"
 )
 
-var url = "https://cartoonize-lkqov62dia-de.a.run.app"
 var bucketName = "asianamericanswiki-images"
 var opts struct {
 	Image string
@@ -85,20 +80,12 @@ func (h *Handler) Do(ctx context.Context) error {
 
 	id := human.ID
 
-	rawHTML, err := submitImage(url+"/cartoonize", opts.Image)
-	if err != nil {
-		return err
+	cartoonizeClient := cartoonize.Client{
+		Debug: opts.Debug,
 	}
-
-	imgPath, err := extractDownloadHref(string(rawHTML))
+	raw, err := cartoonizeClient.Do(opts.Image)
 	if err != nil {
-		return err
-	}
-
-	fullDownloadPath := fmt.Sprintf("%v/%v", url, imgPath)
-	raw, err := downloadImage(fullDownloadPath)
-	if err != nil {
-		return err
+		return fmt.Errorf("unable to cartoonize image: %w", err)
 	}
 
 	imgName := fmt.Sprintf("%v.jpg", id)
@@ -120,112 +107,4 @@ func (h *Handler) Do(ctx context.Context) error {
 
 	log.Println("done.")
 	return nil
-}
-
-func downloadImage(path string) ([]byte, error) {
-	log.Printf("downloading image from %v\n", path)
-
-	// Create a new GET request to the URL
-	request, err := http.NewRequest("GET", path, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	// Send the GET request
-	response, err := http.DefaultClient.Do(request)
-	if err != nil {
-		return nil, err
-	}
-	defer response.Body.Close()
-
-	// Check the response status code
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
-	}
-
-	// Read the response body
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	return body, nil
-}
-
-func submitImage(url string, imagePath string) ([]byte, error) {
-	log.Printf("submitting image from %v to cartoonize\n", imagePath)
-	// Create a new POST request to the URL
-	requestBody := &bytes.Buffer{}
-	writer := multipart.NewWriter(requestBody)
-
-	// Open the image file
-	file, err := os.Open(imagePath)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	// Create a form field for the image
-	part, err := writer.CreateFormFile("image", imagePath)
-	if err != nil {
-		return nil, err
-	}
-
-	// Copy the image file into the form field
-	_, err = io.Copy(part, file)
-	if err != nil {
-		return nil, err
-	}
-
-	// Close the multipart writer
-	writer.Close()
-
-	// Create a POST request with the form data
-	request, err := http.NewRequest("POST", url, requestBody)
-	if err != nil {
-		return nil, err
-	}
-
-	// Set the Content-Type header for the request
-	request.Header.Set("Content-Type", writer.FormDataContentType())
-
-	// Send the POST request
-	response, err := http.DefaultClient.Do(request)
-	if err != nil {
-		return nil, err
-	}
-	defer response.Body.Close()
-
-	// Check the response status code
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
-	}
-
-	// Read the response body
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	return body, nil
-}
-
-func extractDownloadHref(htmlContent string) (downloadHref string, err error) {
-	log.Printf("extracting download href\n")
-	if opts.Debug {
-		fmt.Println(htmlContent)
-		fmt.Println()
-		fmt.Println()
-	}
-
-	re := regexp.MustCompile(`static/cartoonized_images/[^"']+`)
-
-	// Find all matches
-	matches := re.FindAllString(htmlContent, -1)
-
-	if len(matches) == 0 {
-		return "", fmt.Errorf("no matching href found")
-	}
-
-	return matches[0], nil
 }
