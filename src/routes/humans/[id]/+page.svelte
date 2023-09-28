@@ -81,6 +81,9 @@
       >
     </div>
   </button>
+  {#if data.human.featuredImage}
+    <img class="w-sm" src={data.human.featuredImage} alt={data.human.name} />
+  {/if}
   <!-- Table -->
   <table
     class="table-fixed w-full text-sm text-left text-gray-500 dark:text-white bg-gray-200 dark:bg-gray-800"
