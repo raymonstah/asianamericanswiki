@@ -13,6 +13,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: 1.21
+
       - name: Check go.mod and go.sum tidiness
         run: |
           go mod tidy && go mod vendor
@@ -20,3 +21,6 @@ jobs:
             echo "Need to run 'go mod tidy && go mod vendor'";
             exit 1;
           fi
+
+      - id: govulncheck
+        uses: golang/govulncheck-action@v1

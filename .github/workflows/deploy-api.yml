@@ -26,6 +26,11 @@ jobs:
             ${{ runner.os }}-firebase-emulators-${{
             hashFiles('~/.cache/firebase/emulators/**') }}
 
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+
       - name: Install emulators and Test
         run: |
           npm install -g firebase-tools
