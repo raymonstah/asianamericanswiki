@@ -271,6 +271,38 @@ func TestDAO_List(t *testing.T) {
 	})
 }
 
+func TestDAO_List_Paginate(t *testing.T) {
+	WithDAO(t, func(ctx context.Context, dao *DAO) {
+		userID := "user123"
+		n := 100
+		ids := make([]string, 0, n)
+		for i := 0; i < n; i++ {
+			human, err := dao.AddHuman(ctx, AddHumanInput{
+				Name:      fmt.Sprintf("%v", ksuid.New().String()),
+				Draft:     false,
+				CreatedBy: userID,
+			})
+			assert.NoError(t, err)
+			ids = append(ids, human.ID)
+		}
+
+		for i := 0; i < n; i += 10 {
+			humans, err := dao.ListHumans(ctx, ListHumansInput{
+				Limit:  n / 10,
+				Offset: i,
+			})
+
+			assert.NoError(t, err)
+			assert.Len(t, humans, n/10)
+			// we got them in descending order
+			for idx, human := range humans {
+				reverseIdx := n - i - idx - 1
+				assert.Equal(t, ids[reverseIdx], human.ID)
+			}
+		}
+	})
+}
+
 func TestDAO_Delete(t *testing.T) {
 	WithDAO(t, func(ctx context.Context, dao *DAO) {
 		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Foo Bar"})
