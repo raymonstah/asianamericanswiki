@@ -54,7 +54,11 @@ type Human struct {
 }
 
 type Socials struct {
-	IMDB string `firestore:"imdb,omitempty"`
+	IMDB      string `firestore:"imdb,omitempty"`
+	Website   string `firestore:"website,omitempty"`
+	X         string `firestore:"x,omitempty"`
+	YouTube   string `firestore:"youtube,omitempty"`
+	Instagram string `firestore:"instagram,omitempty"`
 }
 
 type Affiliate struct {
