@@ -127,7 +127,6 @@ func (c *Client) submitImage(url string, imagePath string) ([]byte, error) {
 }
 
 func (c *Client) extractDownloadHref(htmlContent string) (downloadHref string, err error) {
-	log.Printf("extracting download href\n")
 	if c.Debug {
 		fmt.Println(htmlContent)
 		fmt.Println()

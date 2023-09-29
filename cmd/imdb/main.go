@@ -20,12 +20,14 @@ import (
 	"github.com/raymonstah/asianamericanswiki/internal/cartoonize"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/urfave/cli/v2"
+	"golang.org/x/sync/errgroup"
 )
 
 var bucketName = "asianamericanswiki-images"
 var opts struct {
 	Name  string
 	Debug bool
+	Force bool
 }
 
 func main() {
@@ -33,6 +35,7 @@ func main() {
 		Name: "A CLI tool to get an image from imdb for a human.",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "name", Destination: &opts.Name},
+			&cli.BoolFlag{Name: "force", Destination: &opts.Force},
 		},
 		Action: run,
 	}
@@ -92,18 +95,27 @@ func (h *Handler) Do(ctx context.Context) error {
 	if opts.Name == "" {
 		log.Println("no name provided. scanning all humans..")
 		humans, err := h.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
-			Limit: 20,
+			Limit: 500,
 		})
 		if err != nil {
 			return err
 		}
+		group, ctx := errgroup.WithContext(ctx)
+		group.SetLimit(8)
 		for _, human := range humans {
+			human := human
 			if !slices.Contains(human.Tags, "actor") && !slices.Contains(human.Tags, "actress") {
 				continue
 			}
+			group.Go(func() error {
+				if err := h.search(ctx, human.Name); err != nil {
+					return fmt.Errorf("unable to search imdb for %v: %w", human.Name, err)
+				}
 
-			if err := h.search(ctx, human.Name); err != nil {
-				return fmt.Errorf("unable to search imdb for %v: %w", human.Name, err)
+				return nil
+			})
+			if err := group.Wait(); err != nil {
+				return err
 			}
 		}
 	} else {
@@ -137,7 +149,7 @@ func (h *Handler) search(ctx context.Context, name string) error {
 		link := e.Attr("href")
 		if name == e.Text {
 			found = true
-			log.Printf("Link found: %q -> %s\n", e.Text, link)
+			log.Printf("Link found: %q -> %s\n", e.Text, "https://www.imdb.com"+link)
 			if err := h.downloadImage("https://www.imdb.com"+link, name); err != nil {
 				log.Println("unable to download image:", err)
 			}
@@ -158,11 +170,11 @@ func (h *Handler) downloadImage(url, name string) error {
 	col.SetRequestTimeout(30 * time.Second)
 
 	firstImageFound := false
-	col.OnHTML(".ipc-image", func(e *colly.HTMLElement) {
+	col.OnHTML("img.ipc-image", func(e *colly.HTMLElement) {
 		if firstImageFound {
 			return
 		}
-		if e.Attr("alt") == name {
+		if strings.Contains(e.Attr("alt"), name) {
 			log.Println("Found image for", name)
 			firstImageFound = true
 			imageLink := e.Attr("src")
@@ -184,10 +196,17 @@ func (h *Handler) downloadImage(url, name string) error {
 
 func (h *Handler) processJobs(ctx context.Context) {
 	defer log.Println("done processing jobs")
+	group, ctx := errgroup.WithContext(ctx)
+	group.SetLimit(4)
 	for job := range h.jobs {
-		if err := h.processJob(ctx, job); err != nil {
-			log.Fatal("unable to process job:", err)
-		}
+		job := job
+		group.Go(func() error {
+			return h.processJob(ctx, job)
+		})
+	}
+
+	if err := group.Wait(); err != nil {
+		log.Println("error processing jobs:", err)
 	}
 }
 
@@ -202,10 +221,9 @@ func (h *Handler) processJob(ctx context.Context, job Job) error {
 		return fmt.Errorf("unable to get human: %w", err)
 	}
 
-	if human.FeaturedImage == "" {
-		log.Printf("Found image for %v: %v", name, url)
+	if human.FeaturedImage == "" || opts.Force {
 		fullSizeURL := modifyURL(url)
-		log.Printf("New url: %v", fullSizeURL)
+		log.Printf("Found image for %v: %v", name, fullSizeURL)
 
 		resp, err := http.Get(fullSizeURL)
 		if err != nil {
@@ -226,7 +244,7 @@ func (h *Handler) processJob(ctx context.Context, job Job) error {
 		}
 		raw, err := cartoonizeClient.Do(tempPath)
 		if err != nil {
-			return fmt.Errorf("unable to cartoonize image: %w", err)
+			return fmt.Errorf("unable to cartoonize image for %v: %w", name, err)
 		}
 
 		imgName := fmt.Sprintf("%v.jpg", id)
@@ -242,8 +260,9 @@ func (h *Handler) processJob(ctx context.Context, job Job) error {
 
 		featuredImageURL := fmt.Sprintf("https://storage.googleapis.com/%v/%v", bucketName, imgName)
 		human.FeaturedImage = featuredImageURL
+		log.Printf("Setting image for %v to %v\n", human.Name, featuredImageURL)
 	} else {
-		log.Printf("human %v already has a featured image\n", human.Name)
+		log.Printf("%v already has an image: %v\n", human.Name, human.FeaturedImage)
 	}
 
 	human.Socials.IMDB = job.IMDB
@@ -287,6 +306,5 @@ func writeResponseToTempFile(body io.ReadCloser) (string, error) {
 	}
 
 	tempFilePath := tempFile.Name()
-
 	return tempFilePath, nil
 }
