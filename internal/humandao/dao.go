@@ -32,12 +32,10 @@ type Human struct {
 	DOB           string        `firestore:"dob,omitempty"`
 	DOD           string        `firestore:"dod,omitempty"`
 	Tags          []string      `firestore:"tags,omitempty"`
-	Website       string        `firestore:"website,omitempty"`
 	Ethnicity     []string      `firestore:"ethnicity,omitempty"`
 	BirthLocation string        `firestore:"birth_location,omitempty"`
 	Location      []string      `firestore:"location,omitempty"`
 	InfluencedBy  []string      `firestore:"influenced_by,omitempty"`
-	Twitter       string        `firestore:"twitter,omitempty"`
 	FeaturedImage string        `firestore:"featured_image,omitempty"`
 	Draft         bool          `firestore:"draft"`
 	AIGenerated   bool          `firestore:"ai_generated,omitempty"`
@@ -223,8 +221,6 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 		Ethnicity:   input.Ethnicity,
 		Description: input.Description,
 		Location:    input.Location,
-		Website:     input.Website,
-		Twitter:     input.Twitter,
 		Tags:        input.Tags,
 		Draft:       input.Draft,
 		CreatedAt:   now,
@@ -232,6 +228,10 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 		Path:        path,
 		UpdatedAt:   now,
 		Affiliates:  input.Affiliates,
+		Socials: Socials{
+			Website: input.Website,
+			X:       input.Twitter,
+		},
 	}
 
 	if input.HumanID == "" {
