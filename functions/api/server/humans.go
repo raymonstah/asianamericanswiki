@@ -117,6 +117,13 @@ type Human struct {
 	CreatedAt     time.Time              `json:"createdAt"`
 	UpdatedAt     time.Time              `json:"updatedAt"`
 	Affiliates    []Affiliate            `json:"affiliates"`
+	Socials       Socials                `json:"socials"`
+}
+
+type Socials struct {
+	IMDB    string `json:"imdb,omitempty"`
+	X       string `json:"x,omitempty"`
+	Website string `json:"website,omitempty"`
 }
 
 type Affiliate struct {
@@ -262,6 +269,11 @@ func convertHuman(human humandao.Human) Human {
 		CreatedAt:     human.CreatedAt,
 		UpdatedAt:     human.UpdatedAt,
 		Affiliates:    affiliates,
+		Socials: Socials{
+			IMDB:    human.Socials.IMDB,
+			X:       human.Socials.X,
+			Website: human.Socials.Website,
+		},
 	}
 }
 
