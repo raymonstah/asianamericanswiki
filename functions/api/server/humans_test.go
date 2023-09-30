@@ -44,6 +44,47 @@ func TestServer_HumansList(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Result().StatusCode)
 }
 
+func TestServer_HumansList_OrderByMostViewed(t *testing.T) {
+	ctx := context.Background()
+	app, err := firebase.NewApp(ctx, &firebase.Config{ProjectID: api.ProjectID})
+	assert.NoError(t, err)
+	client, err := app.Firestore(ctx)
+	assert.NoError(t, err)
+
+	humanDAO := humandao.NewDAO(client, humandao.WithHumanCollectionName("humans-"+ksuid.New().String()))
+	n := 15
+	for i := 0; i < n; i++ {
+		human, err := humanDAO.AddHuman(ctx, humandao.AddHumanInput{Name: fmt.Sprintf("Human %v", i)})
+		assert.NoError(t, err)
+		human.Views = int64(i + 1)
+
+		err = humanDAO.UpdateHuman(ctx, human)
+		assert.NoError(t, err)
+	}
+
+	s := NewServer(Config{
+		HumansDAO: humanDAO,
+		Logger:    zerolog.New(zerolog.NewTestWriter(t)),
+	})
+
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest(http.MethodGet, "/?orderBy=views&direction=desc", nil)
+
+	err = s.HumansList(w, r)
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, w.Result().StatusCode)
+	var respBody struct {
+		Humans []Human `json:"data"`
+	}
+	err = json.NewDecoder(w.Result().Body).Decode(&respBody)
+	assert.NoError(t, err)
+
+	assert.Len(t, respBody.Humans, 10) // default limit is 10
+	for i, human := range respBody.Humans {
+		assert.Equal(t, fmt.Sprintf("Human %v", n-i-1), human.Name)
+	}
+}
+
 func TestServer_HumansByID(t *testing.T) {
 	ctx := context.Background()
 	app, err := firebase.NewApp(ctx, &firebase.Config{ProjectID: api.ProjectID})
