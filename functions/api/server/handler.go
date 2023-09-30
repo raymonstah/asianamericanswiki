@@ -127,6 +127,10 @@ func (s *Server) parseToken(r *http.Request, optional bool) (*auth.Token, error)
 		return nil, NewUnauthorizedError(err)
 	}
 
+	if optional {
+		return nil, nil
+	}
+
 	token, err := s.authClient.VerifyIDToken(ctx, tokenString)
 	if err != nil {
 		return nil, NewUnauthorizedError(fmt.Errorf("unable to verify id token: %w", err))
