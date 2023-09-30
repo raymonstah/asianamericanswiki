@@ -20,6 +20,7 @@ import (
 var (
 	ErrHumanNotFound      = errors.New("human not found")
 	ErrHumanAlreadyExists = errors.New("human already exists")
+	ErrInvalidOrderBy     = errors.New("orderBy must be one of: created_at, views")
 )
 
 type ReactionCount map[string]int
@@ -49,6 +50,7 @@ type Human struct {
 	PublishedAt time.Time   `firestore:"published_at,omitempty"`
 	Affiliates  []Affiliate `firestore:"affiliates,omitempty"`
 	Socials     Socials     `firestore:"socials,omitempty"`
+	Views       int64       `firestore:"views,omitempty"`
 }
 
 type Socials struct {
@@ -377,14 +379,28 @@ func (d *DAO) GetReactions(ctx context.Context, input GetReactionsInput) ([]Reac
 }
 
 type ListHumansInput struct {
-	Limit  int
-	Offset int
+	Limit     int
+	Offset    int
+	OrderBy   string
+	Direction firestore.Direction
 }
 
 func (d *DAO) ListHumans(ctx context.Context, input ListHumansInput) ([]Human, error) {
-	docs, err := d.client.Collection(d.humanCollection).
-		OrderBy("created_at", firestore.Desc).
-		Where("draft", "==", false).
+	allowedOrderBy := map[string]struct{}{
+		"views":      {},
+		"created_at": {},
+	}
+	query := d.client.Collection(d.humanCollection).
+		Where("draft", "==", false)
+	if input.OrderBy == "" {
+		query = query.OrderBy("created_at", firestore.Desc)
+	} else {
+		if _, ok := allowedOrderBy[input.OrderBy]; !ok {
+			return nil, ErrInvalidOrderBy
+		}
+		query = query.OrderBy(input.OrderBy, input.Direction)
+	}
+	docs, err := query.
 		Offset(input.Offset).
 		Limit(input.Limit).
 		Documents(ctx).
@@ -493,6 +509,23 @@ func (d *DAO) Delete(ctx context.Context, input DeleteInput) error {
 		Delete(ctx)
 	if err != nil {
 		return fmt.Errorf("unable to delete human: %v: %w", input.HumanID, err)
+	}
+
+	return nil
+}
+
+type ViewInput struct {
+	HumanID string
+}
+
+func (d *DAO) View(ctx context.Context, input ViewInput) error {
+	_, err := d.client.Collection(d.humanCollection).
+		Doc(input.HumanID).
+		Update(ctx, []firestore.Update{
+			{Path: "views", Value: firestore.Increment(1)},
+		})
+	if err != nil {
+		return fmt.Errorf("unable to view human: %v: %w", input.HumanID, err)
 	}
 
 	return nil

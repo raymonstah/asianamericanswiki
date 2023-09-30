@@ -5,11 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"strings"
 
 	"firebase.google.com/go/v4/auth"
 	"github.com/go-chi/httplog"
+	"github.com/raymonstah/asianamericanswiki/internal/ratelimiter"
 )
 
 type contextKey string
@@ -52,9 +54,22 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (s *Server) OptionalAuthMiddleware(next http.Handler) http.Handler {
+	return Handler(func(w http.ResponseWriter, r *http.Request) error {
+		token, err := s.parseToken(r, true)
+		if err != nil {
+			return err
+		}
+
+		ctx := WithToken(r.Context(), token)
+		next.ServeHTTP(w, r.WithContext(ctx))
+		return nil
+	})
+
+}
 func (s *Server) AuthMiddleware(next http.Handler) http.Handler {
 	return Handler(func(w http.ResponseWriter, r *http.Request) error {
-		token, err := s.parseToken(r)
+		token, err := s.parseToken(r, false)
 		if err != nil {
 			return err
 		}
@@ -66,9 +81,28 @@ func (s *Server) AuthMiddleware(next http.Handler) http.Handler {
 
 }
 
+func (s *Server) RateLimitMiddleware(next http.Handler) http.Handler {
+	return Handler(func(w http.ResponseWriter, r *http.Request) error {
+		ip, _, err := net.SplitHostPort(r.RemoteAddr)
+		if err != nil {
+			return err
+		}
+
+		if err := s.rateLimiter.Check(ip); err != nil {
+			if errors.Is(err, ratelimiter.ErrRateLimitExceeded) {
+				return NewTooManyRequestsError(err)
+			}
+			return NewInternalServerError(err)
+		}
+
+		next.ServeHTTP(w, r)
+		return nil
+	})
+}
+
 func (s *Server) AdminMiddleware(next http.Handler) http.Handler {
 	return Handler(func(w http.ResponseWriter, r *http.Request) error {
-		token, err := s.parseToken(r)
+		token, err := s.parseToken(r, false)
 		if err != nil {
 			return err
 		}
@@ -85,10 +119,10 @@ func (s *Server) AdminMiddleware(next http.Handler) http.Handler {
 
 }
 
-func (s *Server) parseToken(r *http.Request) (*auth.Token, error) {
+func (s *Server) parseToken(r *http.Request, optional bool) (*auth.Token, error) {
 	ctx := r.Context()
 
-	tokenString, err := parseBearerToken(r)
+	tokenString, err := parseBearerToken(r, optional)
 	if err != nil {
 		return nil, NewUnauthorizedError(err)
 	}
@@ -101,10 +135,13 @@ func (s *Server) parseToken(r *http.Request) (*auth.Token, error) {
 	return token, nil
 }
 
-func parseBearerToken(r *http.Request) (token string, err error) {
+func parseBearerToken(r *http.Request, optional bool) (token string, err error) {
 	tok := r.Header.Get("Authorization")
 	if len(tok) > 6 && strings.ToUpper(tok[0:7]) == "BEARER " {
 		return tok[7:], nil
+	}
+	if optional {
+		return "", nil
 	}
 	return "", fmt.Errorf("invalid authorization token")
 }

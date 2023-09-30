@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
+	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/raymonstah/asianamericanswiki/internal/userdao"
 )
 
@@ -71,12 +72,20 @@ func (s *Server) ViewHuman(w http.ResponseWriter, r *http.Request) (err error) {
 		return err
 	}
 
-	err = s.userDAO.ViewHuman(ctx, userdao.ViewHumanInput{
+	if err := s.humanDAO.View(ctx, humandao.ViewInput{
 		HumanID: humanID,
-		UserID:  user.UID,
-	})
-	if err != nil {
+	}); err != nil {
 		return NewInternalServerError(err)
+	}
+
+	if user != nil {
+		err = s.userDAO.ViewHuman(ctx, userdao.ViewHumanInput{
+			HumanID: humanID,
+			UserID:  user.UID,
+		})
+		if err != nil {
+			return NewInternalServerError(err)
+		}
 	}
 
 	s.writeData(w, http.StatusNoContent, nil)

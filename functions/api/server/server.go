@@ -14,6 +14,7 @@ import (
 
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/raymonstah/asianamericanswiki/internal/openai"
+	"github.com/raymonstah/asianamericanswiki/internal/ratelimiter"
 	"github.com/raymonstah/asianamericanswiki/internal/userdao"
 )
 
@@ -31,6 +32,7 @@ type Server struct {
 	router       chi.Router
 	logger       zerolog.Logger
 	humanCache   *cache.Cache
+	rateLimiter  *ratelimiter.RateLimiter
 	humanDAO     *humandao.DAO
 	userDAO      *userdao.DAO
 	version      string
@@ -49,6 +51,7 @@ func NewServer(config Config) *Server {
 		router:       r,
 		logger:       config.Logger,
 		humanCache:   humanCache,
+		rateLimiter:  ratelimiter.New(3, time.Second),
 		humanDAO:     config.HumansDAO,
 		userDAO:      config.UsersDAO,
 		version:      config.Version,
@@ -61,11 +64,9 @@ func NewServer(config Config) *Server {
 }
 
 func (s *Server) setupMiddleware() {
-	s.router.Use(middleware.RequestID)
 	s.router.Use(middleware.RealIP)
 	s.router.Use(httplog.RequestLogger(s.logger))
 	s.router.Use(middleware.StripSlashes)
-	s.router.Use(middleware.Recoverer)
 	s.router.Use(cors.Handler(cors.Options{
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
@@ -96,7 +97,10 @@ func (s *Server) setupRoutes() {
 
 	s.router.With(s.AuthMiddleware).Method(http.MethodGet, "/user", Handler(s.User))
 	s.router.With(s.AuthMiddleware).Method(http.MethodPost, "/humans/{humanID}/save", Handler(s.SaveHuman))
-	s.router.With(s.AuthMiddleware).Method(http.MethodPost, "/humans/{humanID}/view", Handler(s.ViewHuman))
+	s.router.
+		With(s.OptionalAuthMiddleware).
+		With(s.RateLimitMiddleware).
+		Method(http.MethodPost, "/humans/{humanID}/view", Handler(s.ViewHuman))
 }
 
 func (s *Server) Version(w http.ResponseWriter, r *http.Request) error {

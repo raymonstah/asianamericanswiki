@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"cloud.google.com/go/firestore"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
 
@@ -92,10 +93,6 @@ func (s *Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error)
 	return nil
 }
 
-type HumansListResponse struct {
-	Humans []Human `json:"humans"`
-}
-
 type Human struct {
 	ID            string                 `json:"id,omitempty"`
 	Name          string                 `json:"name,omitempty"`
@@ -141,7 +138,16 @@ func (s *Server) HumansList(w http.ResponseWriter, r *http.Request) (err error) 
 		limit     = numOrFallback(limitStr, 10)
 		offsetStr = r.URL.Query().Get("offset")
 		offset    = numOrFallback(offsetStr, 0)
+		orderBy   = r.URL.Query().Get("orderBy")
+		dir       = r.URL.Query().Get("direction")
 	)
+	direction := firestore.Desc
+	if dir == "asc" {
+		direction = firestore.Asc
+	}
+	if orderBy == "" {
+		orderBy = "created_at"
+	}
 
 	defer func(start time.Time) {
 		oplog.Err(err).
@@ -150,18 +156,24 @@ func (s *Server) HumansList(w http.ResponseWriter, r *http.Request) (err error) 
 			Msg("completed request")
 	}(time.Now())
 
-	key := fmt.Sprintf("%d-%d", limit, offset)
+	key := fmt.Sprintf("%v-%v-%d-%d", orderBy, direction, limit, offset)
 	raw, ok := s.humanCache.Get(key)
 	var humans []humandao.Human
 	if ok {
 		humans = raw.([]humandao.Human)
-		s.logger.Info().Msg("HumansList cache hit")
+		s.logger.Debug().Msg("HumansList cache hit")
 	} else {
 		humans, err = s.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
-			Limit:  limit,
-			Offset: offset,
+			Limit:     limit,
+			Offset:    offset,
+			OrderBy:   orderBy,
+			Direction: direction,
 		})
 		if err != nil {
+			if errors.Is(err, humandao.ErrInvalidOrderBy) {
+				return NewBadRequestError(err)
+			}
+
 			return NewInternalServerError(err)
 		}
 		s.humanCache.SetDefault(key, humans)

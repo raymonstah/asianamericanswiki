@@ -11,6 +11,7 @@ import (
 	"cloud.google.com/go/firestore"
 	"github.com/segmentio/ksuid"
 	"github.com/tj/assert"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/raymonstah/asianamericanswiki/functions/api"
 )
@@ -366,5 +367,52 @@ func TestDAO_Affiliates(t *testing.T) {
 			human, err := dao.Human(ctx, HumanInput{HumanID: human.ID})
 			assertions(human, err)
 		})
+	})
+}
+
+func TestDAO_View(t *testing.T) {
+	WithDAO(t, func(ctx context.Context, dao *DAO) {
+		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Foo Bar"})
+		assert.NoError(t, err)
+		n := 100
+		group, ctx := errgroup.WithContext(ctx)
+		group.SetLimit(16)
+		for i := 0; i < n; i++ {
+			group.Go(func() error {
+				err := dao.View(ctx, ViewInput{human.ID})
+				assert.NoError(t, err)
+				return nil
+			})
+		}
+		err = group.Wait()
+		assert.NoError(t, err)
+
+		gotHuman, err := dao.Human(context.TODO(), HumanInput{HumanID: human.ID})
+		assert.NoError(t, err)
+		assert.EqualValues(t, n, gotHuman.Views)
+	})
+}
+
+func TestDAO_MostViewed(t *testing.T) {
+	WithDAO(t, func(ctx context.Context, dao *DAO) {
+		n := 15
+		for i := 0; i < n; i++ {
+			human, err := dao.AddHuman(ctx, AddHumanInput{Name: fmt.Sprintf("Human %v", i)})
+			assert.NoError(t, err)
+			human.Views = int64(i)
+			err = dao.UpdateHuman(ctx, human)
+			assert.NoError(t, err)
+		}
+
+		humans, err := dao.ListHumans(ctx, ListHumansInput{
+			Limit:     10,
+			Offset:    0,
+			OrderBy:   "views",
+			Direction: firestore.Desc,
+		})
+		assert.NoError(t, err)
+		for i, human := range humans {
+			assert.EqualValues(t, n-i-1, human.Views)
+		}
 	})
 }

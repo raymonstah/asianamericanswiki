@@ -18,6 +18,13 @@ func NewInternalServerError(err error) ErrorResponse {
 	}
 }
 
+func NewTooManyRequestsError(err error) ErrorResponse {
+	return ErrorResponse{
+		Status: http.StatusTooManyRequests,
+		Err:    err,
+	}
+}
+
 func NewUnauthorizedError(err error) ErrorResponse {
 	return ErrorResponse{
 		Status: http.StatusUnauthorized,
