@@ -5,7 +5,7 @@
     paths:
       # only run when the source code changes or this file changes
       - "functions/api/**"
-      - "go.mod"
+      - "go.*"
       - ".github/workflows/deploy-api.yml"
       - "internal/**"
       - "Dockerfile"
