@@ -60,9 +60,13 @@ func (s *Server) ViewHuman(w http.ResponseWriter, r *http.Request) (err error) {
 	)
 
 	defer func(start time.Time) {
+		uid := ""
+		if user != nil {
+			uid = user.UID
+		}
 		oplog.Err(err).
 			Str("request", "ViewHuman").
-			Str("uid", user.UID).
+			Str("uid", uid).
 			Dur("duration", time.Since(start).Round(time.Millisecond)).
 			Msg("completed request")
 	}(time.Now())
