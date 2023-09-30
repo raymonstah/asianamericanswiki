@@ -127,7 +127,7 @@ func (s *Server) parseToken(r *http.Request, optional bool) (*auth.Token, error)
 		return nil, NewUnauthorizedError(err)
 	}
 
-	if optional {
+	if tokenString == "" && optional {
 		return nil, nil
 	}
 
