@@ -16,7 +16,7 @@ jobs:
     env:
       IMAGE_NAME: us-central1-docker.pkg.dev/asianamericans-wiki/asianamericanswiki-ui/ui
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - id: "auth"
         name: "Authenticate to Google Cloud"
