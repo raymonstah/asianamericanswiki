@@ -67,6 +67,7 @@ func (s *Server) setupMiddleware() {
 	s.router.Use(middleware.RealIP)
 	s.router.Use(httplog.RequestLogger(s.logger))
 	s.router.Use(middleware.StripSlashes)
+	s.router.Use(s.RateLimitMiddleware)
 	s.router.Use(cors.Handler(cors.Options{
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
@@ -99,7 +100,6 @@ func (s *Server) setupRoutes() {
 	s.router.With(s.AuthMiddleware).Method(http.MethodPost, "/humans/{humanID}/save", Handler(s.SaveHuman))
 	s.router.
 		With(s.OptionalAuthMiddleware).
-		With(s.RateLimitMiddleware).
 		Method(http.MethodPost, "/humans/{humanID}/view", Handler(s.ViewHuman))
 }
 
