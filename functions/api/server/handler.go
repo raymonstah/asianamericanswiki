@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net"
 	"net/http"
 	"strings"
 
@@ -36,17 +35,18 @@ func (n NoOpAuthorizer) VerifyIDToken(ctx context.Context, idToken string) (*aut
 }
 
 func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	oplog := httplog.LogEntry(r.Context())
 	w.Header().Set("Content-Type", "application/json")
 	if err := h(w, r); err != nil {
 		var errResponse ErrorResponse
 		ok := errors.As(err, &errResponse)
 		if !ok {
+			oplog.Err(err).Msg("error in ServeHTTP handler")
 			errResponse.Status = http.StatusInternalServerError
 			errResponse.Err = err
 		}
 		w.WriteHeader(errResponse.Status)
 		if err := json.NewEncoder(w).Encode(map[string]interface{}{"error": errResponse.Error()}); err != nil {
-			oplog := httplog.LogEntry(r.Context())
 			oplog.Err(err).Msg("unable to encode error response")
 			return
 		}
@@ -83,12 +83,7 @@ func (s *Server) AuthMiddleware(next http.Handler) http.Handler {
 
 func (s *Server) RateLimitMiddleware(next http.Handler) http.Handler {
 	return Handler(func(w http.ResponseWriter, r *http.Request) error {
-		ip, _, err := net.SplitHostPort(r.RemoteAddr)
-		if err != nil {
-			return err
-		}
-
-		if err := s.rateLimiter.Check(ip); err != nil {
+		if err := s.rateLimiter.Check(r.RemoteAddr); err != nil {
 			if errors.Is(err, ratelimiter.ErrRateLimitExceeded) {
 				return NewTooManyRequestsError(err)
 			}
