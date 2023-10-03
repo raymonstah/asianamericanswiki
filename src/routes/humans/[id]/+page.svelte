@@ -6,6 +6,7 @@
   import dayjs from "dayjs";
   import relativeTime from "dayjs/plugin/relativeTime";
   import { getAuth, onAuthStateChanged } from "firebase/auth";
+  import { onMount } from "svelte";
   dayjs.extend(relativeTime);
 
   export let data;
@@ -62,6 +63,33 @@
       });
     }
   }
+
+  onMount(async () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    const headers = new Headers();
+    if (user) {
+      const token = await user.getIdToken();
+      headers.append("Authorization", `Bearer ${token}`);
+    }
+
+    try {
+      const response = await fetch(
+        `${PUBLIC_BASE_URL}/humans/${data.human.id}/view`,
+        {
+          method: "POST",
+          headers: headers,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  });
 </script>
 
 <article class="max-w-2xl">
