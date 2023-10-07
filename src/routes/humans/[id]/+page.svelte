@@ -92,6 +92,31 @@
   });
 </script>
 
+<svelte:head>
+  <title>{data.human.name} | AsianAmericans.wiki</title>
+  <meta name="description" content={data.human.description} />
+
+  <!-- Facebook Meta Tags -->
+  <meta
+    property="og:url"
+    content="https://asianamericans.wiki/humans/{data.human.path}"
+  />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={data.human.name} />
+  <meta property="og:description" content={data.human.description} />
+  <meta property="og:image" content={data.human.featuredImage} />
+
+  <!-- Twitter Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta
+    property="twitter:url"
+    content="https://asianamericans.wiki/humans/{data.human.path}"
+  />
+  <meta name="twitter:title" content={data.human.name} />
+  <meta name="twitter:description" content={data.human.description} />
+  <meta name="twitter:image" content={data.human.featuredImage} />
+</svelte:head>
+
 <article class="max-w-2xl">
   <!-- Header -->
   <h1 class="text-2xl">{data.human.name}</h1>
