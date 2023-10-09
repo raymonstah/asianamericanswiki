@@ -76,6 +76,14 @@ github.com/go-chi/cors
 # github.com/go-chi/httplog v0.3.1
 ## explicit; go 1.14
 github.com/go-chi/httplog
+# github.com/go-json-experiment/json v0.0.0-20230922184908-dc36ffcf8533
+## explicit; go 1.21
+github.com/go-json-experiment/json
+github.com/go-json-experiment/json/internal
+github.com/go-json-experiment/json/internal/jsonflags
+github.com/go-json-experiment/json/internal/jsonopts
+github.com/go-json-experiment/json/internal/jsonwire
+github.com/go-json-experiment/json/jsontext
 # github.com/gobwas/glob v0.2.3
 ## explicit
 github.com/gobwas/glob

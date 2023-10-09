@@ -8,6 +8,7 @@ require (
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-chi/cors v1.2.1
 	github.com/go-chi/httplog v0.3.1
+	github.com/go-json-experiment/json v0.0.0-20230922184908-dc36ffcf8533
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/rs/zerolog v1.31.0
 	github.com/sashabaranov/go-openai v1.15.3

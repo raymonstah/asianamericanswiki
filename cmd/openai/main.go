@@ -2,15 +2,19 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
+	"log/slog"
 	"math/rand"
 	"os"
 	"regexp"
 	"strings"
 
 	"cloud.google.com/go/firestore"
+	"github.com/go-json-experiment/json"
 	"github.com/urfave/cli/v2"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/raymonstah/asianamericanswiki/functions/api"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
@@ -23,6 +27,7 @@ func main() {
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "open-ai-token", EnvVars: []string{"OPEN_AI_TOKEN"}},
 			&cli.StringFlag{Name: "name", EnvVars: []string{"NAME"}},
+			&cli.StringSliceFlag{Name: "tags"},
 			&cli.BoolFlag{Name: "scan"},
 		},
 		Action: run,
@@ -38,6 +43,7 @@ type Handler struct {
 	OpenAI   *openai.Client
 	HumanDAO *humandao.DAO
 	Name     string
+	Tags     []string // optional, used when creating a new human.
 	Scan     bool
 }
 
@@ -55,6 +61,7 @@ func run(c *cli.Context) error {
 		OpenAI:   client,
 		FSClient: fsClient,
 		Name:     c.String("name"),
+		Tags:     c.StringSlice("tags"),
 		Scan:     c.Bool("scan"),
 	}
 
@@ -72,6 +79,12 @@ func (h *Handler) do(ctx context.Context) error {
 		path = strings.ToLower(path)
 		human, err := h.HumanDAO.Human(ctx, humandao.HumanInput{Path: path})
 		if err != nil {
+			if errors.Is(err, humandao.ErrHumanNotFound) {
+				if err := h.addNew(ctx, h.Name); err != nil {
+					return err
+				}
+				return nil
+			}
 			return err
 		}
 		humans = append(humans, human)
@@ -93,6 +106,96 @@ func (h *Handler) do(ctx context.Context) error {
 		}
 	}
 
+	return nil
+}
+
+type HumanCreateRequest struct {
+	Name        string   `json:"name,omitempty"`
+	DOB         string   `json:"dob,omitempty"`
+	DOD         string   `json:"dod,omitempty"`
+	Ethnicity   []string `json:"ethnicity,omitempty"`
+	Description string   `json:"description,omitempty"`
+	Location    []string `json:"location,omitempty"`
+	Website     string   `json:"website,omitempty"`
+	Twitter     string   `json:"twitter,omitempty"`
+	Tags        []string `json:"tags,omitempty"`
+}
+
+func (h *Handler) addNew(ctx context.Context, name string) error {
+	tags := strings.Join(h.Tags, ", ")
+	slog.Info("Adding new human:", slog.String("name", name), slog.String("tags", tags))
+	group, groupctx := errgroup.WithContext(ctx)
+	var (
+		description string
+		request     HumanCreateRequest
+	)
+	group.Go(func() error {
+		d, err := h.OpenAI.Generate(groupctx, openai.GenerateInput{
+			Tags: h.Tags,
+			Name: name,
+		})
+		if err != nil {
+			return fmt.Errorf("unable to generate description: %w", err)
+		}
+		description = replaceSingleNewlineWithDoubleNewlines(d)
+		return nil
+	})
+	group.Go(func() error {
+		response, err := h.OpenAI.GenerateCreateRequest(groupctx, openai.GenerateCreateRequest{
+			Tags: h.Tags,
+			Name: name,
+		})
+		if err != nil {
+			return fmt.Errorf("unable to generate json from openai: %w", err)
+		}
+		if err := json.Unmarshal(response, &request); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err := group.Wait(); err != nil {
+		return err
+	}
+
+	input := humandao.AddHumanInput{
+		Name:        request.Name,
+		DOB:         request.DOB,
+		DOD:         request.DOD,
+		Ethnicity:   request.Ethnicity,
+		Description: description,
+		Location:    request.Location,
+		Website:     request.Website,
+		Twitter:     request.Twitter,
+		Tags:        request.Tags,
+	}
+
+	fmt.Printf("Name: %v\n", input.Name)
+	fmt.Printf("DOB: %v\n", input.DOB)
+	fmt.Printf("DOD: %v\n", input.DOD)
+	fmt.Printf("Ethnicity: %v\n", input.Ethnicity)
+	fmt.Printf("Location: %v\n", input.Location)
+	fmt.Printf("Website: %v\n", input.Website)
+	fmt.Printf("Twitter: %v\n", input.Twitter)
+	fmt.Printf("Tags: %v\n", input.Tags)
+	fmt.Printf("Description: %v\n", input.Description)
+
+	fmt.Println("Add new human? (y/n)")
+	var userInput string
+	_, err := fmt.Scan(&userInput)
+	if err != nil {
+		return fmt.Errorf("unable to scan user input: %w", err)
+	}
+
+	if strings.ToUpper(userInput) != "Y" {
+		slog.Info("Aborting")
+		return nil
+	}
+
+	human, err := h.HumanDAO.AddHuman(ctx, input)
+	if err != nil {
+		return fmt.Errorf("unable to add human: %w", err)
+	}
+	slog.Info("Successfully added human", slog.String("id", human.ID), slog.String("name", human.Name))
 	return nil
 }
 
