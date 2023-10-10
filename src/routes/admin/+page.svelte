@@ -44,11 +44,15 @@
         });
         currentUser = u.data;
 
-        // fetch all saved humans
+        let saved = u.data.saved.map((h) => h.human_id);
+        let recentlyViewed = u.data.recently_viewed.map((h) => h.human_id);
+        let allHumans = [...saved, ...recentlyViewed];
+
+        // fetch all humans
         let h = await fetch(`${PUBLIC_BASE_URL}/humans/search`, {
           method: "POST",
           headers: headers,
-          body: JSON.stringify(u.data.saved.map((h) => h.human_id)),
+          body: JSON.stringify(allHumans),
         })
           .then((response) => {
             return response.json();
@@ -131,6 +135,26 @@
                 {humans[savedHuman.human_id]?.name}
               </h2>
               <span class="text-xs">{dayjs(savedHuman.saved_at).fromNow()}</span
+              >
+            </div>
+          </a>
+        {/each}
+      {/if}
+
+      <h1 class="text-4xl font-extrabold mb-4">Recently Viewed</h1>
+      {#if currentUser && currentUser.recently_viewed}
+        {#each currentUser.recently_viewed as recentlyViewed}
+          <a href="humans/{humans[recentlyViewed.human_id]?.path}">
+            <div
+              class="max-w-sm px-1 py-2 my-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100
+        flex flex-col space-x-4 items-center
+        dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+            >
+              <h2 class="text-xl text-gray-900 dark:text-white">
+                {humans[recentlyViewed.human_id]?.name}
+              </h2>
+              <span class="text-xs"
+                >{dayjs(recentlyViewed.viewed_at).fromNow()}</span
               >
             </div>
           </a>
