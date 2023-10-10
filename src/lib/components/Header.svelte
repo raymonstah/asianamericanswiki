@@ -1,29 +1,12 @@
 <script>
-  import { getAuth, signOut } from "firebase/auth";
-  import { loggedIn } from "../../store.js";
-  import { onDestroy } from "svelte";
+  import { signOut } from "firebase/auth";
   import { browser } from "$app/environment";
-
-  let loggedInValue;
-  const sub = loggedIn.subscribe((value) => {
-    loggedInValue = value;
-  });
-
-  // unsubscribe when page goes away
-  onDestroy(() => {
-    sub();
-  });
+  import { auth } from "$lib/firebase";
+  import { user } from "$lib/firebase";
 
   function logout() {
-    const auth = getAuth();
     console.log("logging out");
-    signOut(auth)
-      .then(() => {
-        loggedIn.set(false);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    signOut(auth);
   }
 
   let mobileNavbarVisible = false;
@@ -131,7 +114,7 @@
           >
         </li>
         <li>
-          {#if loggedInValue}
+          {#if $user}
             <a
               href={"#"}
               class="block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"

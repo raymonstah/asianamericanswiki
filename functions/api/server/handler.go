@@ -104,6 +104,7 @@ func (s *Server) AdminMiddleware(next http.Handler) http.Handler {
 
 		admin, ok := token.Claims["admin"]
 		if !ok || !admin.(bool) {
+			s.logger.Warn().Str("uid", token.UID).Msg("user is not an admin")
 			return NewForbiddenError(fmt.Errorf("user is not an admin"))
 		}
 

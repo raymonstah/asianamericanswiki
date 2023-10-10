@@ -129,6 +129,39 @@ func (s *Server) SaveHuman(w http.ResponseWriter, r *http.Request) (err error) {
 	return nil
 }
 
+func (s *Server) UnsaveHuman(w http.ResponseWriter, r *http.Request) (err error) {
+	var (
+		ctx     = r.Context()
+		oplog   = httplog.LogEntry(r.Context())
+		humanID = chi.URLParam(r, "humanID")
+		user    = Token(ctx)
+	)
+
+	defer func(start time.Time) {
+		oplog.Err(err).
+			Str("request", "UnsaveHuman").
+			Str("uid", user.UID).
+			Dur("duration", time.Since(start).Round(time.Millisecond)).
+			Msg("completed request")
+	}(time.Now())
+
+	_, err = s.GetHumanFromCache(ctx, humanID)
+	if err != nil {
+		return err
+	}
+
+	err = s.userDAO.UnsaveHuman(ctx, userdao.UnsaveHumanInput{
+		HumanID: humanID,
+		UserID:  user.UID,
+	})
+	if err != nil {
+		return NewInternalServerError(err)
+	}
+
+	s.writeData(w, http.StatusNoContent, nil)
+	return nil
+}
+
 func toUserResponse(user userdao.User) User {
 	saved := make([]Saved, 0, len(user.Saved))
 	recentlyViewed := make([]RecentlyViewed, 0, len(user.RecentlyViewed))
