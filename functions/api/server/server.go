@@ -97,6 +97,7 @@ func (s *Server) setupRoutes() {
 
 	s.router.With(s.AuthMiddleware).Method(http.MethodGet, "/user", Handler(s.User))
 	s.router.With(s.AuthMiddleware).Method(http.MethodPost, "/humans/{humanID}/save", Handler(s.SaveHuman))
+	s.router.With(s.AuthMiddleware).Method(http.MethodDelete, "/humans/{humanID}/save", Handler(s.UnsaveHuman))
 	s.router.
 		With(s.RateLimitMiddleware).
 		With(s.OptionalAuthMiddleware).

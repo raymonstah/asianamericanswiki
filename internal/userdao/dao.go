@@ -162,6 +162,39 @@ func (d *DAO) SaveHuman(ctx context.Context, input SaveHumanInput) error {
 	return nil
 }
 
+type UnsaveHumanInput struct {
+	UserID  string
+	HumanID string
+}
+
+// UnsaveHuman indicates that the user has unsaved a given human.
+func (d *DAO) UnsaveHuman(ctx context.Context, input UnsaveHumanInput) error {
+	// Unsave the human if the human is saved by the user.
+	docs, err := d.client.Collection(d.userCollectionName).Doc(input.UserID).
+		Collection("saved").Where("human_id", "==", input.HumanID).Documents(ctx).GetAll()
+	if err != nil {
+		return fmt.Errorf("unable to check if human %v has already been saved by user %v: %w", input.HumanID, input.UserID, err)
+	}
+	if len(docs) == 0 {
+		return nil
+	}
+
+	for _, doc := range docs {
+		var saved Saved
+		if err := doc.DataTo(&saved); err != nil {
+			return fmt.Errorf("unable to convert document %v for user %v: %w", doc.Ref.ID, input.UserID, err)
+		}
+		if saved.HumanID == input.HumanID {
+			// Delete the document
+			if _, err := doc.Ref.Delete(ctx); err != nil {
+				return fmt.Errorf("unable to delete document %v for user %v: %w", doc.Ref.ID, input.UserID, err)
+			}
+			return nil
+		}
+	}
+	return nil
+}
+
 type ViewHumanInput struct {
 	UserID  string
 	HumanID string

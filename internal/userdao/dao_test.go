@@ -83,7 +83,6 @@ func TestDAO_RecentlyViewed(t *testing.T) {
 	})
 }
 
-// write a test for saving a human
 func TestDAO_SaveHuman(t *testing.T) {
 	WithDAO(t, func(ctx context.Context, dao *DAO) {
 		var (
@@ -149,6 +148,28 @@ func TestDAO_SaveHuman_IgnoreDupe(t *testing.T) {
 		assert.Equal(t, userID, user.ID)
 		assert.Len(t, user.Saved, 1)
 		assert.Equal(t, human1ID, user.Saved[0].HumanID)
+	})
+}
+
+func TestDAO_SaveHuman_UnsaveHuman(t *testing.T) {
+	WithDAO(t, func(ctx context.Context, dao *DAO) {
+		var (
+			userID   = ksuid.New().String()
+			human1ID = ksuid.New().String()
+		)
+		// Create an empty user
+		_, err := dao.client.Collection(dao.userCollectionName).Doc(userID).Create(ctx, map[string]interface{}{})
+		assert.NoError(t, err)
+
+		err = dao.SaveHuman(ctx, SaveHumanInput{UserID: userID, HumanID: human1ID})
+		assert.NoError(t, err)
+
+		err = dao.UnsaveHuman(ctx, UnsaveHumanInput{UserID: userID, HumanID: human1ID})
+		assert.NoError(t, err)
+
+		user, err := dao.User(ctx, userID, WithSaved())
+		assert.NoError(t, err)
+		assert.Empty(t, user.Saved)
 	})
 }
 

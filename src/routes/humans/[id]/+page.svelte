@@ -5,7 +5,7 @@
   import Affiliate from "../../../lib/components/Affiliate.svelte";
   import dayjs from "dayjs";
   import relativeTime from "dayjs/plugin/relativeTime";
-  import { getAuth, onAuthStateChanged } from "firebase/auth";
+  import { user } from "$lib/firebase";
   import { onMount } from "svelte";
   dayjs.extend(relativeTime);
 
@@ -42,37 +42,52 @@
   let isHumanSaved = false;
   function saveHuman() {
     isHumanSaved = !isHumanSaved;
-    if (isHumanSaved) {
-      const auth = getAuth();
-      onAuthStateChanged(auth, function (user) {
-        if (user) {
-          user.getIdToken().then(function (token) {
-            const headers = new Headers({
-              Authorization: `Bearer ${token}`,
-            });
-            fetch(`${PUBLIC_BASE_URL}/humans/${data.human.id}/save`, {
-              method: "POST",
-              headers: headers,
-            }).catch((error) => {
-              console.error("Error:", error);
-            });
-          });
-        } else {
-          alert("You must be logged in to save a human.");
-        }
+
+    user.subscribe(async (currentUser) => {
+      if (!currentUser) {
+        alert("You must be logged in to save a human.");
+        return;
+      }
+
+      const headers = new Headers({
+        Authorization: `Bearer ${currentUser.accessToken}`,
       });
-    }
+
+      const method = isHumanSaved ? "POST" : "DELETE";
+      const url = `${PUBLIC_BASE_URL}/humans/${data.human.id}/save`;
+
+      try {
+        const response = await fetch(url, {
+          method: method,
+          headers: headers,
+        });
+
+        if (!response.ok) {
+          console.error("Error:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    });
   }
 
   onMount(async () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-
     const headers = new Headers();
-    if (user) {
-      const token = await user.getIdToken();
-      headers.append("Authorization", `Bearer ${token}`);
-    }
+    user.subscribe(async (user) => {
+      if (user) {
+        headers.append("Authorization", `Bearer ${user.accessToken}`);
+
+        // Get the user to see if they have saved this human.
+        let u = await fetch(`${PUBLIC_BASE_URL}/user`, {
+          headers: headers,
+        }).then((response) => {
+          return response.json();
+        });
+        if (u.data.saved.some((h) => h.human_id === data.human.id)) {
+          isHumanSaved = true;
+        }
+      }
+    });
 
     try {
       const response = await fetch(

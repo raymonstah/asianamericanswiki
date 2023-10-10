@@ -1,6 +1,6 @@
 <script>
   import BirthdayInput from "../../lib/components/BirthdayInput.svelte";
-
+  import { user } from "$lib/firebase";
   let human = {};
   let errors = {};
   const ethnicityList = [
@@ -47,7 +47,6 @@
   ];
   import Tags from "svelte-tags-input";
 
-  import { loggedIn } from "../../store.js";
   let response = {};
   async function contribute() {
     Object.entries(errors);
@@ -94,9 +93,6 @@
   }
 
   import { PUBLIC_BASE_URL } from "$env/static/public";
-  import { getAuth } from "firebase/auth";
-  let userLoggedIn = false;
-  loggedIn.subscribe((v) => (userLoggedIn = v));
 </script>
 
 <svelte:head>
@@ -105,7 +101,7 @@
 
 <article>
   <h1 class="text-2xl">Contribute an influential Asian American</h1>
-  {#if userLoggedIn}
+  {#if $user}
     {#if response.hasError === true}
       <div
         class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"

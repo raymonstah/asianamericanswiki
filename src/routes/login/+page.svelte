@@ -1,7 +1,7 @@
 <script>
+  import { auth } from "$lib/firebase";
   import {
     browserLocalPersistence,
-    getAuth,
     GoogleAuthProvider,
     setPersistence,
     signInWithPopup,
@@ -9,7 +9,6 @@
   import { goto } from "$app/navigation";
 
   async function loginWithGoogle() {
-    const auth = getAuth();
     setPersistence(auth, browserLocalPersistence)
       .then(() => {
         const provider = new GoogleAuthProvider();
