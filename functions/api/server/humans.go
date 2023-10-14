@@ -11,6 +11,7 @@ import (
 	"cloud.google.com/go/firestore"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
+	"github.com/rs/zerolog"
 
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 )
@@ -161,8 +162,8 @@ func (s *Server) HumansList(w http.ResponseWriter, r *http.Request) (err error) 
 	var humans []humandao.Human
 	if ok {
 		humans = raw.([]humandao.Human)
-		s.logger.Debug().Msg("HumansList cache hit")
 	} else {
+		zerolog.Ctx(ctx).Debug().Str("key", key).Msg("HumansList cache miss")
 		humans, err = s.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
 			Limit:     limit,
 			Offset:    offset,
