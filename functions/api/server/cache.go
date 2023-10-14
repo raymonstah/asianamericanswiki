@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
+	"github.com/rs/zerolog"
 	"github.com/segmentio/ksuid"
 )
 
@@ -14,7 +15,7 @@ func (s *Server) GetHumansFromCache(ctx context.Context, humanIDs ...string) ([]
 	for _, humanID := range humanIDs {
 		humanRaw, found := s.humanCache.Get(humanID)
 		if !found {
-			s.logger.Debug().Str("humanID", humanID).Msg("cache miss")
+			zerolog.Ctx(ctx).Debug().Str("humanID", humanID).Msg("cache miss")
 			cacheMiss = append(cacheMiss, humanID)
 		} else {
 			human := humanRaw.(humandao.Human)
@@ -71,6 +72,7 @@ func (s *Server) GetHumanFromCache(ctx context.Context, humanID string) (human h
 			}
 			return humandao.Human{}, NewInternalServerError(err)
 		}
+		zerolog.Ctx(ctx).Debug().Str("humanID", human.ID).Msg("cache miss")
 		// Make the human findable by both its ID and its path.
 		s.humanCache.SetDefault(humanID, human)
 		s.humanCache.SetDefault(human.Path, human)
