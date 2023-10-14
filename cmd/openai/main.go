@@ -12,9 +12,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/firestore"
-	"github.com/go-json-experiment/json"
 	"github.com/urfave/cli/v2"
-	"golang.org/x/sync/errgroup"
 
 	"github.com/raymonstah/asianamericanswiki/functions/api"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
@@ -109,64 +107,27 @@ func (h *Handler) do(ctx context.Context) error {
 	return nil
 }
 
-type HumanCreateRequest struct {
-	Name        string   `json:"name,omitempty"`
-	DOB         string   `json:"dob,omitempty"`
-	DOD         string   `json:"dod,omitempty"`
-	Ethnicity   []string `json:"ethnicity,omitempty"`
-	Description string   `json:"description,omitempty"`
-	Location    []string `json:"location,omitempty"`
-	Website     string   `json:"website,omitempty"`
-	Twitter     string   `json:"twitter,omitempty"`
-	Tags        []string `json:"tags,omitempty"`
-}
-
 func (h *Handler) addNew(ctx context.Context, name string) error {
 	tags := strings.Join(h.Tags, ", ")
 	slog.Info("Adding new human:", slog.String("name", name), slog.String("tags", tags))
-	group, groupctx := errgroup.WithContext(ctx)
-	var (
-		description string
-		request     HumanCreateRequest
-	)
-	group.Go(func() error {
-		d, err := h.OpenAI.Generate(groupctx, openai.GenerateInput{
-			Tags: h.Tags,
-			Name: name,
-		})
-		if err != nil {
-			return fmt.Errorf("unable to generate description: %w", err)
-		}
-		description = replaceSingleNewlineWithDoubleNewlines(d)
-		return nil
+	generatedHumanResp, err := h.OpenAI.GenerateHuman(ctx, openai.GenerateHumanRequest{
+		Tags: h.Tags,
+		Name: name,
 	})
-	group.Go(func() error {
-		response, err := h.OpenAI.GenerateCreateRequest(groupctx, openai.GenerateCreateRequest{
-			Tags: h.Tags,
-			Name: name,
-		})
-		if err != nil {
-			return fmt.Errorf("unable to generate json from openai: %w", err)
-		}
-		if err := json.Unmarshal(response, &request); err != nil {
-			return err
-		}
-		return nil
-	})
-	if err := group.Wait(); err != nil {
-		return err
+	if err != nil {
+		return fmt.Errorf("unable to generate human from openai: %w", err)
 	}
 
 	input := humandao.AddHumanInput{
-		Name:        request.Name,
-		DOB:         request.DOB,
-		DOD:         request.DOD,
-		Ethnicity:   request.Ethnicity,
-		Description: description,
-		Location:    request.Location,
-		Website:     request.Website,
-		Twitter:     request.Twitter,
-		Tags:        request.Tags,
+		Name:        generatedHumanResp.Name,
+		DOB:         generatedHumanResp.DOB,
+		DOD:         generatedHumanResp.DOD,
+		Ethnicity:   generatedHumanResp.Ethnicity,
+		Description: generatedHumanResp.Description,
+		Location:    generatedHumanResp.Location,
+		Website:     generatedHumanResp.Website,
+		Twitter:     generatedHumanResp.Twitter,
+		Tags:        generatedHumanResp.Tags,
 	}
 
 	fmt.Printf("Name: %v\n", input.Name)
@@ -181,8 +142,7 @@ func (h *Handler) addNew(ctx context.Context, name string) error {
 
 	fmt.Println("Add new human? (y/n)")
 	var userInput string
-	_, err := fmt.Scan(&userInput)
-	if err != nil {
+	if _, err := fmt.Scan(&userInput); err != nil {
 		return fmt.Errorf("unable to scan user input: %w", err)
 	}
 
@@ -204,7 +164,7 @@ func (h *Handler) generate(ctx context.Context, human humandao.Human) error {
 	fmt.Println("Old description:", human.Description)
 	fmt.Println()
 
-	newDescription, err := h.OpenAI.Generate(ctx, openai.GenerateInput{
+	generatedHuman, err := h.OpenAI.GenerateHuman(ctx, openai.GenerateHumanRequest{
 		Tags: human.Tags,
 		Name: human.Name,
 	})
@@ -212,7 +172,7 @@ func (h *Handler) generate(ctx context.Context, human humandao.Human) error {
 		return fmt.Errorf("unable to generate description: %w", err)
 	}
 
-	newDescription = replaceSingleNewlineWithDoubleNewlines(newDescription)
+	newDescription := replaceSingleNewlineWithDoubleNewlines(generatedHuman.Description)
 	fmt.Println("New description:", newDescription)
 	fmt.Println()
 	fmt.Println("Accept new description? (y/n)")
