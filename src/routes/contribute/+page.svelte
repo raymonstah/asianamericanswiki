@@ -1,6 +1,8 @@
 <script>
   import BirthdayInput from "../../lib/components/BirthdayInput.svelte";
   import { user } from "$lib/firebase";
+  import { PUBLIC_BASE_URL } from "$env/static/public";
+
   let human = {};
   let errors = {};
   const ethnicityList = [
@@ -62,37 +64,39 @@
     if (human.location) {
       human.location = human.location.split(",");
     }
-    let token = await getAuth().currentUser.getIdToken();
-    const headers = new Headers({
-      Authorization: `Bearer ${token}`,
-    });
-    fetch(`${PUBLIC_BASE_URL}/humans/`, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(human),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          response.hasError = true;
-          response.error = data.error;
-          return;
-        }
-        response.success = true;
-        response.data = data;
-        console.log(data);
-      })
-      .catch((error) => {
-        response.hasError = true;
-        response.error = error.error;
-        console.log(error);
-      });
-    // clear form
-    human = {};
-    console.log(response);
-  }
+    user.subscribe(async (user) => {
+      if (user) {
+        const headers = new Headers({
+          Authorization: `Bearer ${user.accessToken}`,
+        });
 
-  import { PUBLIC_BASE_URL } from "$env/static/public";
+        fetch(`${PUBLIC_BASE_URL}/humans/`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(human),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.error) {
+              response.hasError = true;
+              response.error = data.error;
+              return;
+            }
+            response.success = true;
+            response.data = data;
+            console.log(data);
+          })
+          .catch((error) => {
+            response.hasError = true;
+            response.error = error.error;
+            console.log(error);
+          });
+        // clear form
+        human = {};
+        console.log(response);
+      }
+    });
+  }
 </script>
 
 <svelte:head>
