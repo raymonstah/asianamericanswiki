@@ -28,6 +28,11 @@ var opts struct {
 	Name  string
 	Debug bool
 	Force bool
+	URL   string
+	// AsIs does not cartoonize the image
+	AsIs bool
+	// ID takes precedence over name
+	ID string
 }
 
 func main() {
@@ -35,7 +40,10 @@ func main() {
 		Name: "A CLI tool to get an image from imdb for a human.",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "name", Destination: &opts.Name},
+			&cli.StringFlag{Name: "id", Destination: &opts.ID},
+			&cli.StringFlag{Name: "url", Destination: &opts.URL},
 			&cli.BoolFlag{Name: "force", Destination: &opts.Force},
+			&cli.BoolFlag{Name: "as-is", Destination: &opts.AsIs},
 		},
 		Action: run,
 	}
@@ -119,6 +127,11 @@ func (h *Handler) Do(ctx context.Context) error {
 			}
 		}
 	} else {
+		if opts.URL != "" {
+			if err := h.downloadImage(opts.URL, opts.Name); err != nil {
+				return fmt.Errorf("unable to download image: %w", err)
+			}
+		}
 		if err := h.search(ctx, opts.Name); err != nil {
 			return fmt.Errorf("unable to search imdb for %v: %w", opts.Name, err)
 		}
@@ -216,7 +229,11 @@ func (h *Handler) processJob(ctx context.Context, job Job) error {
 	url, name := job.Link, job.Name
 	path := strings.ToLower(name)
 	path = strings.ReplaceAll(path, " ", "-")
-	human, err := h.humanDAO.Human(ctx, humandao.HumanInput{Path: path})
+	input := humandao.HumanInput{Path: path}
+	if opts.ID != "" {
+		input.HumanID = opts.ID
+	}
+	human, err := h.humanDAO.Human(ctx, input)
 	if err != nil {
 		return fmt.Errorf("unable to get human: %w", err)
 	}
@@ -238,13 +255,21 @@ func (h *Handler) processJob(ctx context.Context, job Job) error {
 
 		resp.Body.Close()
 
+		var raw []byte
 		id := human.ID
-		cartoonizeClient := cartoonize.Client{
-			Debug: opts.Debug,
-		}
-		raw, err := cartoonizeClient.Do(tempPath)
-		if err != nil {
-			return fmt.Errorf("unable to cartoonize image for %v: %w", name, err)
+		if !opts.AsIs {
+			cartoonizeClient := cartoonize.Client{
+				Debug: opts.Debug,
+			}
+			raw, err = cartoonizeClient.Do(tempPath)
+			if err != nil {
+				return fmt.Errorf("unable to cartoonize image for %v: %w", name, err)
+			}
+		} else {
+			raw, err = os.ReadFile(tempPath)
+			if err != nil {
+				return err
+			}
 		}
 
 		imgName := fmt.Sprintf("%v.jpg", id)
