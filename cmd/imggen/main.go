@@ -20,6 +20,7 @@ var opts struct {
 	Image string
 	Name  string
 	Debug bool
+	AsIs  bool
 }
 
 func main() {
@@ -29,6 +30,7 @@ func main() {
 			&cli.PathFlag{Name: "image", Required: true, Destination: &opts.Image},
 			&cli.StringFlag{Name: "name", Required: true, Destination: &opts.Name},
 			&cli.BoolFlag{Name: "debug", Destination: &opts.Debug},
+			&cli.BoolFlag{Name: "as-is", Destination: &opts.AsIs},
 		},
 		Action: run,
 	}
@@ -78,14 +80,21 @@ func (h *Handler) Do(ctx context.Context) error {
 		return fmt.Errorf("unable to get human: %w", err)
 	}
 
+	var raw []byte
 	id := human.ID
-
-	cartoonizeClient := cartoonize.Client{
-		Debug: opts.Debug,
-	}
-	raw, err := cartoonizeClient.Do(opts.Image)
-	if err != nil {
-		return fmt.Errorf("unable to cartoonize image: %w", err)
+	if !opts.AsIs {
+		cartoonizeClient := cartoonize.Client{
+			Debug: opts.Debug,
+		}
+		raw, err = cartoonizeClient.Do(opts.Image)
+		if err != nil {
+			return fmt.Errorf("unable to cartoonize image for %v: %w", human.Name, err)
+		}
+	} else {
+		raw, err = os.ReadFile(opts.Image)
+		if err != nil {
+			return err
+		}
 	}
 
 	imgName := fmt.Sprintf("%v.jpg", id)
@@ -105,6 +114,6 @@ func (h *Handler) Do(ctx context.Context) error {
 		return fmt.Errorf("unable to update human: %w", err)
 	}
 
-	log.Println("done.")
+	log.Println("done: ", featuredImageURL)
 	return nil
 }
