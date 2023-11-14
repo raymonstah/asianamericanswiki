@@ -4,11 +4,25 @@
   import dayjs from "dayjs";
   import relativeTime from "dayjs/plugin/relativeTime";
   import { user } from "$lib/firebase";
+  import Gallery from "../../lib/components/Gallery.svelte";
   dayjs.extend(relativeTime);
   let currentUser = {};
   let drafts = [];
   let humans = {};
 
+  let humansWithImages = [];
+  const loadHumansWithImages = async () => {
+    try {
+      const response = await fetch(`${PUBLIC_BASE_URL}/humans/?limit=100`);
+      const data = await response.json();
+
+      if (data && data.data) {
+        humansWithImages = data.data.filter((human) => human.featuredImage);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   async function loadDrafts() {
     user.subscribe(async (user) => {
       if (user) {
@@ -43,8 +57,10 @@
           return response.json();
         });
         currentUser = u.data;
-
-        let saved = u.data.saved.map((h) => h.human_id);
+        if (currentUser == null) {
+          return;
+        }
+        let saved = currentUser.saved.map((h) => h.human_id);
         let recentlyViewed = u.data.recently_viewed.map((h) => h.human_id);
         let allHumans = [...saved, ...recentlyViewed];
 
@@ -90,13 +106,15 @@
   onMount(async () => {
     loadDrafts();
     loadUser();
+    loadHumansWithImages();
   });
 </script>
 
 <svelte:head>
   <title>Admin | AsianAmericans.wiki</title>
 </svelte:head>
-<article class="max-w-sm mx-auto">
+<article class="max-w-sm md:max-w-md mx-auto">
+  <Gallery humans={humansWithImages} />
   {#if $user}
     <div class="text-left leading-relaxed">
       <h1 class="text-4xl font-extrabold mb-4">Draft Requests</h1>
