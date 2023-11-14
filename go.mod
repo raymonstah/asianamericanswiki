@@ -17,7 +17,7 @@ require (
 	github.com/urfave/cli/v2 v2.25.7
 	golang.org/x/oauth2 v0.12.0 // indirect
 	google.golang.org/api v0.143.0
-	google.golang.org/grpc v1.58.2
+	google.golang.org/grpc v1.59.0
 	gopkg.in/loremipsum.v1 v1.1.2
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
@@ -52,7 +52,6 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/uuid v1.3.1 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.1 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
