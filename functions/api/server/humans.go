@@ -102,12 +102,10 @@ type Human struct {
 	DOB           string                 `json:"dob,omitempty"`
 	DOD           string                 `json:"dod,omitempty"`
 	Tags          []string               `json:"tags,omitempty"`
-	Website       string                 `json:"website,omitempty"`
 	Ethnicity     []string               `json:"ethnicity,omitempty"`
 	BirthLocation string                 `json:"birthLocation,omitempty"`
 	Location      []string               `json:"location,omitempty"`
 	InfluencedBy  []string               `json:"influencedBy,omitempty"`
-	Twitter       string                 `json:"twitter,omitempty"`
 	FeaturedImage string                 `json:"featuredImage,omitempty"`
 	Draft         bool                   `json:"draft,omitempty"`
 	AIGenerated   bool                   `json:"ai_generated,omitempty"`
