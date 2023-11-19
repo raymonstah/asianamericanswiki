@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go/v4"
 	"github.com/raymonstah/asianamericanswiki/functions/api"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
@@ -15,7 +16,9 @@ import (
 )
 
 var opts struct {
-	N int
+	N       int
+	UseProd bool
+	Dry     bool
 }
 
 func main() {
@@ -23,6 +26,8 @@ func main() {
 		Name: "A CLI tool to make a generate humans for testing purposes.",
 		Flags: []cli.Flag{
 			&cli.IntFlag{Name: "n", Usage: "how many humans to generate", Destination: &opts.N},
+			&cli.BoolFlag{Name: "use-prod", Usage: "pull data from production", Destination: &opts.UseProd},
+			&cli.BoolFlag{Name: "dry", Usage: "dry run", Destination: &opts.Dry},
 		},
 		Action: run,
 	}
@@ -33,29 +38,39 @@ func main() {
 }
 
 type Handler struct {
-	dao *humandao.DAO
-	n   int
+	localFirestore *firestore.Client
+	prodFirestore  *firestore.Client
 }
 
 func run(c *cli.Context) error {
 	ctx := c.Context
-	if err := os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080"); err != nil {
-		return err
-	}
-
 	app, err := firebase.NewApp(ctx, &firebase.Config{ProjectID: api.ProjectID})
 	if err != nil {
 		return fmt.Errorf("failed to create firebase app: %w", err)
 	}
 
-	fsClient, err := app.Firestore(ctx)
+	if err := os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080"); err != nil {
+		return err
+	}
+
+	localFirestore, err := app.Firestore(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to create firestore client: %w", err)
+		return fmt.Errorf("failed to create local firestore client: %w", err)
+	}
+
+	// unset so that we can create a client pointed to the real firestore servers.
+	if err := os.Unsetenv("FIRESTORE_EMULATOR_HOST"); err != nil {
+		return err
+	}
+
+	prodFirestore, err := app.Firestore(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to create production firestore client: %w", err)
 	}
 
 	h := Handler{
-		dao: humandao.NewDAO(fsClient),
-		n:   opts.N,
+		localFirestore: localFirestore,
+		prodFirestore:  prodFirestore,
 	}
 
 	if err := h.Do(ctx); err != nil {
@@ -66,9 +81,46 @@ func run(c *cli.Context) error {
 }
 
 func (h *Handler) Do(ctx context.Context) error {
+	if opts.UseProd {
+		localSnapshots, err := h.localFirestore.Collection("humans").Documents(ctx).GetAll()
+		if err != nil {
+			return fmt.Errorf("unable to get local documents: %w", err)
+		}
+
+		if len(localSnapshots) > 0 {
+			return fmt.Errorf("local firestore is not empty")
+		}
+
+		snapshots, err := h.prodFirestore.Collection("humans").Documents(ctx).GetAll()
+		if err != nil {
+			return fmt.Errorf("unable to get production documents: %w", err)
+		}
+		for i, snapshot := range snapshots {
+			data := snapshot.Data()
+			if opts.Dry {
+				fmt.Printf("would add %v: %v\n", i, data["name"])
+				continue
+			}
+
+			_, err := h.localFirestore.Collection("humans").Doc(snapshot.Ref.ID).Set(ctx, data)
+			if err != nil {
+				return fmt.Errorf("unable to set document: %w", err)
+			}
+			log.Default().Println("added", data["name"])
+		}
+	} else {
+		return h.generateNew(ctx)
+	}
+
+	log.Default().Println("done.")
+	return nil
+}
+
+func (h *Handler) generateNew(ctx context.Context) error {
+	dao := humandao.NewDAO(h.localFirestore)
 	generator := loremipsum.New()
-	for i := 0; i < h.n; i++ {
-		_, err := h.dao.AddHuman(ctx, humandao.AddHumanInput{
+	for i := 0; i < opts.N; i++ {
+		_, err := dao.AddHuman(ctx, humandao.AddHumanInput{
 			Name:        fmt.Sprintf("Human %v", ksuid.New().String()),
 			Ethnicity:   []string{"Chinese"},
 			Website:     "https://example.com",
