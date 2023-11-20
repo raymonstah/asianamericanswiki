@@ -35,6 +35,20 @@
   </div>
 {/if}
 
+{#if data.recentlyAdded && data.recentlyAdded.length > 0}
+  <h1 class="text-3xl font-bold">Recently Added</h1>
+  <div class="my-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+    {#each data.recentlyAdded as human}
+      <HumanListCard
+        class="my-4"
+        path={"/humans/" + human.path}
+        description={human.description}
+        name={human.name}
+      />
+    {/each}
+  </div>
+{/if}
+
 <h1 class="text-3xl font-bold">Ethnic Backgrounds</h1>
 <div class="my-4 grid grid-cols-3 md:grid-cols-6 gap-3">
   {#each Object.entries(countries) as [code, country]}
