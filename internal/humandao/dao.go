@@ -21,6 +21,7 @@ var (
 	ErrHumanNotFound      = errors.New("human not found")
 	ErrHumanAlreadyExists = errors.New("human already exists")
 	ErrInvalidOrderBy     = errors.New("orderBy must be one of: created_at, views")
+	ErrInvalidGender      = errors.New("invalid gender")
 )
 
 type ReactionCount map[string]int
@@ -51,6 +52,21 @@ type Human struct {
 	Affiliates  []Affiliate `firestore:"affiliates,omitempty"`
 	Socials     Socials     `firestore:"socials,omitempty"`
 	Views       int64       `firestore:"views,omitempty"`
+	Gender      Gender      `firestore:"gender,omitempty"`
+}
+
+type Gender string
+
+const (
+	GenderMale      Gender = "male"
+	GenderFemale    Gender = "female"
+	GenderNonBinary Gender = "nonbinary"
+)
+
+var ValidGenders = map[Gender]struct{}{
+	GenderMale:      {},
+	GenderFemale:    {},
+	GenderNonBinary: {},
 }
 
 type Socials struct {
@@ -191,6 +207,7 @@ type AddHumanInput struct {
 	Draft       bool
 	CreatedBy   string
 	Affiliates  []Affiliate
+	Gender      Gender
 }
 
 func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) {
@@ -215,6 +232,11 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 		}
 	}
 
+	_, ok := ValidGenders[input.Gender]
+	if !ok && input.Gender != "" {
+		return Human{}, ErrInvalidGender
+	}
+
 	now := time.Now().In(time.UTC)
 	human := Human{
 		Name:        input.Name,
@@ -234,6 +256,7 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 			Website: input.Website,
 			X:       input.Twitter,
 		},
+		Gender: input.Gender,
 	}
 
 	if input.HumanID == "" {
