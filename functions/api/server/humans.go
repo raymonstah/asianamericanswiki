@@ -18,6 +18,7 @@ import (
 
 type HumanCreateRequest struct {
 	Name        string   `json:"name,omitempty"`
+	Gender      string   `json:"gender,omitempty"`
 	DOB         string   `json:"dob,omitempty"`
 	DOD         string   `json:"dod,omitempty"`
 	Ethnicity   []string `json:"ethnicity,omitempty"`
@@ -67,6 +68,7 @@ func (s *Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error)
 
 	human, err := s.humanDAO.AddHuman(ctx, humandao.AddHumanInput{
 		Name:        request.Name,
+		Gender:      humandao.Gender(request.Gender),
 		DOB:         request.DOB,
 		DOD:         request.DOD,
 		Ethnicity:   request.Ethnicity,
@@ -79,6 +81,9 @@ func (s *Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error)
 		Draft:       true,
 	})
 	if err != nil {
+		if errors.Is(err, humandao.ErrInvalidGender) {
+			return NewBadRequestError(err)
+		}
 		if errors.Is(err, humandao.ErrHumanAlreadyExists) {
 			return NewBadRequestError(err)
 		}
