@@ -14,7 +14,7 @@ func TestFilterable_ByGender(t *testing.T) {
 		{Gender: GenderMale},
 	}
 
-	result := f.ByGender(GenderMale)
+	result := ByGender(GenderMale)(f)
 
 	expected := Filterable{
 		{Gender: GenderMale},
@@ -31,7 +31,7 @@ func TestFilterable_ByEthnicity(t *testing.T) {
 		{Ethnicity: []string{"Korean", "Chinese"}},
 	}
 
-	result := f.ByEthnicity("Chinese")
+	result := ByEthnicity("Chinese")(f)
 
 	expected := Filterable{
 		{Ethnicity: []string{"Chinese"}},
@@ -50,7 +50,7 @@ func TestFilterable_ByAgeGreaterThan(t *testing.T) {
 
 	age, err := time.Parse("2006-01-02", "1997-01-01")
 	require.NoError(t, err)
-	result := f.ByAgeOlderThan(age)
+	result := ByAgeOlderThan(age)(f)
 
 	require.Equal(t, f, result)
 }
@@ -64,7 +64,7 @@ func TestFilterable_ByAgeLessThan(t *testing.T) {
 
 	age, err := time.Parse("2006-01-02", "1994-01-01")
 	require.NoError(t, err)
-	result := f.ByAgeYoungerThan(age)
+	result := ByAgeYoungerThan(age)(f)
 	expected := Filterable{
 		{DOB: "1995-01-01"},
 		{DOB: "1996-01-01"},
@@ -80,7 +80,7 @@ func TestFilterable_ByTags(t *testing.T) {
 		{Tags: []string{"tag1", "tag3"}},
 	}
 
-	result := f.ByTags("tag1")
+	result := ByTags("tag1")(f)
 
 	expected := Filterable{
 		{Tags: []string{"tag1", "tag2"}},
@@ -97,11 +97,11 @@ func TestFilterable_Chained(t *testing.T) {
 		{DOB: "1996-01-01", Tags: []string{"tag1", "tag3"}, Ethnicity: []string{"Korean"}},
 	}
 
-	result := f.
-		ByAgeOlderThan(time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC)).   // 94
-		ByAgeYoungerThan(time.Date(1993, 1, 1, 0, 0, 0, 0, time.UTC)). // 94, 95, 96
-		ByTags("tag2").
-		ByEthnicity("Chinese")
+	result := ApplyFilters(f,
+		ByAgeOlderThan(time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC)),   // 94
+		ByAgeYoungerThan(time.Date(1993, 1, 1, 0, 0, 0, 0, time.UTC)), // 94, 95, 96
+		ByTags("tag2"),
+		ByEthnicity("Chinese"))
 
 	expected := Filterable{
 		{DOB: "1994-01-01", Tags: []string{"tag1", "tag2"}, Ethnicity: []string{"Chinese"}},

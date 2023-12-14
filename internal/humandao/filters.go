@@ -2,85 +2,105 @@ package humandao
 
 import (
 	"slices"
+	"strings"
 	"time"
 )
 
+type FilterOpt func(f Filterable) Filterable
 type Filterable []Human
 
-func (f Filterable) ByGender(gender Gender) Filterable {
-	filtered := make([]Human, 0, len(f))
-	for _, human := range f {
-		if human.Gender == gender {
-			filtered = append(filtered, human)
-		}
+func ApplyFilters(f Filterable, opts ...FilterOpt) Filterable {
+	for _, opt := range opts {
+		f = opt(f)
 	}
-
-	return filtered
+	return f
 }
 
-func (f Filterable) ByEthnicity(ethnicity string) Filterable {
-	filtered := make([]Human, 0, len(f))
-	for _, human := range f {
-		if slices.Contains(human.Ethnicity, ethnicity) {
-			filtered = append(filtered, human)
-		}
-	}
-
-	return filtered
-}
-
-func (f Filterable) ByAgeOlderThan(age time.Time) Filterable {
-	filtered := make([]Human, 0, len(f))
-	for _, human := range f {
-		// convert human.DOB into a time.Time
-		dobTime, err := time.Parse("2006-01-02", human.DOB)
-		if err != nil {
-			continue
-		}
-		if dobTime.Before(age) {
-			filtered = append(filtered, human)
-		}
-	}
-
-	return filtered
-}
-
-func (f Filterable) ByAgeYoungerThan(age time.Time) Filterable {
-	filtered := make([]Human, 0, len(f))
-	for _, human := range f {
-		// convert human.DOB into a time.Time
-		dobTime, err := time.Parse("2006-01-02", human.DOB)
-		if err != nil {
-			continue
-		}
-		if dobTime.After(age) {
-			filtered = append(filtered, human)
-		}
-	}
-
-	return filtered
-}
-
-func (f Filterable) ByTags(tags ...string) Filterable {
-	filteredMap := make([]int, len(f)) // to prevent dupes
-	for i, human := range f {
-		for _, tag := range tags {
-			if slices.Contains(human.Tags, tag) {
-				filteredMap[i] = 1
+// ByGender is a FilterOpts implementation to filter by gender
+func ByGender(gender Gender) FilterOpt {
+	return func(f Filterable) Filterable {
+		filtered := make([]Human, 0, len(f))
+		for _, human := range f {
+			if human.Gender == gender {
+				filtered = append(filtered, human)
 			}
 		}
+		return filtered
 	}
-
-	filtered := make([]Human, 0, len(filteredMap))
-	for i, val := range filteredMap {
-		if val == 1 {
-			filtered = append(filtered, f[i])
-		}
-	}
-
-	return filtered
 }
 
-func (f Filterable) Humans() []Human {
-	return f
+func ByEthnicity(ethnicity string) FilterOpt {
+	return func(f Filterable) Filterable {
+		filtered := make([]Human, 0, len(f))
+		for _, human := range f {
+			if slices.ContainsFunc(human.Ethnicity, func(e string) bool {
+				return strings.EqualFold(e, ethnicity)
+			}) {
+				filtered = append(filtered, human)
+			}
+		}
+
+		return filtered
+
+	}
+}
+
+func ByAgeOlderThan(age time.Time) FilterOpt {
+	return func(f Filterable) Filterable {
+		filtered := make([]Human, 0, len(f))
+		for _, human := range f {
+			// convert human.DOB into a time.Time
+			dobTime, err := time.Parse("2006-01-02", human.DOB)
+			if err != nil {
+				continue
+			}
+			if dobTime.Before(age) {
+				filtered = append(filtered, human)
+			}
+		}
+
+		return filtered
+	}
+}
+
+func ByAgeYoungerThan(age time.Time) FilterOpt {
+	return func(f Filterable) Filterable {
+		filtered := make([]Human, 0, len(f))
+		for _, human := range f {
+			// convert human.DOB into a time.Time
+			dobTime, err := time.Parse("2006-01-02", human.DOB)
+			if err != nil {
+				continue
+			}
+			if dobTime.After(age) {
+				filtered = append(filtered, human)
+			}
+		}
+
+		return filtered
+	}
+}
+
+func ByTags(tags ...string) FilterOpt {
+	return func(f Filterable) Filterable {
+		filteredMap := make([]int, len(f)) // to prevent dupes
+		for i, human := range f {
+			for _, tag := range tags {
+				if slices.ContainsFunc(human.Tags, func(s string) bool {
+					return strings.EqualFold(s, tag)
+				}) {
+					filteredMap[i] = 1
+				}
+			}
+		}
+
+		filtered := make([]Human, 0, len(filteredMap))
+		for i, val := range filteredMap {
+			if val == 1 {
+				filtered = append(filtered, f[i])
+			}
+		}
+
+		return filtered
+	}
 }

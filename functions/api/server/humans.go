@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -136,14 +137,19 @@ type Affiliate struct {
 
 func (s *Server) HumansList(w http.ResponseWriter, r *http.Request) (err error) {
 	var (
-		ctx       = r.Context()
-		oplog     = httplog.LogEntry(r.Context())
-		limitStr  = r.URL.Query().Get("limit")
-		limit     = numOrFallback(limitStr, 10)
-		offsetStr = r.URL.Query().Get("offset")
-		offset    = numOrFallback(offsetStr, 0)
-		orderBy   = r.URL.Query().Get("orderBy")
-		dir       = r.URL.Query().Get("direction")
+		ctx         = r.Context()
+		oplog       = httplog.LogEntry(r.Context())
+		limitStr    = r.URL.Query().Get("limit")
+		limit       = numOrFallback(limitStr, 10)
+		offsetStr   = r.URL.Query().Get("offset")
+		offset      = numOrFallback(offsetStr, 0)
+		orderBy     = r.URL.Query().Get("orderBy")
+		dir         = r.URL.Query().Get("direction")
+		ethnicity   = r.URL.Query().Get("ethnicity")
+		gender      = r.URL.Query().Get("gender")
+		olderThan   = r.URL.Query().Get("olderThan")
+		youngerThan = r.URL.Query().Get("youngerThan")
+		tags        = r.URL.Query()["tags"]
 	)
 	direction := firestore.Desc
 	if dir == "asc" {
@@ -160,7 +166,8 @@ func (s *Server) HumansList(w http.ResponseWriter, r *http.Request) (err error) 
 			Msg("completed request")
 	}(time.Now())
 
-	key := fmt.Sprintf("%v-%v-%d-%d", orderBy, direction, limit, offset)
+	key := fmt.Sprintf("%v-%v-%d-%d-%v-%v-%v-%v-%v", orderBy, direction, limit, offset,
+		ethnicity, gender, olderThan, youngerThan, strings.Join(tags, ","))
 	raw, ok := s.humanCache.Get(key)
 	var humans []humandao.Human
 	if ok {
@@ -177,9 +184,36 @@ func (s *Server) HumansList(w http.ResponseWriter, r *http.Request) (err error) 
 			if errors.Is(err, humandao.ErrInvalidOrderBy) {
 				return NewBadRequestError(err)
 			}
-
 			return NewInternalServerError(err)
 		}
+
+		// Apply Filters
+		filters := []humandao.FilterOpt{}
+		if ethnicity != "" {
+			filters = append(filters, humandao.ByEthnicity(ethnicity))
+		}
+		if gender != "" {
+			filters = append(filters, humandao.ByGender(humandao.Gender(gender)))
+		}
+		if olderThan != "" {
+			age, err := time.Parse("2006-01-02", olderThan)
+			if err != nil {
+				return NewBadRequestError(err)
+			}
+			filters = append(filters, humandao.ByAgeOlderThan(age))
+		}
+		if youngerThan != "" {
+			age, err := time.Parse("2006-01-02", youngerThan)
+			if err != nil {
+				return NewBadRequestError(err)
+			}
+			filters = append(filters, humandao.ByAgeYoungerThan(age))
+		}
+		if len(tags) > 0 {
+			filters = append(filters, humandao.ByTags(tags...))
+		}
+		humans = humandao.ApplyFilters(humans, filters...)
+
 		s.humanCache.SetDefault(key, humans)
 	}
 
@@ -187,7 +221,6 @@ func (s *Server) HumansList(w http.ResponseWriter, r *http.Request) (err error) 
 	s.writeData(w, http.StatusOK, humansResponse)
 	return nil
 }
-
 func (s *Server) HumanGet(w http.ResponseWriter, r *http.Request) (err error) {
 	var (
 		ctx   = r.Context()
