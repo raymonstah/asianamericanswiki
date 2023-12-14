@@ -113,7 +113,8 @@
       />
     </div>
 
-    <div class="w-">
+    <!-- todo: reenable filtering by Gender when data is backfilled. -->
+    <!-- <div class="w-1/3">
       <label for="gender" class="block text-sm font-medium">Gender:</label>
       <select
         id="gender"
@@ -125,7 +126,7 @@
         <option value="female">Female</option>
         <option value="nonbinary">Nonbinary</option>
       </select>
-    </div>
+    </div> -->
 
     <div class="w-full">
       <label for="tags" class="block text-sm font-medium">Tags:</label>
