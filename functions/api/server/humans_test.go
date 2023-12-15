@@ -54,7 +54,7 @@ func TestServer_HumansList_OrderByMostViewed(t *testing.T) {
 	humanDAO := humandao.NewDAO(client, humandao.WithHumanCollectionName("humans-"+ksuid.New().String()))
 	n := 15
 	for i := 0; i < n; i++ {
-		human, err := humanDAO.AddHuman(ctx, humandao.AddHumanInput{Name: fmt.Sprintf("Human %v", i)})
+		human, err := humanDAO.AddHuman(ctx, humandao.AddHumanInput{Name: fmt.Sprintf("Human %v", i), Gender: humandao.GenderFemale})
 		assert.NoError(t, err)
 		human.Views = int64(i + 1)
 
@@ -97,7 +97,7 @@ func TestServer_HumansByID(t *testing.T) {
 
 	var humans []humandao.Human
 	for i := 0; i < 10; i++ {
-		human, err := humanDAO.AddHuman(ctx, humandao.AddHumanInput{Name: fmt.Sprintf("Human %v", i)})
+		human, err := humanDAO.AddHuman(ctx, humandao.AddHumanInput{Name: fmt.Sprintf("Human %v", i), Gender: humandao.GenderFemale})
 		assert.NoError(t, err)
 		humans = append(humans, human)
 	}
@@ -161,7 +161,7 @@ func TestServer_HumanWithAffiliateLinks(t *testing.T) {
 		})
 	}
 
-	human, err := humanDAO.AddHuman(ctx, humandao.AddHumanInput{Name: "Human Affiliate", Affiliates: affiliates})
+	human, err := humanDAO.AddHuman(ctx, humandao.AddHumanInput{Name: "Human Affiliate", Affiliates: affiliates, Gender: humandao.GenderFemale})
 	assert.NoError(t, err)
 
 	s := NewServer(Config{

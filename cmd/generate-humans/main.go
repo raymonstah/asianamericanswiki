@@ -122,6 +122,7 @@ func (h *Handler) generateNew(ctx context.Context) error {
 	for i := 0; i < opts.N; i++ {
 		_, err := dao.AddHuman(ctx, humandao.AddHumanInput{
 			Name:        fmt.Sprintf("Human %v", ksuid.New().String()),
+			Gender:      humandao.GenderNonBinary,
 			Ethnicity:   []string{"Chinese"},
 			Website:     "https://example.com",
 			Twitter:     "https://twitter.com",
