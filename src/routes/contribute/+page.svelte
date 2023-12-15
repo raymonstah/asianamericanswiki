@@ -136,6 +136,21 @@
         bind:value={human.name}
       />
 
+      <label for="gender">Gender</label>
+      <!-- Create an select for Gender, one of "male", "female", or "nonbinary" -->
+
+      <select
+        class="p-1 bg-gray-100 dark:bg-slate-950 dark:text-slate-300"
+        required
+        id="gender"
+        bind:value={human.gender}
+      >
+        <option value="" disabled>Select a gender</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="nonbinary">Nonbinary</option>
+      </select>
+
       <label for="dob">Date of Birth</label>
       <BirthdayInput
         class="bg-gray-100 dark:bg-slate-950 dark:text-slate-300"

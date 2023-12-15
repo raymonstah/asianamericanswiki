@@ -120,6 +120,7 @@ func (h *Handler) addNew(ctx context.Context, name string) error {
 
 	input := humandao.AddHumanInput{
 		Name:        generatedHumanResp.Name,
+		Gender:      humandao.Gender(generatedHumanResp.Gender),
 		DOB:         generatedHumanResp.DOB,
 		DOD:         generatedHumanResp.DOD,
 		Ethnicity:   generatedHumanResp.Ethnicity,
@@ -131,6 +132,7 @@ func (h *Handler) addNew(ctx context.Context, name string) error {
 	}
 
 	fmt.Printf("Name: %v\n", input.Name)
+	fmt.Printf("Gender: %v\n", input.Gender)
 	fmt.Printf("DOB: %v\n", input.DOB)
 	fmt.Printf("DOD: %v\n", input.DOD)
 	fmt.Printf("Ethnicity: %v\n", input.Ethnicity)

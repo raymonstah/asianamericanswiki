@@ -103,6 +103,7 @@ func (s *Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error)
 type Human struct {
 	ID            string                 `json:"id,omitempty"`
 	Name          string                 `json:"name,omitempty"`
+	Gender        humandao.Gender        `json:"gender,omitempty"`
 	Path          string                 `json:"path,omitempty"`
 	ReactionCount humandao.ReactionCount `json:"reactionCount,omitempty"`
 	DOB           string                 `json:"dob,omitempty"`
@@ -300,6 +301,7 @@ func convertHuman(human humandao.Human) Human {
 	return Human{
 		ID:            human.ID,
 		Name:          human.Name,
+		Gender:        human.Gender,
 		Path:          human.Path,
 		ReactionCount: human.ReactionCount,
 		DOB:           human.DOB,

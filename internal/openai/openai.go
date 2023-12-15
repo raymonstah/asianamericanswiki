@@ -37,6 +37,7 @@ Save your paragraphs as the JSON key "description", replacing new lines with dou
 
 Along with the "description" key, Provide a JSON response with the following keys:
 * name: the name of the person
+* gender: the gender of the person, one of ["male", "female", "nonbinary"]
 * dob: the date of birth of the person in the format "YYYY-MM-DD". If you know only the year, use "YYYY". If you know only the year and month, use "YYYY-MM".
 * dod: the date of death of the person, if they died.
 * ethnicity: an array containing the ethnicity of the person. Provide multiple if they are mixed. Examples include: ["Chinese", "Korean", "Vietnamese"].
@@ -49,6 +50,7 @@ Your output should follow the following JSON template between the triple dashes:
 ---
 {
 	"name": "",
+	"gender": "",
 	"dob": "",
 	"dod": "",
 	"ethnicity": [],
@@ -82,6 +84,7 @@ type GeneratedHumanResponse struct {
 	Website     string   `json:"website"`
 	Twitter     string   `json:"twitter"`
 	Tags        []string `json:"tags"`
+	Gender      string   `json:"gender"`
 }
 
 func (c *Client) GenerateHuman(ctx context.Context, input GenerateHumanRequest) (GeneratedHumanResponse, error) {

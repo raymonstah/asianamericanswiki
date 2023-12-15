@@ -31,7 +31,7 @@ func TestServer_User(t *testing.T) {
 	assert.NoError(t, err)
 
 	humanID := ksuid.New().String()
-	_, err = humanDAO.AddHuman(ctx, humandao.AddHumanInput{HumanID: humanID, Name: "Test Human"})
+	_, err = humanDAO.AddHuman(ctx, humandao.AddHumanInput{HumanID: humanID, Name: "Test Human", Gender: humandao.GenderFemale})
 	assert.NoError(t, err)
 
 	s := NewServer(Config{

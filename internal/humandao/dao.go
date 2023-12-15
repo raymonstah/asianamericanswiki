@@ -233,7 +233,7 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 	}
 
 	_, ok := ValidGenders[input.Gender]
-	if !ok && input.Gender != "" {
+	if !ok {
 		return Human{}, ErrInvalidGender
 	}
 

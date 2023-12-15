@@ -54,7 +54,7 @@ func WithDAO(t *testing.T, do func(ctx context.Context, dao *DAO)) {
 
 func TestDAO(t *testing.T) {
 	WithDAO(t, func(ctx context.Context, dao *DAO) {
-		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond"})
+		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond", Gender: GenderMale})
 		assert.NoError(t, err)
 
 		n := 100
@@ -82,7 +82,7 @@ func TestDAO(t *testing.T) {
 
 func TestDAOReactions(t *testing.T) {
 	WithDAO(t, func(ctx context.Context, dao *DAO) {
-		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond"})
+		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond", Gender: GenderMale})
 		assert.NoError(t, err)
 
 		userID := "user123"
@@ -124,7 +124,7 @@ func TestDAO_ReactionNotFound(t *testing.T) {
 
 func TestDAO_ReactionUndo_Unauthorized(t *testing.T) {
 	WithDAO(t, func(ctx context.Context, dao *DAO) {
-		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond"})
+		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond", Gender: GenderMale})
 		assert.NoError(t, err)
 
 		userID := "user123"
@@ -144,7 +144,7 @@ func TestDAO_ReactionUndo_Unauthorized(t *testing.T) {
 func TestDAO_CreatedBy(t *testing.T) {
 	WithDAO(t, func(ctx context.Context, dao *DAO) {
 		userID := "user123"
-		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond", CreatedBy: userID})
+		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond", CreatedBy: userID, Gender: GenderMale})
 		assert.NoError(t, err)
 
 		t.Run("has-something-created", func(t *testing.T) {
@@ -173,9 +173,9 @@ func TestDAO_CreatedBy(t *testing.T) {
 func TestDAO_Drafts(t *testing.T) {
 	WithDAO(t, func(ctx context.Context, dao *DAO) {
 		userID := "user123"
-		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond", CreatedBy: userID, Draft: true})
+		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond", CreatedBy: userID, Draft: true, Gender: GenderMale})
 		assert.NoError(t, err)
-		_, err = dao.AddHuman(ctx, AddHumanInput{Name: "Foo", CreatedBy: userID, Draft: false})
+		_, err = dao.AddHuman(ctx, AddHumanInput{Name: "Foo", CreatedBy: userID, Draft: false, Gender: GenderFemale})
 		assert.NoError(t, err)
 
 		humans, err := dao.Drafts(ctx, DraftsInput{
@@ -192,9 +192,9 @@ func TestDAO_Drafts(t *testing.T) {
 func TestDAO_UserDrafts(t *testing.T) {
 	WithDAO(t, func(ctx context.Context, dao *DAO) {
 		userID := "user123"
-		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond", CreatedBy: userID, Draft: true})
+		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond", CreatedBy: userID, Draft: true, Gender: GenderMale})
 		assert.NoError(t, err)
-		_, err = dao.AddHuman(ctx, AddHumanInput{Name: "Foo", CreatedBy: userID, Draft: false})
+		_, err = dao.AddHuman(ctx, AddHumanInput{Name: "Foo", CreatedBy: userID, Draft: false, Gender: GenderFemale})
 		assert.NoError(t, err)
 
 		humans, err := dao.UserDrafts(ctx, UserDraftsInput{
@@ -228,7 +228,7 @@ func TestDAO_Publish(t *testing.T) {
 			assert.Equal(t, ErrHumanNotFound, err)
 		})
 		userID := "user123"
-		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond", CreatedBy: userID, Draft: true})
+		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond", CreatedBy: userID, Draft: true, Gender: GenderMale})
 		assert.NoError(t, err)
 		assert.True(t, human.Draft)
 
@@ -253,6 +253,7 @@ func TestDAO_List(t *testing.T) {
 				Name:      fmt.Sprintf("%v", ksuid.New().String()),
 				Draft:     false,
 				CreatedBy: userID,
+				Gender:    GenderFemale,
 			})
 			assert.NoError(t, err)
 		}
@@ -260,6 +261,7 @@ func TestDAO_List(t *testing.T) {
 			Name:      fmt.Sprintf("%v", ksuid.New().String()),
 			Draft:     true,
 			CreatedBy: userID,
+			Gender:    GenderFemale,
 		})
 		assert.NoError(t, err)
 		n++
@@ -283,6 +285,7 @@ func TestDAO_List_Paginate(t *testing.T) {
 				Name:      fmt.Sprintf("%v", ksuid.New().String()),
 				Draft:     false,
 				CreatedBy: userID,
+				Gender:    GenderFemale,
 			})
 			assert.NoError(t, err)
 			ids = append(ids, human.ID)
@@ -307,7 +310,7 @@ func TestDAO_List_Paginate(t *testing.T) {
 
 func TestDAO_Delete(t *testing.T) {
 	WithDAO(t, func(ctx context.Context, dao *DAO) {
-		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Foo Bar"})
+		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Foo Bar", Gender: GenderFemale})
 		assert.NoError(t, err)
 		gotHuman, err := dao.Human(ctx, HumanInput{HumanID: human.ID})
 		assert.NoError(t, err)
@@ -326,7 +329,7 @@ func TestDAO_HumansByID(t *testing.T) {
 		var ids []string
 		numHumans := 10
 		for i := 0; i < numHumans; i++ {
-			human, err := dao.AddHuman(ctx, AddHumanInput{Name: fmt.Sprintf("Human-%v", i)})
+			human, err := dao.AddHuman(ctx, AddHumanInput{Name: fmt.Sprintf("Human-%v", i), Gender: GenderFemale})
 			assert.NoError(t, err)
 			ids = append(ids, human.ID)
 		}
@@ -355,7 +358,8 @@ func TestDAO_Affiliates(t *testing.T) {
 		}
 
 		human, err := dao.AddHuman(ctx, AddHumanInput{
-			Name: "Human",
+			Name:   "Human",
+			Gender: GenderFemale,
 			Affiliates: []Affiliate{
 				{URL: "https://url.com/1"},
 				{URL: "https://url.com/2"},
@@ -373,7 +377,7 @@ func TestDAO_Affiliates(t *testing.T) {
 
 func TestDAO_View(t *testing.T) {
 	WithDAO(t, func(ctx context.Context, dao *DAO) {
-		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Foo Bar"})
+		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Foo Bar", Gender: GenderFemale})
 		assert.NoError(t, err)
 		n := 100
 		group, ctx := errgroup.WithContext(ctx)
@@ -398,7 +402,7 @@ func TestDAO_MostViewed(t *testing.T) {
 	WithDAO(t, func(ctx context.Context, dao *DAO) {
 		n := 15
 		for i := 0; i < n; i++ {
-			human, err := dao.AddHuman(ctx, AddHumanInput{Name: fmt.Sprintf("Human %v", i)})
+			human, err := dao.AddHuman(ctx, AddHumanInput{Name: fmt.Sprintf("Human %v", i), Gender: GenderFemale})
 			assert.NoError(t, err)
 			human.Views = int64(i)
 			err = dao.UpdateHuman(ctx, human)
