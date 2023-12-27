@@ -128,7 +128,7 @@ func (h *Handler) Do(ctx context.Context) error {
 		}
 	} else {
 		if opts.URL != "" {
-			if err := h.downloadImage(opts.URL, opts.Name); err != nil {
+			if err := h.visitURL(opts.URL, opts.Name); err != nil {
 				return fmt.Errorf("unable to download image: %w", err)
 			}
 		}
@@ -163,7 +163,7 @@ func (h *Handler) search(ctx context.Context, name string) error {
 		if name == e.Text {
 			found = true
 			log.Printf("Link found: %q -> %s\n", e.Text, "https://www.imdb.com"+link)
-			if err := h.downloadImage("https://www.imdb.com"+link, name); err != nil {
+			if err := h.visitURL("https://www.imdb.com"+link, name); err != nil {
 				log.Println("unable to download image:", err)
 			}
 		}
@@ -175,7 +175,7 @@ func (h *Handler) search(ctx context.Context, name string) error {
 	return nil
 }
 
-func (h *Handler) downloadImage(url, name string) error {
+func (h *Handler) visitURL(url, name string) error {
 	col := colly.NewCollector()
 	col.OnRequest(func(r *colly.Request) {
 		r.Headers.Set("User-Agent", "1 Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148")
@@ -197,6 +197,17 @@ func (h *Handler) downloadImage(url, name string) error {
 				IMDB: url,
 			}
 
+		}
+	})
+
+	col.OnScraped(func(r *colly.Response) {
+		if !firstImageFound {
+			log.Println("No image found for", name)
+			log.Printf("Creating job for %v IMDB link without image\n", name)
+			h.jobs <- Job{
+				Name: name,
+				IMDB: url,
+			}
 		}
 	})
 
@@ -238,7 +249,7 @@ func (h *Handler) processJob(ctx context.Context, job Job) error {
 		return fmt.Errorf("unable to get human: %w", err)
 	}
 
-	if human.FeaturedImage == "" || opts.Force {
+	if url != "" && (human.FeaturedImage == "" || opts.Force) {
 		fullSizeURL := modifyURL(url)
 		log.Printf("Found image for %v: %v", name, fullSizeURL)
 
