@@ -55,16 +55,20 @@ func (s *Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error)
 		return NewBadRequestError(err)
 	}
 
-	drafts, err := s.humanDAO.UserDrafts(ctx, humandao.UserDraftsInput{
-		UserID: token.UID,
-		Limit:  10,
-		Offset: 0,
-	})
-	if err != nil {
-		return NewInternalServerError(fmt.Errorf("unable to find user drafts: %w", err))
-	}
-	if len(drafts) > 5 {
-		return NewBadRequestError(fmt.Errorf("too many contributions, please try again later"))
+	isAdmin := IsAdmin(token)
+	// if they are not admin, impose a limit on how many drafts they can create
+	if !isAdmin {
+		drafts, err := s.humanDAO.UserDrafts(ctx, humandao.UserDraftsInput{
+			UserID: token.UID,
+			Limit:  10,
+			Offset: 0,
+		})
+		if err != nil {
+			return NewInternalServerError(fmt.Errorf("unable to find user drafts: %w", err))
+		}
+		if len(drafts) > 5 {
+			return NewBadRequestError(fmt.Errorf("too many contributions, please try again later"))
+		}
 	}
 
 	human, err := s.humanDAO.AddHuman(ctx, humandao.AddHumanInput{

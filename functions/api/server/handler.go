@@ -112,7 +112,14 @@ func (s *Server) AdminMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 		return nil
 	})
+}
 
+func IsAdmin(token *auth.Token) bool {
+	admin, ok := token.Claims["admin"]
+	if !ok {
+		return false
+	}
+	return admin.(bool)
 }
 
 func (s *Server) parseToken(r *http.Request, optional bool) (*auth.Token, error) {
