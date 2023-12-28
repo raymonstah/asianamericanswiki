@@ -23,7 +23,6 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-var bucketName = "asianamericanswiki-images"
 var opts struct {
 	Name  string
 	Debug bool
@@ -284,7 +283,7 @@ func (h *Handler) processJob(ctx context.Context, job Job) error {
 		}
 
 		imgName := fmt.Sprintf("%v.jpg", id)
-		obj := h.storageClient.Bucket(bucketName).Object(imgName)
+		obj := h.storageClient.Bucket(api.ImagesStorageBucket).Object(imgName)
 		writer := obj.NewWriter(ctx)
 		if _, err := writer.Write(raw); err != nil {
 			return err
@@ -294,7 +293,7 @@ func (h *Handler) processJob(ctx context.Context, job Job) error {
 			return err
 		}
 
-		featuredImageURL := fmt.Sprintf("https://storage.googleapis.com/%v/%v", bucketName, imgName)
+		featuredImageURL := fmt.Sprintf("https://storage.googleapis.com/%v/%v", api.ImagesStorageBucket, imgName)
 		human.FeaturedImage = featuredImageURL
 		log.Printf("Setting image for %v to %v\n", human.Name, featuredImageURL)
 	} else {

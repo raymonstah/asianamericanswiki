@@ -1,4 +1,4 @@
-# cloud.google.com/go v0.110.8
+# cloud.google.com/go v0.110.9
 ## explicit; go 1.19
 cloud.google.com/go/internal
 cloud.google.com/go/internal/btree
@@ -6,23 +6,23 @@ cloud.google.com/go/internal/fields
 cloud.google.com/go/internal/optional
 cloud.google.com/go/internal/trace
 cloud.google.com/go/internal/version
-# cloud.google.com/go/compute v1.23.0
+# cloud.google.com/go/compute v1.23.2
 ## explicit; go 1.19
 cloud.google.com/go/compute/internal
 # cloud.google.com/go/compute/metadata v0.2.3
 ## explicit; go 1.19
 cloud.google.com/go/compute/metadata
-# cloud.google.com/go/firestore v1.13.0
+# cloud.google.com/go/firestore v1.14.0
 ## explicit; go 1.19
 cloud.google.com/go/firestore
 cloud.google.com/go/firestore/apiv1
 cloud.google.com/go/firestore/apiv1/firestorepb
 cloud.google.com/go/firestore/internal
-# cloud.google.com/go/iam v1.1.2
+# cloud.google.com/go/iam v1.1.4
 ## explicit; go 1.19
 cloud.google.com/go/iam
 cloud.google.com/go/iam/apiv1/iampb
-# cloud.google.com/go/longrunning v0.5.1
+# cloud.google.com/go/longrunning v0.5.3
 ## explicit; go 1.19
 cloud.google.com/go/longrunning/autogen/longrunningpb
 # cloud.google.com/go/storage v1.33.0
@@ -328,17 +328,17 @@ google.golang.org/appengine/v2/internal/base
 google.golang.org/appengine/v2/internal/datastore
 google.golang.org/appengine/v2/internal/modules
 google.golang.org/appengine/v2/internal/remote_api
-# google.golang.org/genproto v0.0.0-20230920204549-e6e6cdab5c13
+# google.golang.org/genproto v0.0.0-20231030173426-d783a09b4405
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/type/date
 google.golang.org/genproto/googleapis/type/expr
 google.golang.org/genproto/googleapis/type/latlng
 google.golang.org/genproto/internal
-# google.golang.org/genproto/googleapis/api v0.0.0-20230920204549-e6e6cdab5c13
+# google.golang.org/genproto/googleapis/api v0.0.0-20231016165738-49dd2c1f3d0b
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/api
 google.golang.org/genproto/googleapis/api/annotations
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20230920204549-e6e6cdab5c13
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20231030173426-d783a09b4405
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails
