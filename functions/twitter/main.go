@@ -1,7 +1,7 @@
-// Package twitter is used and deployed as a Google cloud function.
+// Package main is used and deployed as a Google cloud function.
 // It is triggered by any changes to the /humans collection in Firestore.
 // It then calls the Twitter API to follow/unfollow humans.
-package twitter
+package main
 
 import (
 	"context"
@@ -9,13 +9,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"log/slog"
+	"net/http"
 	"os"
 	"strings"
 
-	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
+	twitter "github.com/g8rswimmer/go-twitter/v2"
 	"github.com/raymonstah/fsevent"
-	"github.com/rs/zerolog"
 )
 
 type Human struct {
@@ -25,72 +26,86 @@ type Human struct {
 
 // TwitterFollow is triggered by a change to a Firestore document.
 func TwitterFollow(ctx context.Context, e fsevent.FirestoreEvent) error {
-	consumerKey := os.Getenv("TWITTER_CONSUMER_KEY")
-	consumerSecret := os.Getenv("TWITTER_CONSUMER_SECRET")
+	apiKey := os.Getenv("TWITTER_API_KEY")
+	apiKeySecret := os.Getenv("TWITTER_API_KEY_SECRET")
 	accessToken := os.Getenv("TWITTER_ACCESS_TOKEN")
 	accessSecret := os.Getenv("TWITTER_ACCESS_SECRET")
-	if consumerKey == "" || consumerSecret == "" || accessToken == "" || accessSecret == "" {
-		log.Fatal("Consumer key/secret and Access token/secret required")
+	if apiKey == "" || apiKeySecret == "" || accessToken == "" || accessSecret == "" {
+		log.Fatal("API key/secret and Access token/secret required")
 	}
-	logger := zerolog.New(os.Stdout)
-	handler := NewHandler(logger, consumerKey, consumerSecret, accessToken, accessSecret)
+	handler := NewHandler(apiKey, apiKeySecret, accessToken, accessSecret)
 
 	return handler.do(ctx, e)
 }
 
-func NewHandler(logger zerolog.Logger, consumerKey, consumerSecret, accessToken, accessSecret string) *Handler {
-	config := oauth1.NewConfig(consumerKey, consumerSecret)
-	token := oauth1.NewToken(accessToken, accessSecret)
-	httpClient := config.Client(oauth1.NoContext, token)
+type NoopAuthorizer struct{}
 
-	client := twitter.NewClient(httpClient)
+func (n NoopAuthorizer) Add(req *http.Request) {}
+
+func NewHandler(apiKey, apiKeySecret, accessToken, accessSecret string) *Handler {
+	config := oauth1.NewConfig(apiKey, apiKeySecret)
+	httpClient := config.Client(oauth1.NoContext, &oauth1.Token{
+		Token:       accessToken,
+		TokenSecret: accessSecret,
+	})
+
+	var noopAuthorizer NoopAuthorizer
+	client := &twitter.Client{
+		Authorizer: noopAuthorizer,
+		Client:     httpClient,
+		Host:       "https://api.twitter.com",
+	}
+
 	return &Handler{
 		client: client,
-		logger: logger,
 	}
 }
 
 type Handler struct {
-	logger zerolog.Logger
 	client *twitter.Client
 }
 
 func (h *Handler) do(ctx context.Context, e fsevent.FirestoreEvent) error {
+	// lookup the current user
+	resp, err := h.client.AuthUserLookup(ctx, twitter.UserLookupOpts{})
+	if err != nil {
+		return fmt.Errorf("unable to lookup user: %w", err)
+	}
+	userID := resp.Raw.Users[0].ID
+	slog.Info("user id", slog.String("userID", userID))
+
 	raw, err := json.MarshalIndent(e, "", "  ")
 	if err != nil {
 		return fmt.Errorf("unable to marshal firestore event: %w", err)
 	}
-	h.logger.Info().Str("rawEvent", base64.StdEncoding.EncodeToString(raw)).Msg("")
+	slog.Info("processing event", slog.String("rawEvent", base64.StdEncoding.EncodeToString(raw)))
 
 	humanID := getHumanID(e)
-	h.logger = h.logger.With().
-		Str("type", e.Type()).
-		Str("humanID", humanID).Logger()
-
+	logger := slog.With(slog.String("humanID", humanID)).With(slog.String("type", e.Type()))
 	var human Human
 	if err := e.Value.DataTo(&human); err != nil {
 		return fmt.Errorf("unable to convert to human: %w", err)
 	}
 
 	if humanID == "" {
-		h.logger.Info().Msg("human ID is empty")
+		logger.Error("human ID is empty")
 		return nil
 	}
 
 	if e.Type() == fsevent.TypeCreate && human.Draft {
 		// nothing to do if marked as Draft
-		h.logger.Info().Msg("found human created as draft, ignoring..")
+		logger.Info("found human created as draft, ignoring..")
 		return nil
 	}
 
 	handles := []string{parseHandle(human.Twitter)}
 
 	if e.Type() == fsevent.TypeDelete || (e.Type() == fsevent.TypeUpdate && human.Draft) {
-		if err := h.unfollowHandles(handles); err != nil {
+		if err := h.unfollowHandles(ctx, userID, handles); err != nil {
 			return err
 		}
 	} else {
-		if err := h.followHandles(handles); err != nil {
+		if err := h.followHandles(ctx, userID, handles); err != nil {
 			return err
 		}
 	}
@@ -119,12 +134,10 @@ func getHumanID(e fsevent.FirestoreEvent) string {
 	return humanID
 }
 
-func (h *Handler) unfollowHandles(toUnfollow []string) error {
+func (h *Handler) unfollowHandles(ctx context.Context, userID string, toUnfollow []string) error {
 	for _, toUnfollow := range toUnfollow {
-		h.logger.Info().Str("user", toUnfollow).Msg("attempting to unfollow")
-		_, _, err := h.client.Friendships.Destroy(&twitter.FriendshipDestroyParams{
-			ScreenName: toUnfollow,
-		})
+		slog.Info("attempting to unfollow", slog.Any("toUnfollow", toUnfollow))
+		_, err := h.client.DeleteUserFollows(ctx, userID, toUnfollow)
 		if err != nil {
 			return err
 		}
@@ -133,12 +146,10 @@ func (h *Handler) unfollowHandles(toUnfollow []string) error {
 	return nil
 }
 
-func (h *Handler) followHandles(toFollows []string) error {
+func (h *Handler) followHandles(ctx context.Context, userID string, toFollows []string) error {
 	for _, toFollow := range toFollows {
-		h.logger.Info().Str("user", toFollow).Msg("attempting to follow")
-		_, _, err := h.client.Friendships.Create(&twitter.FriendshipCreateParams{
-			ScreenName: toFollow,
-		})
+		slog.Info("attempting to follow", slog.Any("toFollow", toFollow))
+		_, err := h.client.UserFollows(ctx, userID, toFollow)
 		if err != nil {
 			if !strings.Contains(err.Error(), "twitter: 160 You've already requested to follow") &&
 				!strings.Contains(err.Error(), "twitter: 108 Cannot find specified user.") {

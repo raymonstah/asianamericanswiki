@@ -1,4 +1,4 @@
-package twitter
+package main
 
 import (
 	"context"
@@ -130,12 +130,12 @@ func TestTwitterFollow(t *testing.T) {
 	err := json.Unmarshal([]byte(updateEvent), &event)
 	assert.NoError(t, err)
 	var (
-		consumerKey    = os.Getenv("TWITTER_CONSUMER_KEY")
-		consumerSecret = os.Getenv("TWITTER_CONSUMER_SECRET")
-		accessToken    = os.Getenv("TWITTER_ACCESS_TOKEN")
-		accessSecret   = os.Getenv("TWITTER_ACCESS_SECRET")
+		apiKey       = os.Getenv("TWITTER_API_KEY")
+		apiKeySecret = os.Getenv("TWITTER_API_KEY_SECRET")
+		accessToken  = os.Getenv("TWITTER_ACCESS_TOKEN")
+		accessSecret = os.Getenv("TWITTER_ACCESS_SECRET")
 	)
-	if consumerKey == "" || consumerSecret == "" || accessToken == "" || accessSecret == "" {
+	if apiKey == "" || apiKeySecret == "" || accessToken == "" || accessSecret == "" {
 		t.SkipNow()
 	}
 
