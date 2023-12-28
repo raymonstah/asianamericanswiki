@@ -10,10 +10,12 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
+	"cloud.google.com/go/storage"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
 	"github.com/rs/zerolog"
 
+	"github.com/raymonstah/asianamericanswiki/functions/api"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 )
 
@@ -31,8 +33,9 @@ type HumanCreateRequest struct {
 }
 
 type HumanCreateResponse struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	SignedURL string `json:"signed_url"`
 }
 
 func (s *Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error) {
@@ -95,9 +98,22 @@ func (s *Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error)
 		return NewInternalServerError(err)
 	}
 
+	// create a signed url for the user to upload an image
+	// a cloud event will be triggered when the image is uploaded to set the image path on the human.
+	signedURL, err := s.storageClient.Bucket(api.ImagesStorageBucket).
+		SignedURL(human.ID, &storage.SignedURLOptions{
+			Public:  true,
+			Method:  http.MethodPost,
+			Expires: time.Now().Add(10 * time.Minute),
+		})
+	if err != nil {
+		return NewInternalServerError(err)
+	}
+
 	response := HumanCreateResponse{
-		ID:   human.ID,
-		Name: human.Name,
+		ID:        human.ID,
+		Name:      human.Name,
+		SignedURL: signedURL,
 	}
 
 	s.writeData(w, http.StatusCreated, response)

@@ -15,7 +15,6 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var bucketName = "asianamericanswiki-images"
 var opts struct {
 	Image string
 	Name  string
@@ -98,7 +97,7 @@ func (h *Handler) Do(ctx context.Context) error {
 	}
 
 	imgName := fmt.Sprintf("%v.jpg", id)
-	obj := h.storageClient.Bucket(bucketName).Object(imgName)
+	obj := h.storageClient.Bucket(api.ImagesStorageBucket).Object(imgName)
 	writer := obj.NewWriter(ctx)
 	if _, err := writer.Write(raw); err != nil {
 		return err
@@ -108,7 +107,7 @@ func (h *Handler) Do(ctx context.Context) error {
 		return err
 	}
 
-	featuredImageURL := fmt.Sprintf("https://storage.googleapis.com/%v/%v", bucketName, imgName)
+	featuredImageURL := fmt.Sprintf("https://storage.googleapis.com/%v/%v", api.ImagesStorageBucket, imgName)
 	human.FeaturedImage = featuredImageURL
 	if err := h.humanDAO.UpdateHuman(ctx, human); err != nil {
 		return fmt.Errorf("unable to update human: %w", err)

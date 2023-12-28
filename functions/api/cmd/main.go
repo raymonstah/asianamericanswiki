@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
+	"cloud.google.com/go/storage"
 	firebase "firebase.google.com/go/v4"
 	"github.com/go-chi/httplog"
 	"github.com/urfave/cli/v2"
@@ -70,6 +71,11 @@ func run(c *cli.Context) error {
 		}
 	}
 
+	storageClient, err := storage.NewClient(ctx)
+	if err != nil {
+		return fmt.Errorf("unable to create storage client: %w", err)
+	}
+
 	fsClient, err := firestore.NewClient(ctx, api.ProjectID)
 	if err != nil {
 		return fmt.Errorf("unable to create firestore client: %w", err)
@@ -80,12 +86,13 @@ func run(c *cli.Context) error {
 	openAiClient := openai.New(c.String("open-ai-token"))
 
 	config := server.Config{
-		OpenAIClient: openAiClient,
-		AuthClient:   authClient,
-		HumansDAO:    humansDAO,
-		UsersDAO:     userDAO,
-		Logger:       logger,
-		Version:      c.String("git-hash"),
+		OpenAIClient:  openAiClient,
+		AuthClient:    authClient,
+		HumansDAO:     humansDAO,
+		UsersDAO:      userDAO,
+		Logger:        logger,
+		Version:       c.String("git-hash"),
+		StorageClient: storageClient,
 	}
 
 	mux := server.NewServer(config)

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"cloud.google.com/go/storage"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -19,24 +20,26 @@ import (
 )
 
 type Config struct {
-	AuthClient   Authorizer
-	HumansDAO    *humandao.DAO
-	UsersDAO     *userdao.DAO
-	Logger       zerolog.Logger
-	Version      string
-	OpenAIClient *openai.Client
+	AuthClient    Authorizer
+	HumansDAO     *humandao.DAO
+	UsersDAO      *userdao.DAO
+	Logger        zerolog.Logger
+	Version       string
+	OpenAIClient  *openai.Client
+	StorageClient *storage.Client
 }
 
 type Server struct {
-	authClient   Authorizer
-	router       chi.Router
-	logger       zerolog.Logger
-	humanCache   *cache.Cache
-	rateLimiter  *ratelimiter.RateLimiter
-	humanDAO     *humandao.DAO
-	userDAO      *userdao.DAO
-	version      string
-	openAIClient *openai.Client
+	authClient    Authorizer
+	router        chi.Router
+	logger        zerolog.Logger
+	humanCache    *cache.Cache
+	rateLimiter   *ratelimiter.RateLimiter
+	humanDAO      *humandao.DAO
+	userDAO       *userdao.DAO
+	version       string
+	openAIClient  *openai.Client
+	storageClient *storage.Client
 }
 
 func (s *Server) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
@@ -47,15 +50,16 @@ func NewServer(config Config) *Server {
 	r := chi.NewRouter()
 	humanCache := cache.New(5*time.Minute, 10*time.Minute)
 	s := &Server{
-		authClient:   config.AuthClient,
-		router:       r,
-		logger:       config.Logger,
-		humanCache:   humanCache,
-		rateLimiter:  ratelimiter.New(3, time.Second),
-		humanDAO:     config.HumansDAO,
-		userDAO:      config.UsersDAO,
-		version:      config.Version,
-		openAIClient: config.OpenAIClient,
+		authClient:    config.AuthClient,
+		router:        r,
+		logger:        config.Logger,
+		humanCache:    humanCache,
+		rateLimiter:   ratelimiter.New(3, time.Second),
+		humanDAO:      config.HumansDAO,
+		userDAO:       config.UsersDAO,
+		version:       config.Version,
+		openAIClient:  config.OpenAIClient,
+		storageClient: config.StorageClient,
 	}
 
 	s.setupMiddleware()
