@@ -103,7 +103,7 @@ func (s *Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error)
 	signedURL, err := s.storageClient.Bucket(api.ImagesStorageBucket).
 		SignedURL(human.ID, &storage.SignedURLOptions{
 			Method:      http.MethodPut,
-			ContentType: "application/octet-stream",
+			ContentType: "image/jpeg",
 			Expires:     time.Now().Add(1 * time.Hour),
 		})
 	if err != nil {
