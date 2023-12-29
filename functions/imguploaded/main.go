@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 
 	"cloud.google.com/go/firestore"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
@@ -48,14 +47,8 @@ type Handler struct {
 }
 
 func (h Handler) do(ctx context.Context, bucket, fileName string) error {
-	// parse the file name to get the human id, in the shape of {id}.jpg
-	index := strings.Index(fileName, ".")
-	if index == -1 {
-		return fmt.Errorf("unable to parse file name: %s", fileName)
-	}
-	humanID := fileName[:index]
 	human, err := h.humanDAO.Human(ctx, humandao.HumanInput{
-		HumanID: humanID,
+		HumanID: fileName, // the file name is the human id
 	})
 	if err != nil {
 		return fmt.Errorf("humanDAO.Human: %w", err)
