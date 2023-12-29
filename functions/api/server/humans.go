@@ -102,7 +102,6 @@ func (s *Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error)
 	// a cloud event will be triggered when the image is uploaded to set the image path on the human.
 	signedURL, err := s.storageClient.Bucket(api.ImagesStorageBucket).
 		SignedURL(human.ID, &storage.SignedURLOptions{
-			Public:  true,
 			Method:  http.MethodPost,
 			Expires: time.Now().Add(10 * time.Minute),
 		})
