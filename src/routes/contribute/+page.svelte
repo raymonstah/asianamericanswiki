@@ -5,6 +5,8 @@
 
   let human = {};
   let errors = {};
+  let image = null;
+  let imageInput;
   const ethnicityList = [
     "Chinese",
     "Vietnamese",
@@ -85,34 +87,43 @@
             }
             response.success = true;
             response.data = data;
-            console.log(data);
+            console.log("response", response);
+            console.log("image", image);
+            if (image && response.data.data.signedUrl) {
+              console.log(
+                "uploading image to",
+                image,
+                response.data.data.signedUrl
+              );
+              const headers = new Headers({
+                "Content-Type": image.type,
+              });
+              fetch(response.data.data.signedUrl, {
+                method: "PUT",
+                headers: headers,
+                body: image,
+              })
+                .then((response) => console.log(response))
+                .catch((error) => {
+                  console.log(error);
+                });
+            }
             human = {}; // only clear on success
+            image = null;
+            imageInput.value = "";
           })
           .catch((error) => {
             response.hasError = true;
             response.error = error.error;
             console.log(error);
           });
-        console.log(response);
-        if (response.signedUrl) {
-          const headers = new Headers({
-            "Content-Type": "image/jpeg",
-          });
-          fetch(response.signedUrl, {
-            method: "PUT",
-            headers: headers,
-            body: human.image_path,
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              console.log(data);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        }
       }
     });
+  }
+
+  function handleFileInputChange(event) {
+    const fileInput = event.target;
+    image = fileInput.files[0];
   }
 </script>
 
@@ -241,6 +252,8 @@
         accept=".jpg, .jpeg, .png"
         class="bg-gray-100 dark:bg-slate-950 dark:text-slate-300"
         bind:value={human.image_path}
+        bind:this={imageInput}
+        on:change={handleFileInputChange}
       />
 
       <label for="tags">Tags</label>
