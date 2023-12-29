@@ -1,4 +1,4 @@
-gcloud functions deploy go-finalize-function \
+gcloud functions deploy imguploaded \
 --gen2 \
 --runtime=go121 \
 --region=us-central1 \
