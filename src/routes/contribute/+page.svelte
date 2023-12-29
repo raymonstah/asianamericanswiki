@@ -46,6 +46,7 @@
     "model",
     "news",
     "producer",
+    "writer",
   ];
   import Tags from "svelte-tags-input";
 
@@ -85,15 +86,31 @@
             response.success = true;
             response.data = data;
             console.log(data);
+            human = {}; // only clear on success
           })
           .catch((error) => {
             response.hasError = true;
             response.error = error.error;
             console.log(error);
           });
-        // clear form
-        human = {};
         console.log(response);
+        if (response.signedUrl) {
+          const headers = new Headers({
+            "Content-Type": "image/jpeg",
+          });
+          fetch(response.signedUrl, {
+            method: "PUT",
+            headers: headers,
+            body: human.image_path,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }
       }
     });
   }
@@ -207,6 +224,23 @@
         class="bg-gray-100 dark:bg-slate-950 dark:text-slate-300"
         type="url"
         bind:value={human.twitter}
+      />
+
+      <label for="imdb">IMDB</label>
+      <input
+        id="imdb"
+        class="bg-gray-100 dark:bg-slate-950 dark:text-slate-300"
+        type="url"
+        bind:value={human.imdb}
+      />
+
+      <label for="image">Image</label>
+      <input
+        id="image"
+        type="file"
+        accept=".jpg, .jpeg, .png"
+        class="bg-gray-100 dark:bg-slate-950 dark:text-slate-300"
+        bind:value={human.image_path}
       />
 
       <label for="tags">Tags</label>

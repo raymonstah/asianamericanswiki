@@ -203,6 +203,7 @@ type AddHumanInput struct {
 	Location    []string
 	Website     string
 	Twitter     string
+	IMDB        string
 	Tags        []string
 	Draft       bool
 	CreatedBy   string
@@ -255,6 +256,7 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 		Socials: Socials{
 			Website: input.Website,
 			X:       input.Twitter,
+			IMDB:    input.IMDB,
 		},
 		Gender: input.Gender,
 	}

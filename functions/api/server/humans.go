@@ -29,13 +29,15 @@ type HumanCreateRequest struct {
 	Location    []string `json:"location,omitempty"`
 	Website     string   `json:"website,omitempty"`
 	Twitter     string   `json:"twitter,omitempty"`
+	IMDB        string   `json:"imdb,omitempty"`
 	Tags        []string `json:"tags,omitempty"`
+	ImagePath   string   `json:"image_path,omitempty"`
 }
 
 type HumanCreateResponse struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
-	SignedURL string `json:"signed_url"`
+	SignedURL string `json:"signedUrl,omitempty"`
 }
 
 func (s *Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error) {
@@ -74,6 +76,14 @@ func (s *Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error)
 		}
 	}
 
+	extension := ""
+	if request.ImagePath != "" {
+		extension = strings.Split(request.ImagePath, ".")[1]
+		if extension != "jpeg" && extension != "png" {
+			return NewBadRequestError(fmt.Errorf("invalid image extension"))
+		}
+	}
+
 	human, err := s.humanDAO.AddHuman(ctx, humandao.AddHumanInput{
 		Name:        request.Name,
 		Gender:      humandao.Gender(request.Gender),
@@ -84,6 +94,7 @@ func (s *Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error)
 		Location:    request.Location,
 		Website:     request.Website,
 		Twitter:     request.Twitter,
+		IMDB:        request.IMDB,
 		Tags:        request.Tags,
 		CreatedBy:   token.UID,
 		Draft:       true,
@@ -98,22 +109,26 @@ func (s *Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error)
 		return NewInternalServerError(err)
 	}
 
-	// create a signed url for the user to upload an image
-	// a cloud event will be triggered when the image is uploaded to set the image path on the human.
-	signedURL, err := s.storageClient.Bucket(api.ImagesStorageBucket).
-		SignedURL(human.ID, &storage.SignedURLOptions{
-			Method:      http.MethodPut,
-			ContentType: "image/jpeg",
-			Expires:     time.Now().Add(1 * time.Hour),
-		})
-	if err != nil {
-		return NewInternalServerError(err)
+	response := HumanCreateResponse{
+		ID:   human.ID,
+		Name: human.Name,
 	}
 
-	response := HumanCreateResponse{
-		ID:        human.ID,
-		Name:      human.Name,
-		SignedURL: signedURL,
+	if extension != "" {
+		// create a signed url for the user to upload an image
+		// a cloud event will be triggered when the image is uploaded to set the image path on the human.
+		contentType := "image/" + extension
+		oplog.Info().Str("contentType", contentType).Msg("creating signed url")
+		signedURL, err := s.storageClient.Bucket(api.ImagesStorageBucket).
+			SignedURL(human.ID, &storage.SignedURLOptions{
+				Method:      http.MethodPut,
+				ContentType: contentType,
+				Expires:     time.Now().Add(1 * time.Hour),
+			})
+		if err != nil {
+			oplog.Err(err).Msg("unable to create signed url")
+		}
+		response.SignedURL = signedURL
 	}
 
 	s.writeData(w, http.StatusCreated, response)
