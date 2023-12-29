@@ -117,5 +117,8 @@ func setupEmulatorEnvironmentVariables() error {
 	if err := os.Setenv("FIREBASE_AUTH_EMULATOR_HOST", "localhost:8081"); err != nil {
 		return err
 	}
+	if err := os.Setenv("STORAGE_EMULATOR_HOST", "localhost:9199"); err != nil {
+		return err
+	}
 	return nil
 }
