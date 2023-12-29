@@ -71,9 +71,13 @@ func (s *Server) ViewHuman(w http.ResponseWriter, r *http.Request) (err error) {
 			Msg("completed request")
 	}(time.Now())
 
-	_, err = s.GetHumanFromCache(ctx, humanID)
+	human, err := s.GetHumanFromCache(ctx, humanID)
 	if err != nil {
 		return err
+	}
+
+	if human.Draft {
+		return nil
 	}
 
 	if err := s.humanDAO.View(ctx, humandao.ViewInput{
