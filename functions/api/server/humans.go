@@ -37,6 +37,7 @@ type HumanCreateRequest struct {
 type HumanCreateResponse struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
+	Path      string `json:"path"`
 	SignedURL string `json:"signedUrl,omitempty"`
 }
 
@@ -112,6 +113,7 @@ func (s *Server) HumanCreate(w http.ResponseWriter, r *http.Request) (err error)
 	response := HumanCreateResponse{
 		ID:   human.ID,
 		Name: human.Name,
+		Path: human.Path,
 	}
 
 	if extension != "" {

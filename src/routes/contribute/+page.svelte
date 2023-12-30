@@ -150,7 +150,9 @@
         <strong class="font-bold">Success!</strong>
         <span class="block sm:inline"
           >Thanks for your contribution. A moderator will review your submission
-          shortly.</span
+          shortly. View <a href="/humans/{response.data.data.path}"
+            >{response.data.data.path}</a
+          >.</span
         >
       </div>
     {/if}
