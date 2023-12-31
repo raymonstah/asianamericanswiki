@@ -18,6 +18,7 @@ import (
 var opts struct {
 	N       int
 	UseProd bool
+	Force   bool
 	Dry     bool
 }
 
@@ -27,6 +28,7 @@ func main() {
 		Flags: []cli.Flag{
 			&cli.IntFlag{Name: "n", Usage: "how many humans to generate", Destination: &opts.N},
 			&cli.BoolFlag{Name: "use-prod", Usage: "pull data from production", Destination: &opts.UseProd},
+			&cli.BoolFlag{Name: "force", Usage: "overwrite local data", Destination: &opts.Force},
 			&cli.BoolFlag{Name: "dry", Usage: "dry run", Destination: &opts.Dry},
 		},
 		Action: run,
@@ -82,13 +84,15 @@ func run(c *cli.Context) error {
 
 func (h *Handler) Do(ctx context.Context) error {
 	if opts.UseProd {
-		localSnapshots, err := h.localFirestore.Collection("humans").Documents(ctx).GetAll()
-		if err != nil {
-			return fmt.Errorf("unable to get local documents: %w", err)
-		}
+		if !opts.Force {
+			localSnapshots, err := h.localFirestore.Collection("humans").Documents(ctx).GetAll()
+			if err != nil {
+				return fmt.Errorf("unable to get local documents: %w", err)
+			}
 
-		if len(localSnapshots) > 0 {
-			return fmt.Errorf("local firestore is not empty")
+			if len(localSnapshots) > 0 {
+				return fmt.Errorf("local firestore is not empty")
+			}
 		}
 
 		snapshots, err := h.prodFirestore.Collection("humans").Documents(ctx).GetAll()
