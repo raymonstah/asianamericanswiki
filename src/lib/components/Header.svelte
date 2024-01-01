@@ -4,33 +4,28 @@
   import { auth } from "$lib/firebase";
   import { user } from "$lib/firebase";
 
-  function logout() {
-    console.log("logging out");
-    signOut(auth);
-  }
-
   let mobileNavbarVisible = false;
-
   let darkMode = true;
+
   function handleSwitchDarkMode() {
     darkMode = !darkMode;
     localStorage.setItem("theme", darkMode ? "dark" : "light");
-    darkMode
-      ? document.documentElement.classList.add("dark")
-      : document.documentElement.classList.remove("dark");
+    document.documentElement.classList.toggle("dark", darkMode);
   }
+
   if (browser) {
-    if (
+    const prefersDarkMode = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    darkMode =
       localStorage.theme === "dark" ||
-      (!("theme" in localStorage) &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches)
-    ) {
-      document.documentElement.classList.add("dark");
-      darkMode = true;
-    } else {
-      document.documentElement.classList.remove("dark");
-      darkMode = false;
-    }
+      (!("theme" in localStorage) && prefersDarkMode);
+    document.documentElement.classList.toggle("dark", darkMode);
+  }
+
+  function logout() {
+    console.log("logging out");
+    signOut(auth);
   }
 </script>
 
@@ -46,8 +41,9 @@
       />
       <span
         class="self-center text-xl font-semibold whitespace-nowrap dark:text-white"
-        >AsianAmericans.wiki</span
       >
+        AsianAmericans.wiki
+      </span>
     </a>
     <button
       on:click={() => (mobileNavbarVisible = !mobileNavbarVisible)}
@@ -63,12 +59,13 @@
         fill="currentColor"
         viewBox="0 0 20 20"
         xmlns="http://www.w3.org/2000/svg"
-        ><path
+      >
+        <path
           fill-rule="evenodd"
           d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
           clip-rule="evenodd"
-        /></svg
-      >
+        />
+      </svg>
     </button>
     <div
       class:hidden={!mobileNavbarVisible}
@@ -78,54 +75,35 @@
       <ul
         class="flex flex-col p-4 mt-4 border border-gray-100 rounded-lg md:flex-row items-center md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0"
       >
-        <li>
-          <a
-            href={"/"}
-            class="block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-            >Home</a
-          >
-        </li>
-        <li>
-          <a
-            href="/humans"
-            class="block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-            >Humans</a
-          >
-        </li>
-        <li>
-          <a
-            href="/contribute"
-            class="block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-            A>Contribute</a
-          >
-        </li>
-        <li>
-          <a
-            href="/about"
-            class="block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-            >Our Story</a
-          >
-        </li>
-        <li>
-          <a
-            href="/search"
-            class="block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-            >Search</a
-          >
-        </li>
+        {#each [{ href: "/", label: "Home" }, { href: "/humans", label: "Humans" }, { href: "/contribute", label: "Contribute" }, { href: "/about", label: "Our Story" }, { href: "/search", label: "Search" }] as { href, label }}
+          <li>
+            <a
+              {href}
+              on:click={() => (mobileNavbarVisible = false)}
+              class="block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+            >
+              {label}
+            </a>
+          </li>
+        {/each}
         <li>
           {#if $user}
             <a
               href={"#"}
+              on:click={() => (mobileNavbarVisible = false)}
               class="block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-              on:click={logout}>Logout</a
+              on:click={logout}
             >
+              Logout
+            </a>
           {:else}
             <a
               href="/login"
+              on:click={() => (mobileNavbarVisible = false)}
               class="block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-              >Login</a
             >
+              Login
+            </a>
           {/if}
         </li>
         <li>

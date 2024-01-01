@@ -1,56 +1,21 @@
 <script>
   import BirthdayInput from "../../lib/components/BirthdayInput.svelte";
-  import { user } from "$lib/firebase";
+  import { user, auth } from "$lib/firebase";
   import { PUBLIC_BASE_URL } from "$env/static/public";
+  import ethnicities from "$lib/flags.json";
+  import tags from "$lib/tags.json";
+  import { goto } from "$app/navigation";
+  import Tags from "svelte-tags-input";
+  import { onMount } from "svelte";
+  import AuthCheck from "$lib/components/AuthCheck.svelte";
 
   let human = {};
   let errors = {};
   let image = null;
   let imageInput;
-  const ethnicityList = [
-    "Chinese",
-    "Vietnamese",
-    "Korean",
-    "Burmese",
-    "Indian",
-    "Cambodian",
-    "Japanese",
-    "Taiwanese",
-    "Thai",
-    "Filipino",
-    "Burmese",
-    "Mongolian",
-    "Malaysian",
-    "Laotian",
-    "Indonesian",
-  ];
-  const tagsList = [
-    "author",
-    "rapper",
-    "musician",
-    "singer",
-    "actor",
-    "comedian",
-    "lgbtq",
-    "entrepreneur",
-    "restaurateur",
-    "activist",
-    "athlete",
-    "ceo",
-    "cofounder",
-    "chef",
-    "designer",
-    "director",
-    "engineer",
-    "film",
-    "fitness",
-    "founder",
-    "model",
-    "news",
-    "producer",
-    "writer",
-  ];
-  import Tags from "svelte-tags-input";
+  const ethnicityList = Object.values(ethnicities)
+    .map((countryData) => countryData.ethnicity)
+    .filter((ethnicity) => ethnicity !== undefined);
 
   let response = {};
   async function contribute() {
@@ -131,9 +96,9 @@
   <title>Contribute | AsianAmericans.wiki</title>
 </svelte:head>
 
-<article>
-  <h1 class="text-2xl">Contribute an influential Asian American</h1>
-  {#if $user}
+<AuthCheck>
+  <article>
+    <h1 class="text-2xl">Contribute an influential Asian American</h1>
     {#if response.hasError === true}
       <div
         class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
@@ -265,7 +230,7 @@
         bind:tags={human.tags}
         onlyUnique="true"
         maxTags={7}
-        autoComplete={tagsList}
+        autoComplete={tags}
         placeholder={"musician comedian engineer actress"}
       />
       <button
@@ -273,14 +238,8 @@
         type="submit">Submit</button
       >
     </form>
-    <!-- Uncomment below to preview form JSON. -->
-    <!-- <p>
-      {JSON.stringify(human)}
-    </p> -->
-  {:else}
-    <h1>Please log in first.</h1>
-  {/if}
-</article>
+  </article>
+</AuthCheck>
 
 <style>
   form {
