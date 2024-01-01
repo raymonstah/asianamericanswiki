@@ -76,7 +76,7 @@
       required
     />
   </div>
-  <div class="humans">
+  <div class="my-4 grid grid-cols-1 md:grid-cols-2 gap-3">
     {#each hits as hit}
       <HumanListCard
         class="my-4"
