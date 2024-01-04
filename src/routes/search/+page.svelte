@@ -12,6 +12,9 @@
     "bcefca03d36ddd83a0f2bcb91b8990e7"
   );
 
+  /**
+   * @type {string | import("algoliasearch/lite").SearchIndex}
+   */
   let index;
 
   let query = data.query || "";
@@ -34,7 +37,9 @@
       hits = [];
       return;
     }
-    const result = await index.search(query);
+    const result = await index.search(query, {
+      hitsPerPage: 1000,
+    });
     hits = result.hits;
   }
 </script>
