@@ -80,7 +80,6 @@ func (s *Server) setupMiddleware() {
 
 func (s *Server) setupRoutes() {
 	s.router.Method(http.MethodGet, "/version", Handler(s.Version))
-	// s.router.Method(http.MethodPost, "/contribute", Handler(s.Contribute))
 
 	s.router.Method(http.MethodGet, "/humans/{humanID}/reactions", Handler(s.ReactionsForHuman))
 

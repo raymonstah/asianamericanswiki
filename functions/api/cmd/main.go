@@ -28,7 +28,6 @@ func main() {
 			&cli.BoolFlag{Name: "local"},
 			&cli.BoolFlag{Name: "no-auth"},
 			&cli.StringFlag{Name: "git-hash", EnvVars: []string{"GIT_HASH"}, Value: "latest"},
-			&cli.StringFlag{Name: "github-auth-token", EnvVars: []string{"GITHUB_AUTH_TOKEN"}},
 			&cli.StringFlag{Name: "open-ai-token", EnvVars: []string{"OPEN_AI_TOKEN"}},
 		},
 		Action: run,
