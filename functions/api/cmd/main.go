@@ -40,7 +40,8 @@ func main() {
 
 func run(c *cli.Context) error {
 	ctx := c.Context
-	if c.Bool("local") {
+	local := c.Bool("local")
+	if local {
 		if err := setupEmulatorEnvironmentVariables(); err != nil {
 			return fmt.Errorf("unable to setup local environment variables: %w", err)
 		}
@@ -92,6 +93,7 @@ func run(c *cli.Context) error {
 		Logger:        logger,
 		Version:       c.String("git-hash"),
 		StorageClient: storageClient,
+		Local:         local,
 	}
 
 	mux := server.NewServer(config)
