@@ -1,7 +1,10 @@
 package server
 
 import (
+	"embed"
 	"encoding/json"
+	"html/template"
+	"io/fs"
 	"net/http"
 	"time"
 
@@ -64,6 +67,10 @@ func NewServer(config Config) *Server {
 
 	s.setupMiddleware()
 	s.setupRoutes()
+	if err := s.setupHTMLRoutes(); err != nil {
+		panic(err)
+	}
+
 	return s
 }
 
@@ -75,7 +82,6 @@ func (s *Server) setupMiddleware() {
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 	}))
-
 }
 
 func (s *Server) setupRoutes() {
@@ -105,6 +111,59 @@ func (s *Server) setupRoutes() {
 		With(s.RateLimitMiddleware).
 		With(s.OptionalAuthMiddleware).
 		Method(http.MethodPost, "/humans/{humanID}/view", Handler(s.ViewHuman))
+}
+
+//go:embed public/*
+var publicFS embed.FS
+
+func (s *Server) setupHTMLRoutes() error {
+
+	templatesFS, err := fs.Sub(publicFS, "public/templates")
+	if err != nil {
+		return err
+	}
+	publicFS, err := fs.Sub(publicFS, "public/static")
+	if err != nil {
+		return err
+	}
+
+	indexTemplate, err := template.ParseFS(templatesFS, "*.html")
+	if err != nil {
+		return err
+	}
+	s.router.Handle("/*", http.FileServer(http.FS(publicFS)))
+	s.router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		var indexParams struct {
+			EnableAds bool
+		}
+		indexParams.EnableAds = false
+		if err := indexTemplate.ExecuteTemplate(w, "index.html", indexParams); err != nil {
+			s.logger.Error().Err(err).Msg("unable to execute index.html template")
+		}
+	})
+	s.router.Get("/about", func(w http.ResponseWriter, r *http.Request) {
+		if err := indexTemplate.ExecuteTemplate(w, "about.html", nil); err != nil {
+			s.logger.Error().Err(err).Msg("unable to execute about.html template")
+		}
+	})
+
+	s.router.Get("/humans", func(w http.ResponseWriter, r *http.Request) {
+		var human struct{ HumanName string }
+		human.HumanName = chi.URLParamFromCtx(r.Context(), "id")
+		if err := indexTemplate.ExecuteTemplate(w, "humans.html", human); err != nil {
+			s.logger.Error().Err(err).Msg("unable to execute humans.html template")
+		}
+	})
+
+	s.router.Get("/humans/{id}", func(w http.ResponseWriter, r *http.Request) {
+		var human struct{ HumanName string }
+		human.HumanName = chi.URLParamFromCtx(r.Context(), "id")
+		if err := indexTemplate.ExecuteTemplate(w, "humans-id.html", human); err != nil {
+			s.logger.Error().Err(err).Msg("unable to execute humans-id template")
+		}
+	})
+
+	return nil
 }
 
 func (s *Server) Version(w http.ResponseWriter, r *http.Request) error {

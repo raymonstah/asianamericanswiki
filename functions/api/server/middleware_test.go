@@ -107,7 +107,7 @@ func TestServer_AdminMiddleware(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/", nil)
-	h := s.AdminMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	h := s.AdminMiddleware(http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
 		token := Token(r.Context())
 		assert.NotNil(t, token)
 		assert.Equal(t, userRecord.UID, token.UID)
