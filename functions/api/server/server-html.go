@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"io/fs"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
@@ -40,10 +41,15 @@ func (s *ServerHTML) Register(router chi.Router) error {
 		return err
 	}
 
-	htmlTemplates, err := template.ParseFS(templatesFS, "*.html")
+	htmlTemplates, err := template.New("").
+		Funcs(template.FuncMap{
+			"year": time.Now().Year,
+		}).
+		ParseFS(templatesFS, "*.html")
 	if err != nil {
 		return err
 	}
+
 	s.template = htmlTemplates
 
 	router.Handle("/*", http.FileServer(http.FS(publicFS)))
