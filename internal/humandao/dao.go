@@ -403,27 +403,34 @@ func (d *DAO) GetReactions(ctx context.Context, input GetReactionsInput) ([]Reac
 	return convertReactionDocs(docs)
 }
 
+type OrderBy string
+
+var (
+	OrderByCreatedAt OrderBy = "created_at"
+	OrderByViews     OrderBy = "views"
+)
+
 type ListHumansInput struct {
 	Limit     int
 	Offset    int
-	OrderBy   string
+	OrderBy   OrderBy
 	Direction firestore.Direction
 }
 
 func (d *DAO) ListHumans(ctx context.Context, input ListHumansInput) ([]Human, error) {
-	allowedOrderBy := map[string]struct{}{
-		"views":      {},
-		"created_at": {},
+	allowedOrderBy := map[OrderBy]struct{}{
+		OrderByCreatedAt: {},
+		OrderByViews:     {},
 	}
 	query := d.client.Collection(d.humanCollection).
 		Where("draft", "==", false)
 	if input.OrderBy == "" {
-		query = query.OrderBy("created_at", firestore.Desc)
+		query = query.OrderBy(string(OrderByCreatedAt), firestore.Desc)
 	} else {
 		if _, ok := allowedOrderBy[input.OrderBy]; !ok {
 			return nil, ErrInvalidOrderBy
 		}
-		query = query.OrderBy(input.OrderBy, input.Direction)
+		query = query.OrderBy(string(input.OrderBy), input.Direction)
 	}
 	docs, err := query.
 		Offset(input.Offset).

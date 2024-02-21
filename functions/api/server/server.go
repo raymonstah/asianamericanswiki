@@ -84,32 +84,34 @@ func (s *Server) setupMiddleware() {
 }
 
 func (s *Server) setupRoutes() {
-	s.router.Method(http.MethodGet, "/version", Handler(s.Version))
+	s.router.Route("/api/v1/", func(r chi.Router) {
+		r.Method(http.MethodGet, "/version", Handler(s.Version))
 
-	s.router.Method(http.MethodGet, "/humans/{humanID}/reactions", Handler(s.ReactionsForHuman))
+		r.Method(http.MethodGet, "/humans/{humanID}/reactions", Handler(s.ReactionsForHuman))
 
-	s.router.Route("/humans", func(r chi.Router) {
-		r.Method(http.MethodGet, "/", Handler(s.HumansList))
-		r.With(s.AuthMiddleware).Method(http.MethodPost, "/search", Handler(s.HumansByID))
-		r.Method(http.MethodGet, "/{path}", Handler(s.HumanGet))
-		r.With(s.AuthMiddleware).Method(http.MethodPost, "/", Handler(s.HumanCreate))
-		r.With(s.AdminMiddleware).Method(http.MethodGet, "/drafts", Handler(s.HumansDraft))
-		r.With(s.AdminMiddleware).Method(http.MethodPost, "/{id}/review", Handler(s.HumansReview))
+		r.Route("/humans", func(r chi.Router) {
+			r.Method(http.MethodGet, "/", Handler(s.HumansList))
+			r.With(s.AuthMiddleware).Method(http.MethodPost, "/search", Handler(s.HumansByID))
+			r.Method(http.MethodGet, "/{path}", Handler(s.HumanGet))
+			r.With(s.AuthMiddleware).Method(http.MethodPost, "/", Handler(s.HumanCreate))
+			r.With(s.AdminMiddleware).Method(http.MethodGet, "/drafts", Handler(s.HumansDraft))
+			r.With(s.AdminMiddleware).Method(http.MethodPost, "/{id}/review", Handler(s.HumansReview))
+		})
+
+		r.Route("/reactions", func(r chi.Router) {
+			r.Method(http.MethodGet, "/", Handler(s.GetReactions))
+			r.With(s.AuthMiddleware).Method(http.MethodPost, "/", Handler(s.PostReaction))
+			r.With(s.AuthMiddleware).Method(http.MethodDelete, "/{id}", Handler(s.DeleteReaction))
+		})
+
+		r.With(s.AuthMiddleware).Method(http.MethodGet, "/user", Handler(s.User))
+		r.With(s.AuthMiddleware).Method(http.MethodPost, "/humans/{humanID}/save", Handler(s.SaveHuman))
+		r.With(s.AuthMiddleware).Method(http.MethodDelete, "/humans/{humanID}/save", Handler(s.UnsaveHuman))
+		r.
+			With(s.RateLimitMiddleware).
+			With(s.OptionalAuthMiddleware).
+			Method(http.MethodPost, "/humans/{humanID}/view", Handler(s.ViewHuman))
 	})
-
-	s.router.Route("/reactions", func(r chi.Router) {
-		r.Method(http.MethodGet, "/", Handler(s.GetReactions))
-		r.With(s.AuthMiddleware).Method(http.MethodPost, "/", Handler(s.PostReaction))
-		r.With(s.AuthMiddleware).Method(http.MethodDelete, "/{id}", Handler(s.DeleteReaction))
-	})
-
-	s.router.With(s.AuthMiddleware).Method(http.MethodGet, "/user", Handler(s.User))
-	s.router.With(s.AuthMiddleware).Method(http.MethodPost, "/humans/{humanID}/save", Handler(s.SaveHuman))
-	s.router.With(s.AuthMiddleware).Method(http.MethodDelete, "/humans/{humanID}/save", Handler(s.UnsaveHuman))
-	s.router.
-		With(s.RateLimitMiddleware).
-		With(s.OptionalAuthMiddleware).
-		Method(http.MethodPost, "/humans/{humanID}/view", Handler(s.ViewHuman))
 }
 
 func (s *Server) Version(w http.ResponseWriter, r *http.Request) error {

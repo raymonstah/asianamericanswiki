@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"cloud.google.com/go/firestore"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
@@ -53,15 +54,7 @@ func (s *ServerHTML) Register(router chi.Router) error {
 	s.template = htmlTemplates
 
 	router.Handle("/*", http.FileServer(http.FS(publicFS)))
-	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		var indexParams struct {
-			EnableAds bool
-		}
-		indexParams.EnableAds = !s.local
-		if err := htmlTemplates.ExecuteTemplate(w, "index.html", indexParams); err != nil {
-			s.logger.Error().Err(err).Msg("unable to execute index.html template")
-		}
-	})
+	router.Get("/", HttpHandler(s.HandlerIndex).Serve())
 	router.Get("/about", func(w http.ResponseWriter, r *http.Request) {
 		if err := htmlTemplates.ExecuteTemplate(w, "about.html", nil); err != nil {
 			s.logger.Error().Err(err).Msg("unable to execute about.html template")
@@ -83,6 +76,45 @@ func (s *ServerHTML) Register(router chi.Router) error {
 
 type HTMlResponseHumans struct {
 	Count int
+}
+
+func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error {
+	var (
+		ctx = r.Context()
+	)
+	humans, err := s.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
+		Limit:     500,
+		OrderBy:   humandao.OrderByCreatedAt,
+		Direction: firestore.Desc,
+	})
+	if err != nil {
+		return err
+	}
+
+	type Human struct {
+		Path        string
+		Name        string
+		Description string
+	}
+	var indexParams struct {
+		EnableAds bool
+		Humans    []Human
+	}
+
+	indexParams.EnableAds = !s.local
+	for i := 0; i < 10; i++ {
+		indexParams.Humans = append(indexParams.Humans, Human{
+			Path:        humans[i].Path,
+			Name:        humans[i].Name,
+			Description: humans[i].Description,
+		})
+	}
+
+	if err := s.template.ExecuteTemplate(w, "index.html", indexParams); err != nil {
+		s.logger.Error().Err(err).Msg("unable to execute index.html template")
+	}
+
+	return nil
 }
 
 func (s *ServerHTML) HandlerHumans(w http.ResponseWriter, r *http.Request) error {
