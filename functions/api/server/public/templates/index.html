@@ -13,12 +13,13 @@
 
   </head>
   <body
-    class="h-full w-full flex flex-col min-h-screen bg-slate-200 dark:bg-zinc-700 dark:text-slate-300"
+    class="h-full w-full flex flex-col align-middle min-h-screen bg-slate-200 dark:bg-gray-950 dark:text-gray-300"
   >
     {{ template "header.html" . }}
 
 
-    <div>
+    <h1 class="text-3xl font-extrabold mb-4 text-center">Recently Added</h1>
+    <div class="flex flex-col items-center align-middle gap-y-3 mx-2">
       {{ range $human := .Humans }}
         {{ template "component-card.html" $human }}
       {{ end }}

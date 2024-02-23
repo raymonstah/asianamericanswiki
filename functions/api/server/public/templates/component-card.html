@@ -1,15 +1,49 @@
 {{ define "component-card.html" }}
   <a
     href="{{ .Path }}"
-    class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+    class="flex flex-col items-center max-w-sm w-full p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-900 dark:hover:bg-gray-700"
   >
-    <h2
-      class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
-    >
-      {{ .Name }}
-    </h2>
-    <p class="font-normal text-gray-700 dark:text-gray-400 break-words">
+    <div class="flex flex-row align-middle">
+      <h2
+        class="mb-2 text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+      >
+        {{ .Name }}
+        <span class="text-sm">
+          {{ if eq .Gender "male" }}
+            ♂️
+          {{ else if eq .Gender "female" }}
+            ♀️
+          {{ else }}
+            ☿️
+          {{ end }}
+        </span>
+      </h2>
+    </div>
+    {{ if .FeaturedImage }}
+      <img
+        class="mb-2"
+        src="{{ .FeaturedImage }}"
+        alt="A photo of {{ .Name }}"
+      />
+    {{ end }}
+    <div>
+      {{ range .Ethnicity }}
+        <span
+          class="rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 dark:bg-gray-700 dark:text-white"
+        >
+          {{ . }}
+        </span>
+      {{ end }}
+      {{ range .Tags }}
+        <span
+          class="rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 dark:bg-gray-700 dark:text-white"
+        >
+          {{ . }}
+        </span>
+      {{ end }}
+    </div>
+    <!-- <p class="font-normal text-gray-700 dark:text-gray-400 break-words">
       {{ .Description }}
-    </p>
+    </p> -->
   </a>
 {{ end }}

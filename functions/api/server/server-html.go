@@ -91,24 +91,13 @@ func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error 
 		return err
 	}
 
-	type Human struct {
-		Path        string
-		Name        string
-		Description string
-	}
 	var indexParams struct {
 		EnableAds bool
-		Humans    []Human
+		Humans    []humandao.Human
 	}
 
 	indexParams.EnableAds = !s.local
-	for i := 0; i < 10; i++ {
-		indexParams.Humans = append(indexParams.Humans, Human{
-			Path:        humans[i].Path,
-			Name:        humans[i].Name,
-			Description: humans[i].Description,
-		})
-	}
+	indexParams.Humans = humans
 
 	if err := s.template.ExecuteTemplate(w, "index.html", indexParams); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute index.html template")
