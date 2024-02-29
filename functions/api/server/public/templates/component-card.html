@@ -1,50 +1,52 @@
 {{ define "component-card.html" }}
   <div
-    class="max-w-sm w-full border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-900 dark:hover:bg-gray-800"
+    onclick="window.location='{{ .Path }}'"
+    class="hover: cursor-pointer max-w-sm w-full border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-900 dark:hover:bg-gray-800"
   >
-    <a
-      href="{{ .Path }}"
-      class="flex flex-col items-center p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-900 dark:hover:bg-gray-800"
+    <div
+      class="flex flex-col items-center p-2 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-900 dark:hover:bg-gray-800"
     >
       <div class="flex flex-row align-middle">
-        <h2
-          class="mb-2 text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
-        >
-          {{ .Name }}
-          <span class="text-sm">
-            {{ if eq .Gender "male" }}
-              ♂️
-            {{ else if eq .Gender "female" }}
-              ♀️
-            {{ else }}
-              ☿️
-            {{ end }}
-          </span>
-        </h2>
+        <a href="/humans/{{ .Path }}">
+          <h2
+            class="mb-2 text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+          >
+            {{ .Name }}
+            <span class="text-sm">
+              {{ if eq .Gender "male" }}
+                ♂️
+              {{ else if eq .Gender "female" }}
+                ♀️
+              {{ else }}
+                ☿️
+              {{ end }}
+            </span>
+          </h2>
+        </a>
       </div>
       {{ if .FeaturedImage }}
-        <img
-          class="object-cover h-96"
-          src="{{ .FeaturedImage }}"
-          alt="A photo of {{ .Name }}"
-        />
+        <a href="/humans/{{ .Path }}">
+          <img
+            class="object-cover h-96"
+            src="{{ .FeaturedImage }}"
+            alt="A photo of {{ .Name }}"
+          />
+        </a>
       {{ end }}
-    </a>
-    <div class="flex flex-col items-center w-full mb-2">
-      <div class="mb-2">
+      <div class="my-2 flex flex-row flex-wrap justify-evenly gap-y-2">
         {{ range .Ethnicity }}
           <a
             href="/humans?ethnicity={{ . }}"
-            class="tag rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 dark:bg-gray-700 dark:text-white"
+            class="tag rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 hover:scale-125"
             >{{ . }}</a
           >
         {{ end }}
       </div>
-      <div class="mb-2">
+      <div class="flex flex-row flex-wrap justify-evenly gap-y-2">
         {{ range .Tags }}
           <a
             href="/humans?tag={{ . }}"
-            class="tag rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 dark:bg-gray-700 dark:text-white"
+            class="tag rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 hover:scale-125"
             >{{ . }}</a
           >
         {{ end }}
