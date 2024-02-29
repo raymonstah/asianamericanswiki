@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"io/fs"
 	"net/http"
+	"net/url"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -62,20 +63,15 @@ func (s *ServerHTML) Register(router chi.Router) error {
 	})
 
 	router.Get("/humans", HttpHandler(s.HandlerHumans).Serve())
-
-	router.Get("/humans/{id}", func(w http.ResponseWriter, r *http.Request) {
-		var human struct{ HumanName string }
-		human.HumanName = chi.URLParamFromCtx(r.Context(), "id")
-		if err := htmlTemplates.ExecuteTemplate(w, "humans-id.html", human); err != nil {
-			s.logger.Error().Err(err).Msg("unable to execute humans-id template")
-		}
-	})
+	router.Get("/humans/{id}", HttpHandler(s.HandlerHuman).Serve())
 
 	return nil
 }
 
-type HTMlResponseHumans struct {
-	Count int
+type HTMLResponseHumans struct {
+	Humans    []humandao.Human
+	EnableAds bool
+	Count     int
 }
 
 func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error {
@@ -98,6 +94,9 @@ func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error 
 
 	indexParams.EnableAds = !s.local
 	indexParams.Humans = humans
+	for i, human := range indexParams.Humans {
+		indexParams.Humans[i].Path = "/humans/" + human.Path
+	}
 
 	if err := s.template.ExecuteTemplate(w, "index.html", indexParams); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute index.html template")
@@ -108,7 +107,9 @@ func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error 
 
 func (s *ServerHTML) HandlerHumans(w http.ResponseWriter, r *http.Request) error {
 	var (
-		ctx = r.Context()
+		ctx         = r.Context()
+		tags        = r.URL.Query()["tag"]
+		ethnicities = r.URL.Query()["ethnicity"]
 	)
 	humans, err := s.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
 		Limit: 500,
@@ -116,12 +117,53 @@ func (s *ServerHTML) HandlerHumans(w http.ResponseWriter, r *http.Request) error
 	if err != nil {
 		return err
 	}
+	filters := []humandao.FilterOpt{}
+	if len(tags) > 0 {
+		filters = append(filters, humandao.ByTags(tags...))
+	}
+	if len(ethnicities) > 0 {
+		for _, ethn := range ethnicities {
+			filters = append(filters, humandao.ByEthnicity(ethn))
+		}
+	}
+	humans = humandao.ApplyFilters(humans, filters...)
+	for i, human := range humans {
+		humans[i].Path = "/humans/" + human.Path
+	}
 
-	response := HTMlResponseHumans{
-		Count: len(humans),
+	response := HTMLResponseHumans{
+		Count:     len(humans),
+		EnableAds: !s.local,
+		Humans:    humans,
 	}
 	if err := s.template.ExecuteTemplate(w, "humans.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute humans.html template")
+	}
+
+	return nil
+}
+
+type HTMLResponseHuman struct {
+	Human     humandao.Human
+	EnableAds bool
+}
+
+func (s *ServerHTML) HandlerHuman(w http.ResponseWriter, r *http.Request) error {
+	path := chi.URLParamFromCtx(r.Context(), "id")
+	ctx := r.Context()
+	path, err := url.PathUnescape(path)
+	if err != nil {
+		return err
+	}
+
+	human, err := s.humanDAO.Human(ctx, humandao.HumanInput{Path: path})
+	if err != nil {
+		return err
+	}
+
+	response := HTMLResponseHuman{Human: human, EnableAds: !s.local}
+	if err := s.template.ExecuteTemplate(w, "humans-id.html", response); err != nil {
+		s.logger.Error().Err(err).Msg("unable to execute humans-id template")
 	}
 
 	return nil

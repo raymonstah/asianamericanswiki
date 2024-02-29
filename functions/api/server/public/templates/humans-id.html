@@ -1,6 +1,146 @@
-{{ template "header.html" . }}
-<div>
-  <h1>{{ .HumanName }}</h1>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ .Human.Name }} | AsianAmericans.wiki</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link href="/output.css" rel="stylesheet" />
+    <script src="/1.9.10.htmx.min.js"></script>
 
-  This is an individual human page.
-</div>
+    {{ template "google-ads.html" . }}
+    {{ template "dark-mode.html" . }}
+
+
+    <meta name="description" content="{data.human.description}" />
+
+    <!-- Facebook Meta Tags -->
+    <meta
+      property="og:url"
+      content="https://asianamericans.wiki/humans/{{ .Human.Path }}"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{{ .Human.Name }}" />
+    <meta property="og:description" content="{{ .Human.Description }}" />
+    <meta property="og:image" content="{{ .Human.FeaturedImage }}" />
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      property="twitter:url"
+      content="https://asianamericans.wiki/humans/{{ .Human.Path }}"
+    />
+    <meta name="twitter:title" content="{{ .Human.Name }}" />
+    <meta name="twitter:description" content="{{ .Human.Description }}" />
+    <meta name="twitter:image" content="{{ .Human.FeaturedImage }}" />
+  </head>
+  <body
+    class="h-full w-full flex flex-col align-middle min-h-screen bg-slate-200 dark:bg-gray-950 dark:text-gray-300"
+  >
+    {{ template "header.html" . }}
+
+
+    <div
+      class="max-w-sm md:max-w-md flex flex-col items-center justify-center content-center self-center"
+    >
+      <h1 class="text-3xl font-extrabold my-4 text-center">
+        {{ .Human.Name }}
+        <span class="text-sm">
+          {{ if eq .Human.Gender "male" }}
+            ♂️
+          {{ else if eq .Human.Gender "female" }}
+            ♀️
+          {{ else }}
+            ☿️
+          {{ end }}
+        </span>
+      </h1>
+      {{ if .Human.FeaturedImage }}
+        <img
+          class="mb-2 object-cover h-96"
+          src="{{ .Human.FeaturedImage }}"
+          alt="A photo of {{ .Human.Name }}"
+        />
+      {{ end }}
+      <div class="mb-2">
+        {{ if .Human.CurrentAge }}
+          {{ .Human.CurrentAge }}
+        {{ end }}
+      </div>
+      <div class="mb-2">
+        {{ range .Human.Ethnicity }}
+          <a
+            href="/humans?ethnicity={{ . }}"
+            class="tag rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 dark:bg-gray-700 dark:text-white"
+            >{{ . }}</a
+          >
+        {{ end }}
+      </div>
+      <div class="mb-2">
+        {{ range .Human.Tags }}
+          <a
+            href="/humans?tag={{ . }}"
+            class="rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 dark:bg-gray-700 dark:text-white"
+            >{{ . }}
+          </a>
+        {{ end }}
+      </div>
+
+      {{ if or (.Human.Socials.X) (.Human.Socials.IMDB) (.Human.Socials.Website) }}
+        <ul class="flex flex-row space-x-2 align-middle items-center">
+          {{ if .Human.Socials.X }}
+            <a target="_blank" href="{{ .Human.Socials.X }}">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                height="1.5em"
+                viewBox="0 0 512 512"
+              >
+                <!-- Font Awesome icon paths -->
+                <path
+                  d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"
+                />
+              </svg>
+            </a>
+          {{ end }}
+          {{ if .Human.Socials.Website }}
+            <a target="_blank" href="{{ .Human.Socials.Website }}">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="1.5em"
+                fill="currentColor"
+                viewBox="0 0 576 512"
+              >
+                <!-- Font Awesome icon paths -->
+                <path
+                  d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"
+                />
+              </svg>
+            </a>
+          {{ end }}
+          {{ if .Human.Socials.IMDB }}
+            <a target="_blank" href="{{ .Human.Socials.IMDB }}">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="2em"
+                fill="currentColor"
+                viewBox="0 0 448 512"
+              >
+                <!-- Font Awesome icon paths -->
+                <path
+                  d="M89.5 323.6H53.93V186.2H89.5V323.6zM156.1 250.5L165.2 186.2H211.5V323.6H180.5V230.9L167.1 323.6H145.8L132.8 232.9L132.7 323.6H101.5V186.2H147.6C148.1 194.5 150.4 204.3 151.9 215.6L156.1 250.5zM223.7 323.6V186.2H250.3C267.3 186.2 277.3 187.1 283.3 188.6C289.4 190.3 294 192.8 297.2 196.5C300.3 199.8 302.3 203.1 303 208.5C303.9 212.9 304.4 221.6 304.4 234.7V282.9C304.4 295.2 303.7 303.4 302.5 307.6C301.4 311.7 299.4 315 296.5 317.3C293.7 319.7 290.1 321.4 285.8 322.3C281.6 323.1 275.2 323.6 266.7 323.6H223.7zM259.2 209.7V299.1C264.3 299.1 267.5 298.1 268.6 296.8C269.7 294.8 270.4 289.2 270.4 280.1V226.8C270.4 220.6 270.3 216.6 269.7 214.8C269.4 213 268.5 211.8 267.1 210.1C265.7 210.1 263 209.7 259.2 209.7V209.7zM316.5 323.6V186.2H350.6V230.1C353.5 227.7 356.7 225.2 360.1 223.5C363.7 222 368.9 221.1 372.9 221.1C377.7 221.1 381.8 221.9 385.2 223.3C388.6 224.8 391.2 226.8 393.2 229.5C394.9 232.1 395.9 234.8 396.3 237.3C396.7 239.9 396.1 245.3 396.1 253.5V292.1C396.1 300.3 396.3 306.4 395.3 310.5C394.2 314.5 391.5 318.1 387.5 320.1C383.4 324 378.6 325.4 372.9 325.4C368.9 325.4 363.7 324.5 360.2 322.9C356.7 321.1 353.5 318.4 350.6 314.9L348.5 323.6L316.5 323.6zM361.6 302.9C362.3 301.1 362.6 296.9 362.6 290.4V255C362.6 249.4 362.3 245.5 361.5 243.8C360.8 241.9 357.8 241.1 355.7 241.1C353.7 241.1 352.3 241.9 351.6 243.4C351 244.9 350.6 248.8 350.6 255V291.4C350.6 297.5 351 301.4 351.8 303C352.4 304.7 353.9 305.5 355.9 305.5C358.1 305.5 360.1 304.7 361.6 302.9L361.6 302.9zM418.4 32.04C434.1 33.27 447.1 47.28 447.1 63.92V448.1C447.1 464.5 435.2 478.5 418.9 479.1C418.6 479.1 418.4 480 418.1 480H29.88C29.6 480 29.32 479.1 29.04 479.9C13.31 478.5 1.093 466.1 0 449.7L.0186 61.78C1.081 45.88 13.82 33.09 30.26 31.1H417.7C417.9 31.1 418.2 32.01 418.4 32.04L418.4 32.04zM30.27 41.26C19 42.01 10.02 51.01 9.257 62.4V449.7C9.63 455.1 11.91 460.2 15.7 464C19.48 467.9 24.51 470.3 29.89 470.7H418.1C429.6 469.7 438.7 459.1 438.7 448.1V63.91C438.7 58.17 436.6 52.65 432.7 48.45C428.8 44.24 423.4 41.67 417.7 41.26L30.27 41.26z"
+                />
+              </svg>
+            </a>
+          {{ end }}
+        </ul>
+      {{ end }}
+
+      {{ if .Human.Description }}
+        <div class="p-4 space-y-4">{{ .Human.Description }}</div>
+      {{ end }}
+
+    </div>
+  </body>
+  {{ template "footer.html" . }}
+</html>
