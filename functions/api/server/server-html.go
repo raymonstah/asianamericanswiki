@@ -3,11 +3,12 @@ package server
 import (
 	"context"
 	"embed"
-	"fmt"
+	"errors"
 	"html/template"
 	"io/fs"
 	"net/http"
 	"net/url"
+	"os"
 	"sort"
 	"sync"
 	"time"
@@ -45,7 +46,6 @@ func NewServerHTML(local bool, humanDAO *humandao.DAO, logger zerolog.Logger) *S
 func (s *ServerHTML) initializeIndex(ctx context.Context) error {
 	defer func(now time.Time) {
 		s.logger.Info().Dur("elapsed", time.Since(now)).Msg("index initialized")
-		fmt.Println("index initialized")
 	}(time.Now())
 	mapping := bleve.NewIndexMapping()
 	index, err := bleve.NewMemOnly(mapping)
@@ -99,20 +99,44 @@ func (s *ServerHTML) Register(router chi.Router) error {
 
 	s.template = htmlTemplates
 
-	router.Handle("/*", http.FileServer(http.FS(publicFS)))
-	router.Get("/", HttpHandler(s.HandlerIndex).Serve())
-	router.Get("/about", func(w http.ResponseWriter, r *http.Request) {
-		if err := htmlTemplates.ExecuteTemplate(w, "about.html", nil); err != nil {
-			s.logger.Error().Err(err).Msg("unable to execute about.html template")
-		}
-	})
-
-	router.Get("/humans", HttpHandler(s.HandlerHumans).Serve())
-	router.Get("/humans/{id}", HttpHandler(s.HandlerHuman).Serve())
+	router.Handle("/*", s.WrapFileServer(publicFS))
+	router.Get("/", HttpHandler(s.HandlerIndex).Serve(s.HandlerNotFound))
+	router.Get("/about", HttpHandler(s.HandlerAbout).Serve(s.HandlerNotFound))
+	router.Get("/humans", HttpHandler(s.HandlerHumans).Serve(s.HandlerNotFound))
+	router.Get("/humans/{id}", HttpHandler(s.HandlerHuman).Serve(s.HandlerNotFound))
 	// redirect the old search route to the new one
 	router.Get("/search", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/humans", http.StatusMovedPermanently)
 	})
+
+	return nil
+}
+
+func (s *ServerHTML) WrapFileServer(fileSystem fs.FS) http.Handler {
+	fileServer := http.FileServer(http.FS(fileSystem))
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, err := fs.Stat(fileSystem, r.URL.Path[1:])
+		if err != nil {
+			if os.IsNotExist(err) {
+				_ = s.HandlerNotFound(w, r)
+				return
+			}
+			// fallthrough
+		}
+
+		fileServer.ServeHTTP(w, r)
+	})
+}
+
+func (s *ServerHTML) HandlerNotFound(w http.ResponseWriter, r *http.Request) error {
+	var notFoundParams struct {
+		EnableAds bool
+	}
+	notFoundParams.EnableAds = !s.local
+	if err := s.template.ExecuteTemplate(w, "404.html", notFoundParams); err != nil {
+		s.logger.Error().Err(err).Msg("unable to execute 404.html template")
+		return err
+	}
 
 	return nil
 }
@@ -245,6 +269,14 @@ type HTMLResponseHuman struct {
 	EnableAds bool
 }
 
+func (s *ServerHTML) HandlerAbout(w http.ResponseWriter, r *http.Request) error {
+	if err := s.template.ExecuteTemplate(w, "about.html", nil); err != nil {
+		s.logger.Error().Err(err).Msg("unable to execute about.html template")
+	}
+
+	return nil
+}
+
 func (s *ServerHTML) HandlerHuman(w http.ResponseWriter, r *http.Request) error {
 	path := chi.URLParamFromCtx(r.Context(), "id")
 	ctx := r.Context()
@@ -255,6 +287,9 @@ func (s *ServerHTML) HandlerHuman(w http.ResponseWriter, r *http.Request) error 
 
 	human, err := s.humanDAO.Human(ctx, humandao.HumanInput{Path: path})
 	if err != nil {
+		if errors.Is(err, humandao.ErrHumanNotFound) {
+			return NewNotFoundError(err)
+		}
 		return err
 	}
 
@@ -268,11 +303,22 @@ func (s *ServerHTML) HandlerHuman(w http.ResponseWriter, r *http.Request) error 
 
 type HttpHandler func(http.ResponseWriter, *http.Request) error
 
-func (h HttpHandler) Serve() func(http.ResponseWriter, *http.Request) {
+func (h HttpHandler) Serve(notFoundHandler HttpHandler) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		oplog := httplog.LogEntry(r.Context())
 		if err := h(w, r); err != nil {
+			var errResponse ErrorResponse
+			ok := errors.As(err, &errResponse)
 			oplog.Err(err).Msg("error serving request")
+			if ok {
+				if errResponse.Status == http.StatusNotFound {
+					notFoundHandler(w, r)
+					return
+				}
+				http.Error(w, errResponse.Error(), errResponse.Status)
+				return
+			}
+
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

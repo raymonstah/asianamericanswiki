@@ -12,6 +12,7 @@ import (
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
 	"github.com/raymonstah/asianamericanswiki/functions/api"
+	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/segmentio/ksuid"
 	"github.com/tj/assert"
 )
@@ -23,8 +24,12 @@ func TestServer_AuthMiddleware_Unauthorized(t *testing.T) {
 	authClient, err := app.Auth(ctx)
 	assert.NoError(t, err)
 
+	fsClient, err := app.Firestore(ctx)
+	assert.NoError(t, err)
+
 	s := NewServer(Config{
 		AuthClient: authClient,
+		HumansDAO:  humandao.NewDAO(fsClient),
 	})
 
 	w := httptest.NewRecorder()
@@ -47,10 +52,15 @@ func TestServer_AuthMiddleware(t *testing.T) {
 	ctx := context.Background()
 	app, err := firebase.NewApp(ctx, &firebase.Config{ProjectID: api.ProjectID})
 	assert.NoError(t, err)
+
+	fsClient, err := app.Firestore(ctx)
+	assert.NoError(t, err)
+
 	authClient, err := app.Auth(ctx)
 	assert.NoError(t, err)
 	s := NewServer(Config{
 		AuthClient: authClient,
+		HumansDAO:  humandao.NewDAO(fsClient),
 	})
 
 	email := fmt.Sprintf("%v@test.com", ksuid.New().String())
@@ -95,8 +105,13 @@ func TestServer_AdminMiddleware(t *testing.T) {
 	assert.NoError(t, err)
 	authClient, err := app.Auth(ctx)
 	assert.NoError(t, err)
+
+	fsClient, err := app.Firestore(ctx)
+	assert.NoError(t, err)
+
 	s := NewServer(Config{
 		AuthClient: authClient,
+		HumansDAO:  humandao.NewDAO(fsClient),
 	})
 
 	userRecord, email, password := createTestUser(t, ctx, authClient)
@@ -177,8 +192,12 @@ func Test_ParseToken(t *testing.T) {
 	assert.NoError(t, err)
 	authClient, err := app.Auth(ctx)
 	assert.NoError(t, err)
+	fsClient, err := app.Firestore(ctx)
+	assert.NoError(t, err)
+
 	s := NewServer(Config{
 		AuthClient: authClient,
+		HumansDAO:  humandao.NewDAO(fsClient),
 	})
 
 	tcs := map[string]struct {

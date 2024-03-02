@@ -63,54 +63,60 @@ func NewServer(config Config) *Server {
 		storageClient: config.StorageClient,
 	}
 
-	s.setupMiddleware()
 	s.setupRoutes()
 	htmlServer := NewServerHTML(config.Local, config.HumansDAO, config.Logger)
-	if err := htmlServer.Register(r); err != nil {
-		panic(err)
-	}
+	r.Group(func(r chi.Router) {
+		r.Use(middleware.RealIP)
+		r.Use(middleware.StripSlashes)
+		r.Use(cors.Handler(cors.Options{
+			AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+			AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		}))
+		if err := htmlServer.Register(r); err != nil {
+			panic(err)
+		}
+	})
 
 	return s
 }
 
-func (s *Server) setupMiddleware() {
-	s.router.Use(middleware.RealIP)
-	s.router.Use(httplog.RequestLogger(s.logger))
-	s.router.Use(middleware.StripSlashes)
-	s.router.Use(cors.Handler(cors.Options{
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-	}))
-}
-
 func (s *Server) setupRoutes() {
-	s.router.Route("/api/v1/", func(r chi.Router) {
-		r.Method(http.MethodGet, "/version", Handler(s.Version))
+	s.router.Group(func(r chi.Router) {
+		r.Use(middleware.RealIP)
+		r.Use(httplog.RequestLogger(s.logger))
+		r.Use(middleware.StripSlashes)
+		r.Use(cors.Handler(cors.Options{
+			AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+			AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		}))
+		r.Route("/api/v1/", func(r chi.Router) {
+			r.Method(http.MethodGet, "/version", Handler(s.Version))
 
-		r.Method(http.MethodGet, "/humans/{humanID}/reactions", Handler(s.ReactionsForHuman))
+			r.Method(http.MethodGet, "/humans/{humanID}/reactions", Handler(s.ReactionsForHuman))
 
-		r.Route("/humans", func(r chi.Router) {
-			r.Method(http.MethodGet, "/", Handler(s.HumansList))
-			r.With(s.AuthMiddleware).Method(http.MethodPost, "/search", Handler(s.HumansByID))
-			r.Method(http.MethodGet, "/{path}", Handler(s.HumanGet))
-			r.With(s.AuthMiddleware).Method(http.MethodPost, "/", Handler(s.HumanCreate))
-			r.With(s.AdminMiddleware).Method(http.MethodGet, "/drafts", Handler(s.HumansDraft))
-			r.With(s.AdminMiddleware).Method(http.MethodPost, "/{id}/review", Handler(s.HumansReview))
+			r.Route("/humans", func(r chi.Router) {
+				r.Method(http.MethodGet, "/", Handler(s.HumansList))
+				r.With(s.AuthMiddleware).Method(http.MethodPost, "/search", Handler(s.HumansByID))
+				r.Method(http.MethodGet, "/{path}", Handler(s.HumanGet))
+				r.With(s.AuthMiddleware).Method(http.MethodPost, "/", Handler(s.HumanCreate))
+				r.With(s.AdminMiddleware).Method(http.MethodGet, "/drafts", Handler(s.HumansDraft))
+				r.With(s.AdminMiddleware).Method(http.MethodPost, "/{id}/review", Handler(s.HumansReview))
+			})
+
+			r.Route("/reactions", func(r chi.Router) {
+				r.Method(http.MethodGet, "/", Handler(s.GetReactions))
+				r.With(s.AuthMiddleware).Method(http.MethodPost, "/", Handler(s.PostReaction))
+				r.With(s.AuthMiddleware).Method(http.MethodDelete, "/{id}", Handler(s.DeleteReaction))
+			})
+
+			r.With(s.AuthMiddleware).Method(http.MethodGet, "/user", Handler(s.User))
+			r.With(s.AuthMiddleware).Method(http.MethodPost, "/humans/{humanID}/save", Handler(s.SaveHuman))
+			r.With(s.AuthMiddleware).Method(http.MethodDelete, "/humans/{humanID}/save", Handler(s.UnsaveHuman))
+			r.
+				With(s.RateLimitMiddleware).
+				With(s.OptionalAuthMiddleware).
+				Method(http.MethodPost, "/humans/{humanID}/view", Handler(s.ViewHuman))
 		})
-
-		r.Route("/reactions", func(r chi.Router) {
-			r.Method(http.MethodGet, "/", Handler(s.GetReactions))
-			r.With(s.AuthMiddleware).Method(http.MethodPost, "/", Handler(s.PostReaction))
-			r.With(s.AuthMiddleware).Method(http.MethodDelete, "/{id}", Handler(s.DeleteReaction))
-		})
-
-		r.With(s.AuthMiddleware).Method(http.MethodGet, "/user", Handler(s.User))
-		r.With(s.AuthMiddleware).Method(http.MethodPost, "/humans/{humanID}/save", Handler(s.SaveHuman))
-		r.With(s.AuthMiddleware).Method(http.MethodDelete, "/humans/{humanID}/save", Handler(s.UnsaveHuman))
-		r.
-			With(s.RateLimitMiddleware).
-			With(s.OptionalAuthMiddleware).
-			Method(http.MethodPost, "/humans/{humanID}/view", Handler(s.ViewHuman))
 	})
 }
 
