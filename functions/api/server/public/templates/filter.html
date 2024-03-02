@@ -57,9 +57,17 @@
   </div>
 
   <div class="w-full">
+    <label for="search" class="block text-sm font-medium">Search:</label>
+    <input
+      id="search"
+      class="dark:bg-gray-950 mt-1 p-2 w-full rounded-md shadow-sm border focus:outline-none focus:ring focus:border-blue-300"
+    />
+  </div>
+
+  <div class="w-full">
     <button
       class="dark:bg-gray-950 my-4 w-full text-center p-2 rounded-md bg-white border-gray-500 shadow hover:bg-gray-100 border"
-      onclick="search()"
+      onclick="doSearch()"
     >
       Search
     </button>

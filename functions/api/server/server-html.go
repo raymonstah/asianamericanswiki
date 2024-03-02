@@ -1,15 +1,18 @@
 package server
 
 import (
+	"context"
 	"embed"
+	"fmt"
 	"html/template"
 	"io/fs"
 	"net/http"
 	"net/url"
 	"sort"
+	"sync"
 	"time"
 
-	"cloud.google.com/go/firestore"
+	"github.com/blevesearch/bleve/v2"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
 	"github.com/raymonstah/asianamericanswiki/internal/ethnicity"
@@ -25,6 +28,10 @@ type ServerHTML struct {
 	humanDAO *humandao.DAO
 	logger   zerolog.Logger
 	template *template.Template
+
+	index  bleve.Index
+	humans []humandao.Human
+	lock   sync.Mutex
 }
 
 func NewServerHTML(local bool, humanDAO *humandao.DAO, logger zerolog.Logger) *ServerHTML {
@@ -35,7 +42,43 @@ func NewServerHTML(local bool, humanDAO *humandao.DAO, logger zerolog.Logger) *S
 	}
 }
 
+func (s *ServerHTML) initializeIndex(ctx context.Context) error {
+	defer func(now time.Time) {
+		s.logger.Info().Dur("elapsed", time.Since(now)).Msg("index initialized")
+		fmt.Println("index initialized")
+	}(time.Now())
+	mapping := bleve.NewIndexMapping()
+	index, err := bleve.NewMemOnly(mapping)
+	if err != nil {
+		return err
+	}
+
+	humans, err := s.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
+		Limit: 500,
+	})
+	if err != nil {
+		return err
+	}
+
+	for _, human := range humans {
+		if err := index.Index(human.ID, human); err != nil {
+			return err
+		}
+	}
+
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	s.index = index
+	s.humans = humans
+	return nil
+}
+
 func (s *ServerHTML) Register(router chi.Router) error {
+	ctx := context.Background()
+	if err := s.initializeIndex(ctx); err != nil {
+		return err
+	}
+
 	templatesFS, err := fs.Sub(publicFS, "public/templates")
 	if err != nil {
 		return err
@@ -66,6 +109,10 @@ func (s *ServerHTML) Register(router chi.Router) error {
 
 	router.Get("/humans", HttpHandler(s.HandlerHumans).Serve())
 	router.Get("/humans/{id}", HttpHandler(s.HandlerHuman).Serve())
+	// redirect the old search route to the new one
+	router.Get("/search", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/humans", http.StatusMovedPermanently)
+	})
 
 	return nil
 }
@@ -84,28 +131,18 @@ type Ethnicity struct {
 }
 
 func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error {
-	var (
-		ctx = r.Context()
-	)
-	humans, err := s.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
-		Limit:     500,
-		OrderBy:   humandao.OrderByCreatedAt,
-		Direction: firestore.Desc,
-	})
-	if err != nil {
-		return err
-	}
-
 	var indexParams struct {
 		EnableAds bool
 		Humans    []humandao.Human
 	}
 
 	indexParams.EnableAds = !s.local
-	indexParams.Humans = humans
-	for i, human := range indexParams.Humans {
-		indexParams.Humans[i].Path = "/humans/" + human.Path
+	// deep copy humans
+	humans := append([]humandao.Human(nil), s.humans...)
+	for i, human := range humans {
+		humans[i].Path = "/humans/" + human.Path
 	}
+	indexParams.Humans = humans
 
 	if err := s.template.ExecuteTemplate(w, "index.html", indexParams); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute index.html template")
@@ -116,22 +153,33 @@ func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error 
 
 func (s *ServerHTML) HandlerHumans(w http.ResponseWriter, r *http.Request) error {
 	var (
-		ctx         = r.Context()
 		tags        = r.URL.Query()["tag"]
 		ethnicities = r.URL.Query()["ethnicity"]
 		gender      = r.URL.Query().Get("gender")
 		dobBefore   = r.URL.Query().Get("dobBefore")
 		dobAfter    = r.URL.Query().Get("dobAfter")
+		search      = r.URL.Query().Get("search")
 	)
-	humans, err := s.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
-		Limit: 500,
-	})
-	if err != nil {
-		return err
-	}
-	allTags := getTags(humans)
-
+	allTags := getTags(s.humans)
 	filters := []humandao.FilterOpt{}
+	// deep copy humans
+	humans := append([]humandao.Human(nil), s.humans...)
+
+	if search != "" {
+		query := bleve.NewMatchQuery(search)
+		query.SetFuzziness(1)
+		result, err := s.index.Search(bleve.NewSearchRequest(query))
+		if err != nil {
+			return err
+		}
+		hitIDs := make([]string, 0, len(result.Hits))
+		for _, hit := range result.Hits {
+			hitIDs = append(hitIDs, hit.ID)
+		}
+
+		filters = append(filters, humandao.ByIDs(hitIDs...))
+	}
+
 	if len(tags) > 0 {
 		filters = append(filters, humandao.ByTags(tags...))
 	}

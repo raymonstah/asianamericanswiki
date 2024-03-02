@@ -3,9 +3,8 @@ const urlParams = new URLSearchParams(window.location.search);
 const ethnicity = urlParams.get("ethnicity");
 const tag = urlParams.get("tag");
 const gender = urlParams.get("gender");
-console.log("ethnicity", ethnicity);
-console.log("tag", tag);
-console.log("gender", gender);
+const search = urlParams.get("search");
+
 var ethnicitySelected = document.getElementById("ethnicity");
 if (ethnicity != null) {
   ethnicitySelected.value = ethnicity;
@@ -36,11 +35,16 @@ if (tag != null) {
   tagSelected.value = tag;
 }
 
+var searchInput = document.getElementById("search");
+if (search != null) {
+  searchInput.value = search;
+}
+
 function removeEmpty(obj) {
   return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != ""));
 }
 
-function search() {
+function doSearch() {
   var minAgeSelected = document.getElementById("minAge");
   var maxAgeSelected = document.getElementById("maxAge");
   var tagSelected = document.getElementById("tags");
@@ -51,6 +55,7 @@ function search() {
       gender: genderSelected.value,
       ethnicity: ethnicitySelected.value,
       tag: tagSelected.value,
+      search: searchInput.value,
     })
   );
   console.log("search parameters", params.toString());
