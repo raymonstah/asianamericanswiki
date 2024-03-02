@@ -18,8 +18,8 @@
     {{ template "header.html" . }}
 
 
-    <h1 class="text-3xl font-extrabold my-4 text-center">Recently Added</h1>
     <div class="flex flex-col items-center align-middle gap-y-4 mx-2">
+      {{ template "filter.html" . }}
       {{ range $human := .Humans }}
         {{ template "component-card.html" $human }}
       {{ end }}

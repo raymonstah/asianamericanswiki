@@ -7,7 +7,7 @@
       class="flex flex-col items-center p-2 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-900 dark:hover:bg-gray-800"
     >
       <div class="flex flex-row align-middle">
-        <a href="/humans/{{ .Path }}">
+        <a href="{{ .Path }}">
           <h2
             class="mb-2 text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
           >
@@ -25,7 +25,7 @@
         </a>
       </div>
       {{ if .FeaturedImage }}
-        <a href="/humans/{{ .Path }}">
+        <a href="{{ .Path }}">
           <img
             class="object-cover h-96"
             src="{{ .FeaturedImage }}"

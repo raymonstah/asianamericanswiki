@@ -6,11 +6,13 @@ import (
 	"io/fs"
 	"net/http"
 	"net/url"
+	"sort"
 	"time"
 
 	"cloud.google.com/go/firestore"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
+	"github.com/raymonstah/asianamericanswiki/internal/ethnicity"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/rs/zerolog"
 )
@@ -69,9 +71,16 @@ func (s *ServerHTML) Register(router chi.Router) error {
 }
 
 type HTMLResponseHumans struct {
-	Humans    []humandao.Human
-	EnableAds bool
-	Count     int
+	Humans      []humandao.Human
+	EnableAds   bool
+	Count       int
+	Ethnicities []ethnicity.Ethnicity
+	Tags        []string
+}
+
+type Ethnicity struct {
+	ID    string
+	Emoji string
 }
 
 func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error {
@@ -110,6 +119,9 @@ func (s *ServerHTML) HandlerHumans(w http.ResponseWriter, r *http.Request) error
 		ctx         = r.Context()
 		tags        = r.URL.Query()["tag"]
 		ethnicities = r.URL.Query()["ethnicity"]
+		gender      = r.URL.Query().Get("gender")
+		dobBefore   = r.URL.Query().Get("dobBefore")
+		dobAfter    = r.URL.Query().Get("dobAfter")
 	)
 	humans, err := s.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
 		Limit: 500,
@@ -117,6 +129,8 @@ func (s *ServerHTML) HandlerHumans(w http.ResponseWriter, r *http.Request) error
 	if err != nil {
 		return err
 	}
+	allTags := getTags(humans)
+
 	filters := []humandao.FilterOpt{}
 	if len(tags) > 0 {
 		filters = append(filters, humandao.ByTags(tags...))
@@ -126,21 +140,56 @@ func (s *ServerHTML) HandlerHumans(w http.ResponseWriter, r *http.Request) error
 			filters = append(filters, humandao.ByEthnicity(ethn))
 		}
 	}
+	if gender != "" {
+		filters = append(filters, humandao.ByGender(humandao.Gender(gender)))
+	}
+	if dobBefore != "" {
+		age, err := time.Parse("2006-01-02", dobBefore)
+		if err != nil {
+			return NewBadRequestError(err)
+		}
+		filters = append(filters, humandao.ByAgeOlderThan(age))
+	}
+	if dobAfter != "" {
+		age, err := time.Parse("2006-01-02", dobAfter)
+		if err != nil {
+			return NewBadRequestError(err)
+		}
+		filters = append(filters, humandao.ByAgeYoungerThan(age))
+	}
+
 	humans = humandao.ApplyFilters(humans, filters...)
 	for i, human := range humans {
 		humans[i].Path = "/humans/" + human.Path
 	}
 
 	response := HTMLResponseHumans{
-		Count:     len(humans),
-		EnableAds: !s.local,
-		Humans:    humans,
+		Count:       len(humans),
+		EnableAds:   !s.local,
+		Humans:      humans,
+		Ethnicities: ethnicity.All,
+		Tags:        allTags,
 	}
 	if err := s.template.ExecuteTemplate(w, "humans.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute humans.html template")
 	}
 
 	return nil
+}
+
+func getTags(humans []humandao.Human) []string {
+	uniqueTags := make(map[string]struct{}, 64)
+	for _, human := range humans {
+		for _, tag := range human.Tags {
+			uniqueTags[tag] = struct{}{}
+		}
+	}
+	tags := make([]string, 0, len(uniqueTags))
+	for tag := range uniqueTags {
+		tags = append(tags, tag)
+	}
+	sort.Strings(tags)
+	return tags
 }
 
 type HTMLResponseHuman struct {
