@@ -3,7 +3,7 @@
     <label for="ethnicity" class="block text-sm font-medium">Ethnicity:</label>
     <select
       id="ethnicity"
-      class="dark:bg-gray-950 mt-1 p-2 w-full rounded-md shadow-sm border focus:outline-none focus:ring focus:border-blue-300"
+      class="dark:bg-gray-950 mt-1 p-2 w-full rounded-md shadow-sm border-transparent border-r-8 outline outline-neutral-700"
     >
       <option value="">Any</option>
       {{ range .Ethnicities }}
@@ -17,7 +17,7 @@
     <input
       type="number"
       id="minAge"
-      class="dark:bg-gray-950 mt-1 p-2 w-2/3 rounded-md shadow-sm border focus:outline-none focus:ring focus:border-blue-300"
+      class="dark:bg-gray-950 mt-1 p-2 w-2/3 rounded-md shadow-sm border-transparent border-r-8 outline outline-neutral-700"
     />
   </div>
 
@@ -26,7 +26,7 @@
     <input
       type="number"
       id="maxAge"
-      class="dark:bg-gray-950 mt-1 p-2 w-2/3 rounded-md shadow-sm border focus:outline-none focus:ring focus:border-blue-300"
+      class="dark:bg-gray-950 mt-1 p-2 w-2/3 rounded-md shadow-sm border-transparent border-r-8 outline outline-neutral-700"
     />
   </div>
 
@@ -34,7 +34,7 @@
     <label for="gender" class="block text-sm font-medium">Gender:</label>
     <select
       id="gender"
-      class="dark:bg-gray-950 mt-1 p-2 rounded-md shadow-sm border border-gray-300 focus:outline-none focus:ring focus:border-blue-300"
+      class="dark:bg-gray-950 mt-1 p-2 rounded-md shadow-sm border-transparent border-r-8 outline outline-neutral-700"
     >
       <option value="">Any</option>
       <option value="male">Male</option>
@@ -47,7 +47,7 @@
     <label for="tags" class="block text-sm font-medium">Tags:</label>
     <select
       id="tags"
-      class="dark:bg-gray-950 w-full mt-1 p-2 rounded-md shadow-sm border border-gray-300 focus:outline-none focus:ring focus:border-blue-300"
+      class="dark:bg-gray-950 w-full mt-1 p-2 rounded-md shadow-sm border-transparent border-r-8 outline outline-neutral-700"
     >
       <option value="">Any</option>
       {{ range .Tags }}
@@ -60,13 +60,13 @@
     <label for="search" class="block text-sm font-medium">Search:</label>
     <input
       id="search"
-      class="dark:bg-gray-950 mt-1 p-2 w-full rounded-md shadow-sm border focus:outline-none focus:ring focus:border-blue-300"
+      class="dark:bg-gray-950 mt-1 p-2 w-full rounded-md shadow-sm outline outline-neutral-700"
     />
   </div>
 
   <div class="w-full">
     <button
-      class="dark:bg-gray-950 my-4 w-full text-center p-2 rounded-md bg-white border-gray-500 shadow hover:bg-gray-100 border"
+      class="dark:bg-gray-950 my-4 w-full text-center p-2 rounded-md bg-white border-gray-500 shadow hover:bg-gray-100 border-transparent border-r-8 outline outline-neutral-700"
       onclick="doSearch()"
     >
       Search

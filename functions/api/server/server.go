@@ -74,9 +74,9 @@ func NewServer(config Config) *Server {
 	r.Group(func(r chi.Router) {
 		r.Use(httplog.RequestLogger(s.logger))
 	})
-		if err := htmlServer.Register(r); err != nil {
-			panic(err)
-		}
+	if err := htmlServer.Register(r); err != nil {
+		panic(err)
+	}
 
 	return s
 }

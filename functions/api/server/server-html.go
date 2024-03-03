@@ -132,13 +132,12 @@ func (s *ServerHTML) WrapFileServer(fileSystem fs.FS) http.Handler {
 func (s *ServerHTML) HandlerError(w http.ResponseWriter, r *http.Request, e ErrorResponse) error {
 	var errorParam struct {
 		EnableAds bool
-		Error string
-		Status int
+		Error     string
+		Status    int
 	}
 	errorParam.EnableAds = !s.local
 	errorParam.Status = e.Status
 	errorParam.Error = e.Err.Error()
-
 
 	w.WriteHeader(errorParam.Status)
 	if err := s.template.ExecuteTemplate(w, "error.html", errorParam); err != nil {
@@ -165,8 +164,12 @@ type Ethnicity struct {
 
 func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error {
 	var indexParams struct {
-		EnableAds bool
-		Humans    []humandao.Human
+		EnableAds     bool
+		Musicians     []humandao.Human
+		Comedians     []humandao.Human
+		Actors        []humandao.Human
+		Legends       []humandao.Human
+		RecentlyAdded []humandao.Human
 	}
 
 	indexParams.EnableAds = !s.local
@@ -175,13 +178,39 @@ func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error 
 	for i, human := range humans {
 		humans[i].Path = "/humans/" + human.Path
 	}
-	indexParams.Humans = humans
+	indexParams.RecentlyAdded = humans[:10]
+	musicians := byName(humans, "Samica Jhangiani", "Thuy Tran", "Jonathan Park")
+	actors := byName(humans, "Michelle Yeoh", "Sung Kang", "Constance Wu")
+	comedians := byName(humans, "Bobby Lee", "Sheng Wang", "Ali Wong")
+	legends := byName(humans, "Bruce Lee", "Anna May Wong", "Yuri Kochiyama")
+
+	indexParams.Musicians = musicians
+	indexParams.Actors = actors
+	indexParams.Comedians = comedians
+	indexParams.Legends = legends
 
 	if err := s.template.ExecuteTemplate(w, "index.html", indexParams); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute index.html template")
 	}
 
 	return nil
+}
+
+func byName(humans []humandao.Human, names ...string) []humandao.Human {
+	m := make(map[string]humandao.Human)
+	for _, human := range humans {
+		m[human.Name] = human
+	}
+	results := make([]humandao.Human, 0, len(names))
+	for _, name := range names {
+		human, ok := m[name]
+		if !ok {
+			continue
+		}
+		results = append(results, human)
+	}
+
+	return results
 }
 
 func (s *ServerHTML) HandlerHumans(w http.ResponseWriter, r *http.Request) error {
@@ -323,8 +352,8 @@ func (h HttpHandler) Serve(errorHandler func(w http.ResponseWriter, r *http.Requ
 				errResponse.Err = err
 			}
 			oplog.Err(err).Int("status", errResponse.Status).Msg("error serving request")
-					_ = errorHandler(w, r, errResponse)
-					return
+			_ = errorHandler(w, r, errResponse)
+			return
 		}
 	}
 }
