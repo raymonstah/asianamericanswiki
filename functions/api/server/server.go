@@ -63,32 +63,27 @@ func NewServer(config Config) *Server {
 		storageClient: config.StorageClient,
 	}
 
+	r.Use(middleware.RealIP)
+	r.Use(middleware.StripSlashes)
+	r.Use(cors.Handler(cors.Options{
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+	}))
 	s.setupRoutes()
 	htmlServer := NewServerHTML(config.Local, config.HumansDAO, config.Logger)
 	r.Group(func(r chi.Router) {
-		r.Use(middleware.RealIP)
-		r.Use(middleware.StripSlashes)
-		r.Use(cors.Handler(cors.Options{
-			AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-			AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		}))
+		r.Use(httplog.RequestLogger(s.logger))
+	})
 		if err := htmlServer.Register(r); err != nil {
 			panic(err)
 		}
-	})
 
 	return s
 }
 
 func (s *Server) setupRoutes() {
 	s.router.Group(func(r chi.Router) {
-		r.Use(middleware.RealIP)
 		r.Use(httplog.RequestLogger(s.logger))
-		r.Use(middleware.StripSlashes)
-		r.Use(cors.Handler(cors.Options{
-			AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-			AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		}))
 		r.Route("/api/v1/", func(r chi.Router) {
 			r.Method(http.MethodGet, "/version", Handler(s.Version))
 

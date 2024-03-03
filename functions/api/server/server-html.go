@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	"errors"
+	"fmt"
 	"html/template"
 	"io/fs"
 	"net/http"
@@ -99,15 +100,15 @@ func (s *ServerHTML) Register(router chi.Router) error {
 
 	s.template = htmlTemplates
 
-	router.Handle("/*", s.WrapFileServer(publicFS))
-	router.Get("/", HttpHandler(s.HandlerIndex).Serve(s.HandlerNotFound))
-	router.Get("/about", HttpHandler(s.HandlerAbout).Serve(s.HandlerNotFound))
-	router.Get("/humans", HttpHandler(s.HandlerHumans).Serve(s.HandlerNotFound))
-	router.Get("/humans/{id}", HttpHandler(s.HandlerHuman).Serve(s.HandlerNotFound))
+	router.Get("/", HttpHandler(s.HandlerIndex).Serve(s.HandlerError))
+	router.Get("/about", HttpHandler(s.HandlerAbout).Serve(s.HandlerError))
+	router.Get("/humans", HttpHandler(s.HandlerHumans).Serve(s.HandlerError))
+	router.Get("/humans/{id}", HttpHandler(s.HandlerHuman).Serve(s.HandlerError))
 	// redirect the old search route to the new one
 	router.Get("/search", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/humans", http.StatusMovedPermanently)
 	})
+	router.Handle("/*", s.WrapFileServer(publicFS))
 
 	return nil
 }
@@ -118,7 +119,7 @@ func (s *ServerHTML) WrapFileServer(fileSystem fs.FS) http.Handler {
 		_, err := fs.Stat(fileSystem, r.URL.Path[1:])
 		if err != nil {
 			if os.IsNotExist(err) {
-				_ = s.HandlerNotFound(w, r)
+				_ = s.HandlerError(w, r, NewNotFoundError(fmt.Errorf("page does not exist")))
 				return
 			}
 			// fallthrough
@@ -128,13 +129,21 @@ func (s *ServerHTML) WrapFileServer(fileSystem fs.FS) http.Handler {
 	})
 }
 
-func (s *ServerHTML) HandlerNotFound(w http.ResponseWriter, r *http.Request) error {
-	var notFoundParams struct {
+func (s *ServerHTML) HandlerError(w http.ResponseWriter, r *http.Request, e ErrorResponse) error {
+	var errorParam struct {
 		EnableAds bool
+		Error string
+		Status int
 	}
-	notFoundParams.EnableAds = !s.local
-	if err := s.template.ExecuteTemplate(w, "404.html", notFoundParams); err != nil {
-		s.logger.Error().Err(err).Msg("unable to execute 404.html template")
+	errorParam.EnableAds = !s.local
+	errorParam.Status = e.Status
+	errorParam.Error = e.Err.Error()
+
+
+	w.WriteHeader(errorParam.Status)
+	if err := s.template.ExecuteTemplate(w, "error.html", errorParam); err != nil {
+		s.logger.Error().Err(err).Msg("unable to execute error.html template")
+		http.Error(w, "Something went terribly wrong!", http.StatusInternalServerError)
 		return err
 	}
 
@@ -303,24 +312,19 @@ func (s *ServerHTML) HandlerHuman(w http.ResponseWriter, r *http.Request) error 
 
 type HttpHandler func(http.ResponseWriter, *http.Request) error
 
-func (h HttpHandler) Serve(notFoundHandler HttpHandler) func(http.ResponseWriter, *http.Request) {
+func (h HttpHandler) Serve(errorHandler func(w http.ResponseWriter, r *http.Request, e ErrorResponse) error) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		oplog := httplog.LogEntry(r.Context())
 		if err := h(w, r); err != nil {
 			var errResponse ErrorResponse
 			ok := errors.As(err, &errResponse)
-			oplog.Err(err).Msg("error serving request")
-			if ok {
-				if errResponse.Status == http.StatusNotFound {
-					notFoundHandler(w, r)
-					return
-				}
-				http.Error(w, errResponse.Error(), errResponse.Status)
-				return
+			if !ok {
+				errResponse.Status = http.StatusInternalServerError
+				errResponse.Err = err
 			}
-
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			oplog.Err(err).Int("status", errResponse.Status).Msg("error serving request")
+					_ = errorHandler(w, r, errResponse)
+					return
 		}
 	}
 }

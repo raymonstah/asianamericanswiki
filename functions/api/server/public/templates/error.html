@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Not Found | AsianAmericans.wiki</title>
+    <title>Uh oh | AsianAmericans.wiki</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
@@ -18,7 +18,8 @@
     {{ template "header.html" . }}
 
 
-    <h1 class="text-3xl font-extrabold my-4 text-center">Not Found</h1>
+    <h1 class="text-3xl font-extrabold my-4 text-center">{{ .Status }}</h1>
+    <h1 class="text-3xl font-extrabold my-4 text-center">{{ .Error }}</h1>
   </body>
   {{ template "footer.html" . }}
 </html>
