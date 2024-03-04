@@ -42,6 +42,8 @@
 
     <div
       class="max-w-sm md:max-w-md flex flex-col items-center justify-center content-center self-center"
+      hx-target="this"
+      hx-swap="outerHTML"
     >
       <h1 class="text-3xl font-extrabold my-4 text-center">
         {{ .Human.Name }}
@@ -137,9 +139,19 @@
       {{ end }}
 
       {{ if .Human.Description }}
-        <div class="p-4 space-y-4">{{ .Human.Description }}</div>
+        <div class="p-4 space-y-4 text-wrap break-words">
+          {{ .Human.Description }}
+        </div>
       {{ end }}
 
+      {{ if .Admin }}
+        <button
+          hx-get="/humans/{{ .Human.Path }}/edit"
+          class="dark:bg-gray-950 my-4 w-3/4 text-center p-2 rounded-md bg-white border-gray-500 shadow hover:bg-gray-100 border-transparent border-r-8 outline outline-neutral-700"
+        >
+          Edit
+        </button>
+      {{ end }}
     </div>
   </body>
   {{ template "footer.html" . }}

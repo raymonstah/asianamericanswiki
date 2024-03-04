@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
@@ -104,6 +105,8 @@ func (s *ServerHTML) Register(router chi.Router) error {
 	router.Get("/about", HttpHandler(s.HandlerAbout).Serve(s.HandlerError))
 	router.Get("/humans", HttpHandler(s.HandlerHumans).Serve(s.HandlerError))
 	router.Get("/humans/{id}", HttpHandler(s.HandlerHuman).Serve(s.HandlerError))
+	router.Post("/humans/{id}", HttpHandler(s.HandlerHumanUpdate).Serve(s.HandlerError))
+	router.Get("/humans/{id}/edit", HttpHandler(s.HandlerHumanEdit).Serve(s.HandlerError))
 	// redirect the old search route to the new one
 	router.Get("/search", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/humans", http.StatusMovedPermanently)
@@ -305,6 +308,7 @@ func getTags(humans []humandao.Human) []string {
 type HTMLResponseHuman struct {
 	Human     humandao.Human
 	EnableAds bool
+	Admin     bool
 }
 
 func (s *ServerHTML) HandlerAbout(w http.ResponseWriter, r *http.Request) error {
@@ -331,7 +335,68 @@ func (s *ServerHTML) HandlerHuman(w http.ResponseWriter, r *http.Request) error 
 		return err
 	}
 
-	response := HTMLResponseHuman{Human: human, EnableAds: !s.local}
+	response := HTMLResponseHuman{Human: human, EnableAds: !s.local, Admin: s.local}
+	if err := s.template.ExecuteTemplate(w, "humans-id.html", response); err != nil {
+		s.logger.Error().Err(err).Msg("unable to execute humans-id template")
+	}
+
+	return nil
+}
+
+func (s *ServerHTML) HandlerHumanEdit(w http.ResponseWriter, r *http.Request) error {
+	path := chi.URLParamFromCtx(r.Context(), "id")
+	ctx := r.Context()
+	path, err := url.PathUnescape(path)
+	if err != nil {
+		return err
+	}
+
+	human, err := s.humanDAO.Human(ctx, humandao.HumanInput{Path: path})
+	if err != nil {
+		if errors.Is(err, humandao.ErrHumanNotFound) {
+			return NewNotFoundError(err)
+		}
+		return err
+	}
+
+	response := HTMLResponseHuman{Human: human, EnableAds: !s.local, Admin: s.local}
+	if err := s.template.ExecuteTemplate(w, "humans-id-edit.html", response); err != nil {
+		s.logger.Error().Err(err).Msg("unable to execute humans-id-edit.html template")
+	}
+
+	return nil
+}
+
+func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) error {
+	// todo: protect this handler
+	// todo: make this return just a partial template
+	if err := r.ParseForm(); err != nil {
+		return err
+	}
+	fmt.Println("form received", r.Form)
+	description := strings.TrimSpace(r.Form.Get("description"))
+
+	path := chi.URLParamFromCtx(r.Context(), "id")
+	ctx := r.Context()
+	path, err := url.PathUnescape(path)
+	if err != nil {
+		return err
+	}
+
+	human, err := s.humanDAO.Human(ctx, humandao.HumanInput{Path: path})
+	if err != nil {
+		if errors.Is(err, humandao.ErrHumanNotFound) {
+			return NewNotFoundError(err)
+		}
+		return err
+	}
+
+	human.Description = description
+	if err := s.humanDAO.UpdateHuman(ctx, human); err != nil {
+		return err
+	}
+
+	response := HTMLResponseHuman{Human: human, EnableAds: !s.local, Admin: s.local}
 	if err := s.template.ExecuteTemplate(w, "humans-id.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute humans-id template")
 	}

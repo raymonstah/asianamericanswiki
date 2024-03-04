@@ -64,16 +64,14 @@ func NewServer(config Config) *Server {
 	}
 
 	r.Use(middleware.RealIP)
-	r.Use(middleware.StripSlashes)
+	r.Use(middleware.CleanPath)
+	r.Use(middleware.Recoverer)
 	r.Use(cors.Handler(cors.Options{
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 	}))
 	s.setupRoutes()
 	htmlServer := NewServerHTML(config.Local, config.HumansDAO, config.Logger)
-	r.Group(func(r chi.Router) {
-		r.Use(httplog.RequestLogger(s.logger))
-	})
 	if err := htmlServer.Register(r); err != nil {
 		panic(err)
 	}
