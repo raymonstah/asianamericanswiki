@@ -66,6 +66,7 @@ func NewServer(config Config) *Server {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.CleanPath)
 	r.Use(middleware.Recoverer)
+	r.Use(middleware.Compress(5))
 	r.Use(cors.Handler(cors.Options{
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},

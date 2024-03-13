@@ -134,6 +134,7 @@ func (s *ServerHTML) WrapFileServer(fileSystem fs.FS) http.Handler {
 			// fallthrough
 		}
 
+		w.Header().Set("Cache-Control", fmt.Sprintf("max-age=%v", 24*time.Hour.Seconds()))
 		fileServer.ServeHTTP(w, r)
 	})
 }
@@ -436,6 +437,7 @@ type HttpHandler func(http.ResponseWriter, *http.Request) error
 
 func (h HttpHandler) Serve(errorHandler func(w http.ResponseWriter, r *http.Request, e ErrorResponse) error) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html")
 		oplog := httplog.LogEntry(r.Context())
 		if err := h(w, r); err != nil {
 			var errResponse ErrorResponse
