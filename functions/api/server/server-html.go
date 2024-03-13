@@ -27,21 +27,27 @@ import (
 var publicFS embed.FS
 
 type ServerHTML struct {
-	local    bool
-	humanDAO *humandao.DAO
-	logger   zerolog.Logger
-	template *template.Template
+	local        bool
+	rollbarToken string
+	humanDAO     *humandao.DAO
+	logger       zerolog.Logger
+	template     *template.Template
 
 	index  bleve.Index
 	humans []humandao.Human
 	lock   sync.Mutex
 }
 
-func NewServerHTML(local bool, humanDAO *humandao.DAO, logger zerolog.Logger) *ServerHTML {
+type ServerHTMLConfig struct {
+	RollbarToken string
+}
+
+func NewServerHTML(local bool, humanDAO *humandao.DAO, logger zerolog.Logger, conf ServerHTMLConfig) *ServerHTML {
 	return &ServerHTML{
-		local:    local,
-		humanDAO: humanDAO,
-		logger:   logger,
+		local:        local,
+		humanDAO:     humanDAO,
+		logger:       logger,
+		rollbarToken: conf.RollbarToken,
 	}
 }
 
@@ -152,9 +158,16 @@ func (s *ServerHTML) HandlerError(w http.ResponseWriter, r *http.Request, e Erro
 	return nil
 }
 
+type Base struct {
+	Local        bool
+	EnableAds    bool
+	RollbarToken string
+	Admin        bool
+}
+
 type HTMLResponseHumans struct {
+	Base
 	Humans      []humandao.Human
-	EnableAds   bool
 	Count       int
 	Ethnicities []ethnicity.Ethnicity
 	Tags        []string
@@ -167,7 +180,7 @@ type Ethnicity struct {
 
 func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error {
 	var indexParams struct {
-		EnableAds     bool
+		Base
 		Musicians     []humandao.Human
 		Comedians     []humandao.Human
 		Actors        []humandao.Human
@@ -176,6 +189,7 @@ func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error 
 	}
 
 	indexParams.EnableAds = !s.local
+	indexParams.RollbarToken = s.rollbarToken
 	// deep copy humans
 	humans := append([]humandao.Human(nil), s.humans...)
 	for i, human := range humans {
@@ -277,8 +291,12 @@ func (s *ServerHTML) HandlerHumans(w http.ResponseWriter, r *http.Request) error
 	}
 
 	response := HTMLResponseHumans{
+		Base: Base{
+			Local:        s.local,
+			EnableAds:    !s.local,
+			RollbarToken: s.rollbarToken,
+		},
 		Count:       len(humans),
-		EnableAds:   !s.local,
 		Humans:      humans,
 		Ethnicities: ethnicity.All,
 		Tags:        allTags,
@@ -306,9 +324,8 @@ func getTags(humans []humandao.Human) []string {
 }
 
 type HTMLResponseHuman struct {
-	Human     humandao.Human
-	EnableAds bool
-	Admin     bool
+	Base
+	Human humandao.Human
 }
 
 func (s *ServerHTML) HandlerAbout(w http.ResponseWriter, r *http.Request) error {
@@ -335,10 +352,19 @@ func (s *ServerHTML) HandlerHuman(w http.ResponseWriter, r *http.Request) error 
 		return err
 	}
 
-	response := HTMLResponseHuman{Human: human, EnableAds: !s.local, Admin: s.local}
+	base := Base{EnableAds: !s.local, Admin: s.local, RollbarToken: s.rollbarToken, Local: s.local}
+	response := HTMLResponseHuman{Human: human, Base: base}
 	if err := s.template.ExecuteTemplate(w, "humans-id.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute humans-id template")
 	}
+
+	go func() {
+		ctx := context.Background()
+		// best attempt to update the view count
+		if err := s.humanDAO.View(ctx, humandao.ViewInput{HumanID: human.ID}); err != nil {
+			s.logger.Error().Err(err).Str("humanName", human.Name).Msg("unable to update human view count")
+		}
+	}()
 
 	return nil
 }
@@ -359,7 +385,8 @@ func (s *ServerHTML) HandlerHumanEdit(w http.ResponseWriter, r *http.Request) er
 		return err
 	}
 
-	response := HTMLResponseHuman{Human: human, EnableAds: !s.local, Admin: s.local}
+	base := Base{EnableAds: !s.local, Admin: s.local, RollbarToken: s.rollbarToken, Local: s.local}
+	response := HTMLResponseHuman{Human: human, Base: base}
 	if err := s.template.ExecuteTemplate(w, "humans-id-edit.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute humans-id-edit.html template")
 	}
@@ -396,7 +423,8 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		return err
 	}
 
-	response := HTMLResponseHuman{Human: human, EnableAds: !s.local, Admin: s.local}
+	base := Base{EnableAds: !s.local, Admin: s.local, RollbarToken: s.rollbarToken, Local: s.local}
+	response := HTMLResponseHuman{Human: human, Base: base}
 	if err := s.template.ExecuteTemplate(w, "humans-id.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute humans-id template")
 	}

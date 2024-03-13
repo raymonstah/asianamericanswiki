@@ -71,7 +71,9 @@ func NewServer(config Config) *Server {
 		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 	}))
 	s.setupRoutes()
-	htmlServer := NewServerHTML(config.Local, config.HumansDAO, config.Logger)
+	htmlServer := NewServerHTML(config.Local, config.HumansDAO, config.Logger, ServerHTMLConfig{
+		RollbarToken: "e1082079233c44628d29032fc1847ca7",
+	})
 	if err := htmlServer.Register(r); err != nil {
 		panic(err)
 	}

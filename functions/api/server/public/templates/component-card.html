@@ -1,10 +1,10 @@
 {{ define "component-card.html" }}
   <div
     onclick="window.location='{{ .Path }}'"
-    class="hover: cursor-pointer max-w-sm w-full border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-900 dark:hover:bg-gray-800"
+    class="hover:cursor-pointer max-w-sm w-full border-gray-200 rounded-lg shadow hover:bg-gray-200 bg-gray-100 dark:bg-gray-900 dark:border-gray-900 dark:hover:bg-gray-800"
   >
     <div
-      class="flex flex-col items-center p-2 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-900 dark:hover:bg-gray-800"
+      class="flex flex-col items-center p-2 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-900 dark:hover:bg-gray-800"
     >
       <div class="flex flex-row align-middle">
         <a href="{{ .Path }}">
