@@ -30,6 +30,15 @@ Or use air (for hot reload)
 air
 ```
 
+## Deploying manually to Cloud Run
+
+```shell
+export IMAGE_NAME=us-central1-docker.pkg.dev/asianamericans-wiki/asianamericanswiki-api/api
+docker build -t $IMAGE_NAME . --platform linux/amd64
+docker push $IMAGE_NAME
+gcloud run deploy apiv2 --max-instances 1 --timeout 10 --region us-central1 --memory 128Mi --image ${IMAGE_NAME}:latest --allow-unauthenticated
+```
+
 ## Formatting
 
 All source code should be formatted with prettier for consistency.
