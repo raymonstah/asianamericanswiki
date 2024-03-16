@@ -2,6 +2,7 @@
   push:
     branches:
       - main
+      - htmx
     paths:
       # only run when the source code changes or this file changes
       - "functions/api/**"
@@ -30,7 +31,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v4.1.0
         with:
-          go-version: "1.21.5"
+          go-version: "1.22.1"
 
       - name: Install emulators and Test
         run: |
@@ -39,7 +40,7 @@ jobs:
 
       - id: "auth"
         name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v1"
+        uses: "google-github-actions/auth@v2"
         with:
           credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT }}"
 
@@ -61,10 +62,10 @@ jobs:
 
       - id: deploy
         name: Deploy
-        uses: "google-github-actions/deploy-cloudrun@v1"
+        uses: "google-github-actions/deploy-cloudrun@v2"
         with:
           timeout: 90
-          service: "api"
+          service: "api2"
           region: "us-central1"
           labels: githash=${{ steps.vars.outputs.sha_short }}
           image: ${{ env.IMAGE_NAME }}:latest

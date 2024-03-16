@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -53,6 +54,118 @@ type Human struct {
 	Socials     Socials     `firestore:"socials,omitempty"`
 	Views       int64       `firestore:"views,omitempty"`
 	Gender      Gender      `firestore:"gender,omitempty"`
+}
+
+func (h Human) CurrentAge(inputTime ...time.Time) (string, error) {
+	now := time.Now()
+	if len(inputTime) > 0 {
+		now = inputTime[0]
+	}
+	if h.DOB == "" {
+		return "", nil
+	}
+
+	born, err := parseDateString(h.DOB)
+	if err != nil {
+		return "", err
+	}
+
+	if h.DOD != "" {
+		died, err := parseDateString(h.DOD)
+		if err != nil {
+			return "", err
+		}
+		ageInYears, _, _, _, _, _ := diff(died, born)
+		return fmt.Sprintf("%v - %v (aged %v)", displayFormat(h.DOB), displayFormat(h.DOD), ageInYears), nil
+	}
+
+	ageInYears, _, _, _, _, _ := diff(now, born)
+	return fmt.Sprintf("%v (age %v years)", displayFormat(h.DOB), ageInYears), nil
+}
+
+func displayFormat(date string) string {
+	parts := strings.Split(date, "-")
+
+	var month time.Month
+	if len(parts) > 1 {
+		// we have a month
+		monthRaw, err := strconv.Atoi(parts[1])
+		if err != nil {
+			return date
+		}
+		month = time.Month(monthRaw)
+		if len(parts) == 2 {
+			return fmt.Sprintf("%v %v", month, parts[0])
+		}
+		return fmt.Sprintf("%v %v, %v", month, strings.TrimLeft(parts[2], "0"), parts[0])
+	}
+
+	return date
+}
+
+func parseDateString(date string) (time.Time, error) {
+	format := "2006-01-02"
+	if len(date) == 4 {
+		// only have the year
+		format = "2006"
+	} else if len(date) == 7 {
+		// only have the year and month
+		format = "2006-01"
+	}
+
+	res, err := time.Parse(format, date)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	return res, nil
+}
+
+func diff(a, b time.Time) (year, month, day, hour, min, sec int) {
+	if a.Location() != b.Location() {
+		b = b.In(a.Location())
+	}
+	if a.After(b) {
+		a, b = b, a
+	}
+	y1, M1, d1 := a.Date()
+	y2, M2, d2 := b.Date()
+
+	h1, m1, s1 := a.Clock()
+	h2, m2, s2 := b.Clock()
+
+	year = int(y2 - y1)
+	month = int(M2 - M1)
+	day = int(d2 - d1)
+	hour = int(h2 - h1)
+	min = int(m2 - m1)
+	sec = int(s2 - s1)
+
+	// Normalize negative values
+	if sec < 0 {
+		sec += 60
+		min--
+	}
+	if min < 0 {
+		min += 60
+		hour--
+	}
+	if hour < 0 {
+		hour += 24
+		day--
+	}
+	if day < 0 {
+		// days in month:
+		t := time.Date(y1, M1, 32, 0, 0, 0, 0, time.UTC)
+		day += 32 - t.Day()
+		month--
+	}
+	if month < 0 {
+		month += 12
+		year--
+	}
+
+	return
 }
 
 type Gender string
@@ -274,9 +387,7 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 	return human, nil
 }
 
-var (
-	ErrUnauthorized = errors.New("user is not authorized to perform this operation")
-)
+var ErrUnauthorized = errors.New("user is not authorized to perform this operation")
 
 type ReactionKind string
 
@@ -286,6 +397,7 @@ var (
 	ReactionKindJoy    ReactionKind = "joy"
 	ReactionKindFlower ReactionKind = "flower"
 )
+
 var validReactionKinds = map[ReactionKind]struct{}{
 	ReactionKindLove:   {},
 	ReactionKindFire:   {},
@@ -403,27 +515,34 @@ func (d *DAO) GetReactions(ctx context.Context, input GetReactionsInput) ([]Reac
 	return convertReactionDocs(docs)
 }
 
+type OrderBy string
+
+var (
+	OrderByCreatedAt OrderBy = "created_at"
+	OrderByViews     OrderBy = "views"
+)
+
 type ListHumansInput struct {
 	Limit     int
 	Offset    int
-	OrderBy   string
+	OrderBy   OrderBy
 	Direction firestore.Direction
 }
 
 func (d *DAO) ListHumans(ctx context.Context, input ListHumansInput) ([]Human, error) {
-	allowedOrderBy := map[string]struct{}{
-		"views":      {},
-		"created_at": {},
+	allowedOrderBy := map[OrderBy]struct{}{
+		OrderByCreatedAt: {},
+		OrderByViews:     {},
 	}
 	query := d.client.Collection(d.humanCollection).
 		Where("draft", "==", false)
 	if input.OrderBy == "" {
-		query = query.OrderBy("created_at", firestore.Desc)
+		query = query.OrderBy(string(OrderByCreatedAt), firestore.Desc)
 	} else {
 		if _, ok := allowedOrderBy[input.OrderBy]; !ok {
 			return nil, ErrInvalidOrderBy
 		}
-		query = query.OrderBy(input.OrderBy, input.Direction)
+		query = query.OrderBy(string(input.OrderBy), input.Direction)
 	}
 	docs, err := query.
 		Offset(input.Offset).

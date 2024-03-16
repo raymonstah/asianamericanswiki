@@ -104,3 +104,23 @@ func ByTags(tags ...string) FilterOpt {
 		return filtered
 	}
 }
+
+func ByIDs(ids ...string) FilterOpt {
+	return func(f Filterable) Filterable {
+		idToHuman := make(map[string]Human, len(f))
+		for _, human := range f {
+			idToHuman[human.ID] = human
+		}
+
+		filtered := make([]Human, 0, len(f))
+		for _, id := range ids {
+			human, ok := idToHuman[id]
+			if !ok {
+				continue
+			}
+			filtered = append(filtered, human)
+		}
+
+		return filtered
+	}
+}

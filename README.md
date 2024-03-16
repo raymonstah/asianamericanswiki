@@ -4,17 +4,12 @@
 
 Source code for AsianAmericans.wiki.
 
-## Contributing
-
-I could use some UI help. If you have experience in Tailwind or Svelte.js, feel
-free to make changes and open up a pull request.
-
 ## Running Locally
 
-To run the UI locally:
+To run tailwind watcher:
 
 ```shell
-npm run dev
+ npx tailwindcss -i functions/api/server/public/static/input.css -o ./functions/api/server/public/static/output.css --watch
 ```
 
 To run the emulators:
@@ -27,6 +22,21 @@ To run the backend locally (emulators required):
 
 ```shell
 go run functions/api/cmd/main.go --local
+```
+
+Or use air (for hot reload)
+
+```shell
+air
+```
+
+## Deploying manually to Cloud Run
+
+```shell
+export IMAGE_NAME=us-central1-docker.pkg.dev/asianamericans-wiki/asianamericanswiki-api/api
+docker build -t $IMAGE_NAME . --platform linux/amd64
+docker push $IMAGE_NAME
+gcloud run deploy apiv2 --max-instances 1 --timeout 10 --region us-central1 --memory 128Mi --image ${IMAGE_NAME}:latest --allow-unauthenticated
 ```
 
 ## Formatting

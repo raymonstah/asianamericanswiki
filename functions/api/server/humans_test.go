@@ -120,7 +120,7 @@ func TestServer_HumansByID(t *testing.T) {
 	raw, err := json.Marshal(humanIDs)
 	assert.NoError(t, err)
 	body := bytes.NewReader(raw)
-	req, err := http.NewRequest(http.MethodPost, httpserver.URL+"/humans/search", body)
+	req, err := http.NewRequest(http.MethodPost, httpserver.URL+"/api/v1/humans/search", body)
 	req.Header.Set("Authorization", "Bearer XXXXXXXXXXXX")
 	assert.NoError(t, err)
 
@@ -174,9 +174,9 @@ func TestServer_HumanWithAffiliateLinks(t *testing.T) {
 	httpserver := httptest.NewServer(s)
 	t.Cleanup(httpserver.Close)
 
-	req, err := http.NewRequest(http.MethodGet, httpserver.URL+fmt.Sprintf("/humans/%v", human.Path), nil)
-	req.Header.Set("Authorization", "Bearer XXXXXXXXXXXX")
+	req, err := http.NewRequest(http.MethodGet, httpserver.URL+fmt.Sprintf("/api/v1/humans/%v", human.Path), nil)
 	assert.NoError(t, err)
+	req.Header.Set("Authorization", "Bearer XXXXXXXXXXXX")
 
 	resp, err := http.DefaultClient.Do(req)
 	assert.NoError(t, err)
