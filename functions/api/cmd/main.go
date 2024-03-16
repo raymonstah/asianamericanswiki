@@ -11,6 +11,7 @@ import (
 	"cloud.google.com/go/storage"
 	firebase "firebase.google.com/go/v4"
 	"github.com/go-chi/httplog"
+	"github.com/rs/zerolog"
 	"github.com/urfave/cli/v2"
 
 	"github.com/raymonstah/asianamericanswiki/functions/api"
@@ -41,17 +42,17 @@ func main() {
 func run(c *cli.Context) error {
 	ctx := c.Context
 	local := c.Bool("local")
-	if local {
-		if err := setupEmulatorEnvironmentVariables(); err != nil {
-			return fmt.Errorf("unable to setup local environment variables: %w", err)
-		}
-	}
-
 	logger := httplog.NewLogger(api.ProjectID, httplog.Options{
 		Concise:         true,
 		JSON:            true,
 		TimeFieldFormat: time.RFC3339,
 	})
+
+	if local {
+		if err := setupEmulatorEnvironmentVariables(logger); err != nil {
+			return fmt.Errorf("unable to setup local environment variables: %w", err)
+		}
+	}
 
 	app, err := firebase.NewApp(ctx, &firebase.Config{
 		ProjectID: api.ProjectID,
@@ -111,7 +112,12 @@ func run(c *cli.Context) error {
 	return s.ListenAndServe()
 }
 
-func setupEmulatorEnvironmentVariables() error {
+func setupEmulatorEnvironmentVariables(logger zerolog.Logger) error {
+	defer func(start time.Time) {
+		logger.Info().Dur("elapsed", time.Since(start)).Msg("set up emulator env vars")
+		fmt.Println("set up emulator env vars..")
+	}(time.Now())
+
 	if err := os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080"); err != nil {
 		return err
 	}

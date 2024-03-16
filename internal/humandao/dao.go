@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -55,41 +56,69 @@ type Human struct {
 	Gender      Gender      `firestore:"gender,omitempty"`
 }
 
-func (h Human) CurrentAge() (string, error) {
+func (h Human) CurrentAge(inputTime ...time.Time) (string, error) {
+	now := time.Now()
+	if len(inputTime) > 0 {
+		now = inputTime[0]
+	}
 	if h.DOB == "" {
 		return "", nil
 	}
 
-	const layoutUS = "January 2, 2006"
-	if h.DOD != "" {
-		died, err := time.Parse("2006-01-02", h.DOD)
-		if err != nil {
-			return "", err
-		}
-		born, err := time.Parse("2006-01-02", h.DOB)
-		if err != nil {
-			return "", err
-		}
-		ageInYears, _, _, _, _, _ := diff(time.Now(), born)
-		return fmt.Sprintf("%v - %v (aged %v)", born.Format(layoutUS), died.Format(layoutUS), ageInYears), nil
-	}
-
-	// only the year exists
-	if len(h.DOB) == 4 {
-		born, err := time.Parse("2006", h.DOB)
-		if err != nil {
-			return "", err
-		}
-		ageInYears, _, _, _, _, _ := diff(time.Now(), born)
-		return fmt.Sprintf("%v (age %v years)", h.DOB, ageInYears), nil
-	}
-	// full date
-	born, err := time.Parse("2006-01-02", h.DOB)
+	born, err := parseDateString(h.DOB)
 	if err != nil {
 		return "", err
 	}
-	ageInYears, _, _, _, _, _ := diff(time.Now(), born)
-	return fmt.Sprintf("%v (age %v years)", born.Format(layoutUS), ageInYears), nil
+
+	if h.DOD != "" {
+		died, err := parseDateString(h.DOD)
+		if err != nil {
+			return "", err
+		}
+		ageInYears, _, _, _, _, _ := diff(died, born)
+		return fmt.Sprintf("%v - %v (aged %v)", displayFormat(h.DOB), displayFormat(h.DOD), ageInYears), nil
+	}
+
+	ageInYears, _, _, _, _, _ := diff(now, born)
+	return fmt.Sprintf("%v (age %v years)", displayFormat(h.DOB), ageInYears), nil
+}
+
+func displayFormat(date string) string {
+	parts := strings.Split(date, "-")
+
+	var month time.Month
+	if len(parts) > 1 {
+		// we have a month
+		monthRaw, err := strconv.Atoi(parts[1])
+		if err != nil {
+			return date
+		}
+		month = time.Month(monthRaw)
+		if len(parts) == 2 {
+			return fmt.Sprintf("%v %v", month, parts[0])
+		}
+		return fmt.Sprintf("%v %v, %v", month, strings.TrimLeft(parts[2], "0"), parts[0])
+	}
+
+	return date
+}
+
+func parseDateString(date string) (time.Time, error) {
+	format := "2006-01-02"
+	if len(date) == 4 {
+		// only have the year
+		format = "2006"
+	} else if len(date) == 7 {
+		// only have the year and month
+		format = "2006-01"
+	}
+
+	res, err := time.Parse(format, date)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	return res, nil
 }
 
 func diff(a, b time.Time) (year, month, day, hour, min, sec int) {
@@ -358,9 +387,7 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 	return human, nil
 }
 
-var (
-	ErrUnauthorized = errors.New("user is not authorized to perform this operation")
-)
+var ErrUnauthorized = errors.New("user is not authorized to perform this operation")
 
 type ReactionKind string
 
@@ -370,6 +397,7 @@ var (
 	ReactionKindJoy    ReactionKind = "joy"
 	ReactionKindFlower ReactionKind = "flower"
 )
+
 var validReactionKinds = map[ReactionKind]struct{}{
 	ReactionKindLove:   {},
 	ReactionKindFire:   {},
