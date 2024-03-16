@@ -2,7 +2,6 @@
   push:
     branches:
       - main
-      - htmx
     paths:
       # only run when the source code changes or this file changes
       - "functions/api/**"
@@ -72,4 +71,4 @@ jobs:
           env_vars: |
             GIT_HASH=${{ steps.vars.outputs.sha_short }}
       - name: "Use output"
-        run: 'curl "${{ steps.deploy.outputs.url }}"/version'
+        run: 'curl "${{ steps.deploy.outputs.url }}"/api/v1/version'
