@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Humans | AsianAmericans.wiki</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    {{ template "rollbar.html" . }}
+    <link href="/output.css" rel="stylesheet" />
+    <script src="/1.9.10.htmx.min.js"></script>
+
+    {{ template "google-ads.html" . }}
+    {{ template "dark-mode.html" . }}
+
+  </head>
+  <body
+    class="h-full w-full flex flex-col align-middle min-h-screen bg-slate-200 dark:bg-gray-950 dark:text-gray-300"
+  >
+    {{ template "header.html" . }}
+
+
+    <div class="flex flex-col items-center align-middle gap-y-4 mx-2">
+      {{ template "filter.html" . }}
+      {{ range $human := .Humans }}
+        {{ template "component-card.html" $human }}
+      {{ end }}
+    </div>
+  </body>
+  {{ template "footer.html" . }}
+</html>

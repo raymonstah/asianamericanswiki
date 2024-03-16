@@ -57,7 +57,7 @@ func TestServer_User(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Save a human
-	savePath := fmt.Sprintf("%s/humans/%s/save", httpserver.URL, humanID)
+	savePath := fmt.Sprintf("%s/api/v1/humans/%s/save", httpserver.URL, humanID)
 	r, err := http.NewRequestWithContext(ctx, http.MethodPost, savePath, nil)
 	assert.NoError(t, err)
 	r.Header.Add("Authorization", "Bearer "+idToken)
@@ -67,7 +67,7 @@ func TestServer_User(t *testing.T) {
 	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
 
 	// View a human
-	viewPath := fmt.Sprintf("%s/humans/%s/view", httpserver.URL, humanID)
+	viewPath := fmt.Sprintf("%s/api/v1/humans/%s/view", httpserver.URL, humanID)
 	r, err = http.NewRequestWithContext(ctx, http.MethodPost, viewPath, nil)
 	assert.NoError(t, err)
 	r.Header.Add("Authorization", "Bearer "+idToken)
@@ -76,7 +76,7 @@ func TestServer_User(t *testing.T) {
 	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
 
 	// Check user and validate the human was view and saved.
-	userPath := fmt.Sprintf("%s/user", httpserver.URL)
+	userPath := fmt.Sprintf("%s/api/v1/user", httpserver.URL)
 	r, err = http.NewRequestWithContext(ctx, http.MethodGet, userPath, nil)
 	assert.NoError(t, err)
 	r.Header.Add("Authorization", "Bearer "+idToken)

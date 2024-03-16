@@ -215,7 +215,7 @@ func (s *Server) HumansList(w http.ResponseWriter, r *http.Request) (err error) 
 		humans, err = s.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
 			Limit:     limit,
 			Offset:    offset,
-			OrderBy:   orderBy,
+			OrderBy:   humandao.OrderBy(orderBy),
 			Direction: direction,
 		})
 		if err != nil {

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>AsianAmericans.wiki</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    {{ template "rollbar.html" . }}
+    <link href="/output.css" rel="stylesheet" />
+    <script src="/1.9.10.htmx.min.js"></script>
+
+    {{ template "google-ads.html" . }} {{ template "dark-mode.html" . }}
+  </head>
+
+  <body
+    class="h-full w-full flex flex-col align-middle min-h-screen bg-slate-200 dark:bg-gray-950 dark:text-gray-300"
+  >
+    {{ template "header.html" . }}
+
+    <div class="flex flex-col items-center align-middle gap-y-4 mx-2">
+      <h1 class="text-3xl font-extrabold my-4 text-center">
+        Discover and learn about Asian Americans
+      </h1>
+      <h2 class="text-3xl font-extrabold mt-4 text-center">
+        <a href="/humans?tag=music">Musicians</a>
+      </h2>
+      {{ range $human := .Musicians }} {{ template "component-card.html" $human
+      }} {{ end }}
+      <h2 class="text-3xl font-extrabold mt-4 text-center">
+        <a href="/humans?tag=comedian">Comedians</a>
+      </h2>
+      {{ range $human := .Comedians }} {{ template "component-card.html" $human
+      }} {{ end }}
+      <h2 class="text-3xl font-extrabold mt-4 text-center">
+        <a href="/humans?tag=actor">Actors</a>
+      </h2>
+      {{ range $human := .Actors }} {{ template "component-card.html" $human }}
+      {{ end }}
+      <h2 class="text-3xl font-extrabold mt-4 text-center">
+        <a href="/humans?search=legend">Legends</a>
+      </h2>
+      {{ range $human := .Legends }} {{ template "component-card.html" $human }}
+      {{ end }}
+      <h1 class="text-3xl font-extrabold mt-4 text-center">
+        <a href="/humans">Recently Added</a>
+      </h1>
+      {{ range $human := .RecentlyAdded }} {{ template "component-card.html"
+      $human }} {{ end }}
+    </div>
+  </body>
+  {{ template "footer.html" . }}
+</html>

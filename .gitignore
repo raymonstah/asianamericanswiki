@@ -1,5 +1,5 @@
 .idea/
-public/
+/public/
 .firebase/
 .hugo_build.lock
 .DS_Store
@@ -21,3 +21,4 @@ node_modules
 
 go.work
 go.work.sum
+tmp/main
