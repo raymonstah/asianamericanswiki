@@ -196,7 +196,10 @@ func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error 
 	for i, human := range humans {
 		humans[i].Path = "/humans/" + human.Path
 	}
-	indexParams.RecentlyAdded = humans[:10]
+
+	if len(humans) >= 10 {
+		indexParams.RecentlyAdded = humans[:10]
+	}
 	musicians := byName(humans, "Samica Jhangiani", "Thuy Tran", "Jonathan Park")
 	actors := byName(humans, "Michelle Yeoh", "Sung Kang", "Constance Wu")
 	comedians := byName(humans, "Bobby Lee", "Sheng Wang", "Ali Wong")
