@@ -163,6 +163,7 @@ func (h *Handler) Tags(ctx context.Context) error {
 				"youTuber":          "youtuber",
 				"olympics":          "olympian",
 				"photography":       "photographer",
+				"music":             "musician",
 			}
 
 			normalizedTag, ok := normalizeValues[tag]
