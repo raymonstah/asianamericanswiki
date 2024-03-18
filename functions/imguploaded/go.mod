@@ -8,7 +8,7 @@ require (
 	github.com/cloudevents/sdk-go/v2 v2.14.0
 	github.com/googleapis/google-cloudevents-go v0.7.1
 	github.com/raymonstah/asianamericanswiki v0.0.0-20231228074302-93bb6325ecb2
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/protobuf v1.33.0
 )
 
 require (

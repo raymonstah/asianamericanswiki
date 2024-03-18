@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"slices"
 	"strings"
 	"unicode"
 
@@ -21,10 +22,21 @@ var opts struct {
 func main() {
 	app := &cli.App{
 		Name: "A CLI tool to normalize asian american data.",
+		Commands: []*cli.Command{
+			{
+				Name:   "ethnicity",
+				Usage:  "normalize ethnicity data",
+				Action: ethnicity,
+			},
+			{
+				Name:   "tags",
+				Usage:  "normalize tags data",
+				Action: tags,
+			},
+		},
 		Flags: []cli.Flag{
 			&cli.BoolFlag{Name: "dry", Destination: &opts.Dry},
 		},
-		Action: run,
 	}
 
 	if err := app.Run(os.Args); err != nil {
@@ -37,11 +49,10 @@ type Handler struct {
 	humanDAO *humandao.DAO
 }
 
-func run(c *cli.Context) error {
-	ctx := c.Context
+func prepareHandler(ctx context.Context) (Handler, error) {
 	fsClient, err := firestore.NewClient(ctx, api.ProjectID)
 	if err != nil {
-		return fmt.Errorf("unable to create firestore client: %w", err)
+		return Handler{}, fmt.Errorf("unable to create firestore client: %w", err)
 	}
 
 	humanDAO := humandao.NewDAO(fsClient)
@@ -50,14 +61,36 @@ func run(c *cli.Context) error {
 		humanDAO: humanDAO,
 	}
 
-	if err := h.Do(ctx); err != nil {
+	return h, nil
+}
+
+func ethnicity(c *cli.Context) error {
+	ctx := c.Context
+	h, err := prepareHandler(ctx)
+	if err != nil {
+		return err
+	}
+	if err := h.Ethnicity(ctx); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (h *Handler) Do(ctx context.Context) error {
+func tags(c *cli.Context) error {
+	ctx := c.Context
+	h, err := prepareHandler(ctx)
+	if err != nil {
+		return err
+	}
+	if err := h.Tags(ctx); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (h *Handler) Ethnicity(ctx context.Context) error {
 	// Get all humans
 	humans, err := h.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
 		Limit: 1000,
@@ -79,6 +112,7 @@ func (h *Handler) Do(ctx context.Context) error {
 			}
 
 		}
+
 		if needUpdate {
 			log.Println("would update human", human.Name, human.Ethnicity)
 		}
@@ -87,6 +121,68 @@ func (h *Handler) Do(ctx context.Context) error {
 			err := h.humanDAO.UpdateHuman(ctx, human)
 			if err != nil {
 				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (h *Handler) Tags(ctx context.Context) error {
+	// Get all humans
+	humans, err := h.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
+		Limit: 1000,
+	})
+	if err != nil {
+		return fmt.Errorf("unable to list humans: %w", err)
+	}
+
+	// Lowercase all Tags
+	for _, human := range humans {
+		needUpdate := false
+		previousTags := slices.Clone(human.Tags)
+		for i, tag := range human.Tags {
+			// ensure tags are lowercase
+			if strings.ToLower(tag) != tag {
+				needUpdate = true
+				human.Tags[i] = strings.ToLower(tag)
+			}
+
+			// ensure tag doesn't contain multiple values
+			parts := strings.Split(tag, ",")
+			if len(parts) > 1 {
+				needUpdate = true
+				human.Tags[i] = parts[0]
+				human.Tags = append(human.Tags, parts[1:]...)
+			}
+
+			normalizeValues := map[string]string{
+				"technologist":      "technology",
+				"tech":              "technology",
+				"software engineer": "technology",
+				"youTuber":          "youtuber",
+				"olympics":          "olympian",
+				"photography":       "photographer",
+			}
+
+			normalizedTag, ok := normalizeValues[tag]
+			if ok {
+				needUpdate = true
+				human.Tags[i] = normalizedTag
+			}
+		}
+
+		if needUpdate {
+			log.Printf("would update %v's tags", human.Name)
+			log.Printf("\tbefore: %v", previousTags)
+			log.Printf("\tafter: %v", human.Tags)
+
+			if !opts.Dry {
+				err := h.humanDAO.UpdateHuman(ctx, human)
+				if err != nil {
+					return err
+				}
+				log.Println("successfully updated", human.Name)
 			}
 		}
 	}
