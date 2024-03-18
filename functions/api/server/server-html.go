@@ -342,18 +342,19 @@ func (s *ServerHTML) HandlerAbout(w http.ResponseWriter, r *http.Request) error 
 
 func (s *ServerHTML) HandlerHuman(w http.ResponseWriter, r *http.Request) error {
 	path := chi.URLParamFromCtx(r.Context(), "id")
-	ctx := r.Context()
 	path, err := url.PathUnescape(path)
 	if err != nil {
 		return err
 	}
 
-	human, err := s.humanDAO.Human(ctx, humandao.HumanInput{Path: path})
-	if err != nil {
-		if errors.Is(err, humandao.ErrHumanNotFound) {
-			return NewNotFoundError(err)
+	var human humandao.Human
+	for _, h := range s.humans {
+		if h.Path == path {
+			human = h
 		}
-		return err
+	}
+	if human.ID == "" {
+		return NewNotFoundError(humandao.ErrHumanNotFound)
 	}
 
 	base := Base{EnableAds: !s.local, Admin: s.local, RollbarToken: s.rollbarToken, Local: s.local}
