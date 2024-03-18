@@ -354,7 +354,7 @@ func (s *ServerHTML) HandlerHuman(w http.ResponseWriter, r *http.Request) error 
 		}
 	}
 	if human.ID == "" {
-		return NewNotFoundError(humandao.ErrHumanNotFound)
+		return NewNotFoundError(fmt.Errorf("%w: %v", humandao.ErrHumanNotFound, path))
 	}
 
 	base := Base{EnableAds: !s.local, Admin: s.local, RollbarToken: s.rollbarToken, Local: s.local}
