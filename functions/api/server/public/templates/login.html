@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Login | AsianAmericans.wiki</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    {{ template "rollbar.html" . }}
+    <link href="/output.css" rel="stylesheet" />
+    <script src="/1.9.10.htmx.min.js"></script>
+
+    {{ template "google-ads.html" . }} {{ template "dark-mode.html" . }}
+
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.js"></script>
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css"
+    />
+    <script type="module">
+      // Initialize the FirebaseUI Widget using Firebase.
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+      // Add Firebase products that you want to use
+      import { getAuth } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyAzAtLQv_j6TFdkKZyuxG4Yibz9V6VtzRA",
+        authDomain: "asianamericans-wiki.firebaseapp.com",
+        projectId: "asianamericans-wiki",
+        storageBucket: "asianamericans-wiki.appspot.com",
+        messagingSenderId: "424340922093",
+        appId: "1:424340922093:web:c7a5b00652170e2c9cb6e4",
+        measurementId: "G-DNWC1SD6ZZ",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const authInstance = getAuth(app);
+      var uiConfig = {
+        callbacks: {
+          signInSuccessWithAuthResult: function (authResult, redirectUrl) {
+            console.log("authResult:", authResult);
+            // const token = authResult.credential.idToken;
+            const token = authResult.user.accessToken;
+            // console.log("accessToken:", token);
+            // User successfully signed in.
+            // Return type determines whether we continue the redirect automatically
+            // or whether we leave that to developer to handle.
+            htmx.ajax("POST", "/login", {
+              headers: {
+                Authorization: "Bearer " + token,
+              },
+            });
+            return false;
+          },
+          uiShown: function () {
+            // The widget is rendered.
+            // Hide the loader.
+            document.getElementById("loader").style.display = "none";
+          },
+        },
+        // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
+        signInFlow: "popup",
+        signInOptions: [
+          // Leave the lines as is for the providers you want to offer your users.
+          firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+          //firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+          //firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+          //firebase.auth.GithubAuthProvider.PROVIDER_ID,
+          //firebase.auth.EmailAuthProvider.PROVIDER_ID,
+        ],
+      };
+
+      var ui = new firebaseui.auth.AuthUI(authInstance);
+      ui.start("#firebaseui-auth-container", uiConfig);
+    </script>
+  </head>
+
+  <body
+    class="h-full w-full flex flex-col align-middle min-h-screen bg-slate-200 dark:bg-gray-950 dark:text-gray-300"
+  >
+    {{ template "header.html" . }}
+
+    <div class="flex flex-col items-center align-middle gap-y-4 mx-2">
+      <h1 class="text-3xl font-extrabold my-4 text-center">Login</h1>
+      <div id="firebaseui-auth-container"></div>
+      <div id="loader">Loading...</div>
+    </div>
+  </body>
+  {{ template "footer.html" . }}
+</html>

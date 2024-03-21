@@ -15,6 +15,7 @@ import (
 	"sync"
 	"time"
 
+	"firebase.google.com/go/v4/auth"
 	"github.com/blevesearch/bleve/v2"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
@@ -29,6 +30,7 @@ var publicFS embed.FS
 type ServerHTML struct {
 	local        bool
 	rollbarToken string
+	authClient   Authorizer
 	humanDAO     *humandao.DAO
 	logger       zerolog.Logger
 	template     *template.Template
@@ -39,12 +41,14 @@ type ServerHTML struct {
 }
 
 type ServerHTMLConfig struct {
+	AuthClient   Authorizer
 	RollbarToken string
 }
 
 func NewServerHTML(local bool, humanDAO *humandao.DAO, logger zerolog.Logger, conf ServerHTMLConfig) *ServerHTML {
 	return &ServerHTML{
 		local:        local,
+		authClient:   conf.AuthClient,
 		humanDAO:     humanDAO,
 		logger:       logger,
 		rollbarToken: conf.RollbarToken,
@@ -113,6 +117,8 @@ func (s *ServerHTML) Register(router chi.Router) error {
 	router.Get("/humans/{id}", HttpHandler(s.HandlerHuman).Serve(s.HandlerError))
 	router.Post("/humans/{id}", HttpHandler(s.HandlerHumanUpdate).Serve(s.HandlerError))
 	router.Get("/humans/{id}/edit", HttpHandler(s.HandlerHumanEdit).Serve(s.HandlerError))
+	router.Get("/login", HttpHandler(s.HandlerLogin).Serve(s.HandlerError))
+	router.Post("/login", HttpHandler(s.HandlerLogin).Serve(s.HandlerError))
 	// redirect the old search route to the new one
 	router.Get("/search", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/humans", http.StatusMovedPermanently)
@@ -120,6 +126,23 @@ func (s *ServerHTML) Register(router chi.Router) error {
 	router.Handle("/*", s.WrapFileServer(publicFS))
 
 	return nil
+}
+
+func (s *ServerHTML) parseToken(r *http.Request) (*auth.Token, error) {
+	ctx := r.Context()
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		return nil, err
+	}
+
+	tokenString := cookie.Value
+
+	token, err := s.authClient.VerifySessionCookieAndCheckRevoked(ctx, tokenString)
+	if err != nil {
+		return nil, NewUnauthorizedError(fmt.Errorf("unable to verify id token: %w", err))
+	}
+
+	return token, nil
 }
 
 func (s *ServerHTML) WrapFileServer(fileSystem fs.FS) http.Handler {
@@ -140,6 +163,9 @@ func (s *ServerHTML) WrapFileServer(fileSystem fs.FS) http.Handler {
 }
 
 func (s *ServerHTML) HandlerError(w http.ResponseWriter, r *http.Request, e ErrorResponse) error {
+	if e.Status == http.StatusInternalServerError {
+		s.logger.Error().Err(e.Err).Msg("handler internal error")
+	}
 	var errorParam struct {
 		EnableAds bool
 		Error     string
@@ -400,17 +426,25 @@ func (s *ServerHTML) HandlerHumanEdit(w http.ResponseWriter, r *http.Request) er
 }
 
 func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) error {
-	// todo: protect this handler
 	// todo: make this return just a partial template
+	token, err := s.parseToken(r)
+	if err != nil {
+		return NewUnauthorizedError(err)
+	}
+
+	if admin := IsAdmin(token); !admin {
+		return NewForbiddenError(fmt.Errorf("user is not an admin"))
+	}
+
 	if err := r.ParseForm(); err != nil {
 		return err
 	}
-	fmt.Println("form received", r.Form)
+
 	description := strings.TrimSpace(r.Form.Get("description"))
 
 	path := chi.URLParamFromCtx(r.Context(), "id")
 	ctx := r.Context()
-	path, err := url.PathUnescape(path)
+	path, err = url.PathUnescape(path)
 	if err != nil {
 		return err
 	}
@@ -434,6 +468,50 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		s.logger.Error().Err(err).Msg("unable to execute humans-id template")
 	}
 
+	s.logger.Info().Str("id", human.ID).Str("name", human.Name).Msg("successfully updated human")
+	return nil
+}
+
+type HTMLResponseLogin struct {
+	Base
+}
+
+func (s *ServerHTML) HandlerLogin(w http.ResponseWriter, r *http.Request) error {
+	if r.Method == http.MethodPost {
+		idToken, err := parseBearerToken(r)
+		if err != nil {
+			return err
+		}
+		// Set session expiration to 5 days.
+		expiresIn := time.Hour * 24 * 5
+
+		// Create the session cookie. This will also verify the ID token in the process.
+		// The session cookie will have the same claims as the ID token.
+		// To only allow session cookie setting on recent sign-in, auth_time in ID token
+		// can be checked to ensure user was recently signed in before creating a session cookie.
+		cookie, err := s.authClient.SessionCookie(r.Context(), idToken, expiresIn)
+		if err != nil {
+			return fmt.Errorf("unable to create session token: %w", err)
+		}
+
+		// Set cookie policy for session cookie.
+		http.SetCookie(w, &http.Cookie{
+			Name:     "session",
+			Value:    cookie,
+			MaxAge:   int(expiresIn.Seconds()),
+			HttpOnly: true,
+			Secure:   true,
+		})
+
+		http.Redirect(w, r, "/", http.StatusFound)
+		return nil
+	}
+
+	base := Base{EnableAds: !s.local, Admin: s.local, RollbarToken: s.rollbarToken, Local: s.local}
+	response := HTMLResponseLogin{Base: base}
+	if err := s.template.ExecuteTemplate(w, "login.html", response); err != nil {
+		s.logger.Error().Err(err).Msg("unable to execute login template")
+	}
 	return nil
 }
 
