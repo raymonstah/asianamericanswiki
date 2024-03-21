@@ -73,6 +73,7 @@ func NewServer(config Config) *Server {
 	}))
 	s.setupRoutes()
 	htmlServer := NewServerHTML(config.Local, config.HumansDAO, config.Logger, ServerHTMLConfig{
+		AuthClient:   config.AuthClient,
 		RollbarToken: "e1082079233c44628d29032fc1847ca7",
 	})
 	if err := htmlServer.Register(r); err != nil {
