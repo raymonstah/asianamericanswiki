@@ -100,6 +100,9 @@ func (s *Server) AdminMiddleware(next http.Handler) http.Handler {
 }
 
 func IsAdmin(token *auth.Token) bool {
+	if token == nil {
+		return false
+	}
 	admin, ok := token.Claims["admin"]
 	if !ok {
 		return false

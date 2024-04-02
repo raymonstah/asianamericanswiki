@@ -38,21 +38,42 @@
       // Initialize Firebase
       const app = initializeApp(firebaseConfig);
       const authInstance = getAuth(app);
+
+      // Pull referer from localstorage
+      var referrer = localStorage.getItem("referer");
+      if (!referrer) {
+        referrer = "/admin";
+      }
+
       var uiConfig = {
         callbacks: {
           signInSuccessWithAuthResult: function (authResult, redirectUrl) {
-            console.log("authResult:", authResult);
+            // console.log("authResult:", authResult);
             // const token = authResult.credential.idToken;
             const token = authResult.user.accessToken;
             // console.log("accessToken:", token);
             // User successfully signed in.
             // Return type determines whether we continue the redirect automatically
             // or whether we leave that to developer to handle.
-            htmx.ajax("POST", "/login", {
+            const requestOptions = {
+              method: "POST",
               headers: {
                 Authorization: "Bearer " + token,
               },
-            });
+              referrer: referrer,
+            };
+
+            fetch("/login", requestOptions)
+              .then((response) => {
+                console.log(response);
+                if (response.redirected) {
+                  // todo: this fetches the url twice, but is okay for now.
+                  window.location.href = response.url;
+                }
+              })
+              .catch((error) => {
+                console.error("Error:", error);
+              });
             return false;
           },
           uiShown: function () {
