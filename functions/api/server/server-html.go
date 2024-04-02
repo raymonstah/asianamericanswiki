@@ -236,9 +236,14 @@ func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error 
 		Legends       []humandao.Human
 		RecentlyAdded []humandao.Human
 	}
+	base := Base{
+		Local:           s.local,
+		EnableAds:       !s.local,
+		EnableAnalytics: !s.local,
+		RollbarToken:    s.rollbarToken,
+	}
+	indexParams.Base = base
 
-	indexParams.EnableAds = !s.local
-	indexParams.RollbarToken = s.rollbarToken
 	// deep copy humans
 	humans := append([]humandao.Human(nil), s.humans...)
 	for i, human := range humans {
