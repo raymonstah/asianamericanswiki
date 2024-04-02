@@ -183,11 +183,16 @@ func (s *ServerHTML) HandlerError(w http.ResponseWriter, r *http.Request, e Erro
 		s.logger.Error().Err(e.Err).Msg("handler internal error")
 	}
 	var errorParam struct {
+		Base
 		EnableAds bool
 		Error     string
 		Status    int
 	}
 	errorParam.EnableAds = !s.local
+	errorParam.EnableAnalytics = !s.local
+	errorParam.RollbarToken = s.rollbarToken
+	errorParam.Local = s.local
+
 	errorParam.Status = e.Status
 	errorParam.Error = e.Err.Error()
 
