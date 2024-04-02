@@ -2,6 +2,7 @@
   push:
     branches:
       - main
+      - wif
     paths:
       # only run when the source code changes or this file changes
       - "functions/api/**"
@@ -41,7 +42,8 @@ jobs:
         name: "Authenticate to Google Cloud"
         uses: "google-github-actions/auth@v2"
         with:
-          credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT }}"
+          project-id: "asianamericans-wiki"
+          workload_identify_provider: "projects/424340922093/locations/global/workloadIdentityPools/github-action-wif/providers/github"
 
       - name: Set outputs
         id: vars
