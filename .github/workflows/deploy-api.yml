@@ -41,7 +41,7 @@ jobs:
         uses: "google-github-actions/auth@v2"
         with:
           project_id: "asianamericans-wiki"
-          service_account: "github-action-api-deployer"
+          service_account: "github-action-api-deployer@asianamericans-wiki.iam.gserviceaccount.com"
           workload_identity_provider: "projects/424340922093/locations/global/workloadIdentityPools/github-action-wif/providers/github"
 
       - name: Set outputs
