@@ -13,6 +13,9 @@
 name: Deploy API to cloud run
 jobs:
   deploy-api:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: us-central1-docker.pkg.dev/asianamericans-wiki/asianamericanswiki-api/api
@@ -41,7 +44,9 @@ jobs:
         name: "Authenticate to Google Cloud"
         uses: "google-github-actions/auth@v2"
         with:
-          credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT }}"
+          project_id: "asianamericans-wiki"
+          service_account: "github-action-api-deployer@asianamericans-wiki.iam.gserviceaccount.com"
+          workload_identity_provider: "projects/424340922093/locations/global/workloadIdentityPools/github-action-wif/providers/github"
 
       - name: Set outputs
         id: vars
