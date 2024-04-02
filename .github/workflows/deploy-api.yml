@@ -23,6 +23,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+
+      - name: Checkout actions-oidc-debugger
+        uses: actions/checkout@v3
+        with:
+          repository: github/actions-oidc-debugger
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: ./.github/actions/actions-oidc-debugger
+      - name: Debug OIDC Claims
+        uses: ./.github/actions/actions-oidc-debugger
+        with:
+          audience: 'projects/424340922093/locations/global/workloadIdentityPools/github-action-wif/providers/github'
+
       - id: "auth"
         name: "Authenticate to Google Cloud"
         uses: "google-github-actions/auth@v2"
