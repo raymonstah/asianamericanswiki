@@ -202,10 +202,11 @@ func (s *ServerHTML) HandlerError(w http.ResponseWriter, r *http.Request, e Erro
 }
 
 type Base struct {
-	Local        bool
-	EnableAds    bool
-	RollbarToken string
-	Admin        bool
+	Local           bool
+	EnableAds       bool
+	EnableAnalytics bool
+	RollbarToken    string
+	Admin           bool
 }
 
 type HTMLResponseHumans struct {
@@ -338,9 +339,10 @@ func (s *ServerHTML) HandlerHumans(w http.ResponseWriter, r *http.Request) error
 
 	response := HTMLResponseHumans{
 		Base: Base{
-			Local:        s.local,
-			EnableAds:    !s.local,
-			RollbarToken: s.rollbarToken,
+			Local:           s.local,
+			EnableAds:       !s.local,
+			EnableAnalytics: !s.local,
+			RollbarToken:    s.rollbarToken,
 		},
 		Count:       len(humans),
 		Humans:      humans,
@@ -404,7 +406,7 @@ func (s *ServerHTML) HandlerHuman(w http.ResponseWriter, r *http.Request) error 
 		return NewNotFoundError(fmt.Errorf("%w: %v", humandao.ErrHumanNotFound, path))
 	}
 
-	base := Base{EnableAds: !s.local, Admin: admin, RollbarToken: s.rollbarToken, Local: s.local}
+	base := Base{EnableAds: !s.local, EnableAnalytics: !s.local, Admin: admin, RollbarToken: s.rollbarToken, Local: s.local}
 	response := HTMLResponseHuman{Human: human, Base: base}
 	if err := s.template.ExecuteTemplate(w, "humans-id.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute humans-id template")
@@ -449,7 +451,7 @@ func (s *ServerHTML) HandlerHumanEdit(w http.ResponseWriter, r *http.Request) er
 		return err
 	}
 
-	base := Base{EnableAds: !s.local, Admin: admin, RollbarToken: s.rollbarToken, Local: s.local}
+	base := Base{EnableAds: !s.local, EnableAnalytics: !s.local, Admin: admin, RollbarToken: s.rollbarToken, Local: s.local}
 	response := HTMLResponseHuman{Human: human, Base: base}
 	if err := s.template.ExecuteTemplate(w, "humans-id-edit.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute humans-id-edit.html template")
@@ -495,7 +497,7 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		return err
 	}
 
-	base := Base{EnableAds: !s.local, Admin: s.local, RollbarToken: s.rollbarToken, Local: s.local}
+	base := Base{EnableAds: !s.local, EnableAnalytics: !s.local, Admin: s.local, RollbarToken: s.rollbarToken, Local: s.local}
 	response := HTMLResponseHuman{Human: human, Base: base}
 	if err := s.template.ExecuteTemplate(w, "humans-id.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute humans-id template")
@@ -543,12 +545,12 @@ func (s *ServerHTML) HandlerLogin(w http.ResponseWriter, r *http.Request) error 
 			referer = "/admin"
 		}
 
-		w.Header().Add("HX-Redirect", referer) // not needed, but just in case I decide to switch to htmx.ajax()
+		w.Header().Add("HX-Redirect", referer)
 		http.Redirect(w, r, referer, http.StatusFound)
 		return nil
 	}
 
-	base := Base{EnableAds: !s.local, Admin: s.local, RollbarToken: s.rollbarToken, Local: s.local}
+	base := Base{EnableAds: !s.local, EnableAnalytics: !s.local, Admin: s.local, RollbarToken: s.rollbarToken, Local: s.local}
 	response := HTMLResponseLogin{Base: base}
 	if err := s.template.ExecuteTemplate(w, "login.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute login template")
