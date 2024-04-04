@@ -5,8 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-    {{ template "rollbar.html" . }}
-    {{ template "google-analytics.html" . }}
+    {{ template "rollbar.html" . }} {{ template "google-analytics.html" . }}
     <link href="/output.css" rel="stylesheet" />
     <script src="/1.9.10.htmx.min.js"></script>
 
@@ -18,7 +17,7 @@
   >
     {{ template "header.html" . }}
 
-    <div class="flex flex-col items-center align-middle gap-y-4 mx-2">
+    <div class="flex flex-col items-center align-middle gap-y-4 mx-2 mb-4">
       <h1 class="text-3xl font-extrabold my-4 text-center">
         Discover and learn about Asian Americans
       </h1>
@@ -48,6 +47,7 @@
       {{ range $human := .RecentlyAdded }} {{ template "component-card.html"
       $human }} {{ end }}
     </div>
+
+    {{ template "footer.html" . }}
   </body>
-  {{ template "footer.html" . }}
 </html>
