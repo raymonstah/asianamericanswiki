@@ -404,7 +404,9 @@ go.uber.org/zap/internal/color
 go.uber.org/zap/internal/exit
 go.uber.org/zap/zapcore
 # golang.org/x/crypto v0.14.0
-## explicit; go 1.17
+## explicit; go 1.18
+# golang.org/x/crypto v0.21.0
+## explicit; go 1.18
 golang.org/x/crypto/chacha20
 golang.org/x/crypto/chacha20poly1305
 golang.org/x/crypto/cryptobyte
@@ -413,7 +415,9 @@ golang.org/x/crypto/hkdf
 golang.org/x/crypto/internal/alias
 golang.org/x/crypto/internal/poly1305
 # golang.org/x/net v0.17.0
-## explicit; go 1.17
+## explicit; go 1.18
+# golang.org/x/net v0.23.0
+## explicit; go 1.18
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
@@ -437,12 +441,16 @@ golang.org/x/oauth2/jwt
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 # golang.org/x/sys v0.13.0
-## explicit; go 1.17
+## explicit; go 1.18
+# golang.org/x/sys v0.18.0
+## explicit; go 1.18
 golang.org/x/sys/cpu
 golang.org/x/sys/unix
 golang.org/x/sys/windows
 # golang.org/x/text v0.13.0
-## explicit; go 1.17
+## explicit; go 1.18
+# golang.org/x/text v0.14.0
+## explicit; go 1.18
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap
 golang.org/x/text/encoding/htmlindex

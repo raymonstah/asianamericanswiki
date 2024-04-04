@@ -187,7 +187,7 @@ func (s *ServerHTML) HandlerError(w http.ResponseWriter, r *http.Request, e Erro
 		Error  string
 		Status int
 	}
-	base := getBase(s)
+	base := getBase(s, false)
 	errorParam.Base = base
 
 	errorParam.Status = e.Status
@@ -233,7 +233,7 @@ func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error 
 		Legends       []humandao.Human
 		RecentlyAdded []humandao.Human
 	}
-	base := getBase(s)
+	base := getBase(s, false)
 	indexParams.Base = base
 
 	// deep copy humans
@@ -340,7 +340,7 @@ func (s *ServerHTML) HandlerHumans(w http.ResponseWriter, r *http.Request) error
 	}
 
 	response := HTMLResponseHumans{
-		Base:        getBase(s),
+		Base:        getBase(s, false),
 		Count:       len(humans),
 		Humans:      humans,
 		Ethnicities: ethnicity.All,
@@ -403,7 +403,7 @@ func (s *ServerHTML) HandlerHuman(w http.ResponseWriter, r *http.Request) error 
 		return NewNotFoundError(fmt.Errorf("%w: %v", humandao.ErrHumanNotFound, path))
 	}
 
-	response := HTMLResponseHuman{Human: human, Base: getBase(s)}
+	response := HTMLResponseHuman{Human: human, Base: getBase(s, admin)}
 	if err := s.template.ExecuteTemplate(w, "humans-id.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute humans-id template")
 	}
@@ -447,7 +447,7 @@ func (s *ServerHTML) HandlerHumanEdit(w http.ResponseWriter, r *http.Request) er
 		return err
 	}
 
-	response := HTMLResponseHuman{Human: human, Base: getBase(s)}
+	response := HTMLResponseHuman{Human: human, Base: getBase(s, admin)}
 	if err := s.template.ExecuteTemplate(w, "humans-id-edit.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute humans-id-edit.html template")
 	}
@@ -492,7 +492,7 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		return err
 	}
 
-	response := HTMLResponseHuman{Human: human, Base: getBase(s)}
+	response := HTMLResponseHuman{Human: human, Base: getBase(s, false)}
 	if err := s.template.ExecuteTemplate(w, "humans-id.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute humans-id template")
 	}
@@ -544,7 +544,7 @@ func (s *ServerHTML) HandlerLogin(w http.ResponseWriter, r *http.Request) error 
 		return nil
 	}
 
-	response := HTMLResponseLogin{Base: getBase(s)}
+	response := HTMLResponseLogin{Base: getBase(s, false)}
 	if err := s.template.ExecuteTemplate(w, "login.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute login template")
 	}
@@ -572,11 +572,11 @@ func (h HttpHandler) Serve(errorHandler func(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-func getBase(s *ServerHTML) Base {
+func getBase(s *ServerHTML, admin bool) Base {
 	base := Base{
 		EnableAds:       false,
 		EnableAnalytics: !s.local,
-		Admin:           s.local,
+		Admin:           admin,
 		RollbarToken:    s.rollbarToken,
 		Local:           s.local,
 	}
