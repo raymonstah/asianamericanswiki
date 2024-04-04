@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <title>Our Story | AsianAmericans.wiki</title>
@@ -8,16 +8,13 @@
     <link href="/output.css" rel="stylesheet" />
     <script src="/1.9.10.htmx.min.js"></script>
 
-    {{ template "rollbar.html" . }}
-    {{ template "google-analytics.html" . }}
-    {{ template "dark-mode.html" . }}
-
+    {{ template "rollbar.html" . }} {{ template "google-analytics.html" . }} {{
+    template "dark-mode.html" . }}
   </head>
   <body
     class="h-full w-full flex flex-col align-middle min-h-screen bg-slate-200 dark:bg-gray-950 dark:text-gray-300"
   >
     {{ template "header.html" . }}
-
 
     <div
       class="max-w-sm flex flex-col items-center align-middle gap-y-3 mx-2 justify-center content-center self-center"
@@ -49,6 +46,6 @@
       Explore our site and join the conversation. We can't wait to connect with
       you!
     </div>
+    {{ template "footer.html" . }}
   </body>
-  {{ template "footer.html" . }}
 </html>
