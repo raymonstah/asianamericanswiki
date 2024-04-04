@@ -462,7 +462,8 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		return NewUnauthorizedError(err)
 	}
 
-	if admin := IsAdmin(token); !admin {
+	admin := IsAdmin(token)
+	if !admin {
 		return NewForbiddenError(fmt.Errorf("user is not an admin"))
 	}
 
@@ -492,7 +493,9 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		return err
 	}
 
-	response := HTMLResponseHuman{Human: human, Base: getBase(s, false)}
+	_ = s.initializeIndex(ctx)
+
+	response := HTMLResponseHuman{Human: human, Base: getBase(s, admin)}
 	if err := s.template.ExecuteTemplate(w, "humans-id.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute humans-id template")
 	}
