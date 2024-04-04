@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <title>Uh oh | AsianAmericans.wiki</title>
@@ -8,20 +8,17 @@
     <link href="/output.css" rel="stylesheet" />
     <script src="/1.9.10.htmx.min.js"></script>
 
-    {{ template "rollbar.html" . }}
-    {{ template "google-analytics.html" . }}
-    {{ template "google-ads.html" . }}
-    {{ template "dark-mode.html" . }}
-
+    {{ template "rollbar.html" . }} {{ template "google-analytics.html" . }} {{
+    template "google-ads.html" . }} {{ template "dark-mode.html" . }}
   </head>
   <body
     class="h-full w-full flex flex-col align-middle min-h-screen bg-slate-200 dark:bg-gray-950 dark:text-gray-300"
   >
     {{ template "header.html" . }}
 
-
     <h1 class="text-3xl font-extrabold my-4 text-center">{{ .Status }}</h1>
     <h1 class="text-3xl font-extrabold my-4 text-center">{{ .Error }}</h1>
+
+    {{ template "footer.html" . }}
   </body>
-  {{ template "footer.html" . }}
 </html>
