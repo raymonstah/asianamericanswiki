@@ -14,7 +14,7 @@ require (
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/rs/zerolog v1.31.0
-	github.com/sashabaranov/go-openai v1.15.3
+	github.com/sashabaranov/go-openai v1.20.5
 	github.com/segmentio/ksuid v1.0.4
 	github.com/stretchr/testify v1.8.4
 	github.com/tj/assert v0.0.3

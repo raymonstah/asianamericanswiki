@@ -344,10 +344,11 @@ github.com/russross/blackfriday/v2
 # github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d
 ## explicit
 github.com/saintfish/chardet
-# github.com/sashabaranov/go-openai v1.15.3
+# github.com/sashabaranov/go-openai v1.20.5
 ## explicit; go 1.18
 github.com/sashabaranov/go-openai
 github.com/sashabaranov/go-openai/internal
+github.com/sashabaranov/go-openai/jsonschema
 # github.com/segmentio/ksuid v1.0.4
 ## explicit; go 1.12
 github.com/segmentio/ksuid

@@ -1,46 +1,63 @@
 <form
   action="/humans/{{ .Human.Path }}"
   method="post"
+  enctype="multipart/form-data"
   class="max-w-sm md:max-w-md flex flex-col items-center justify-center content-center self-center gap-y-2"
 >
+  <script>
+    const imgElement = document.getElementById("image");
+    console.log("image", imgElement);
+    if (imgElement.src === "" || imgElement.src === "about:blank") {
+      // Hide the img element
+      imgElement.style.display = "none";
+    }
+
+    featured_image.onchange = (evt) => {
+      imgElement.style.display = "block";
+      const [file] = featured_image.files;
+      if (file) {
+        image.src = URL.createObjectURL(file);
+      }
+    };
+  </script>
   <h1 class="text-3xl font-extrabold my-4 text-center">
     {{ .Human.Name }}
     <span class="text-sm">
-      {{ if eq .Human.Gender "male" }}
-        ♂️
-      {{ else if eq .Human.Gender "female" }}
-        ♀️
-      {{ else }}
-        ☿️
-      {{ end }}
+      {{ if eq .Human.Gender "male" }} ♂️ {{ else if eq .Human.Gender "female"
+      }} ♀️ {{ else }} ☿️ {{ end }}
     </span>
   </h1>
   {{ if .Human.FeaturedImage }}
-    <img
-      class="mb-2 object-cover h-96"
-      src="{{ .Human.FeaturedImage }}"
-      alt="A photo of {{ .Human.Name }}"
-    />
+  <img
+    class="mb-2 object-cover h-96"
+    src="{{ .Human.FeaturedImage }}"
+    alt="A photo of {{ .Human.Name }}"
+  />
   {{ end }}
-  <div class="mb-2">
-    {{ .Human.DOB }}
-  </div>
+  <input
+    accept="image/*"
+    type="file"
+    id="featured_image"
+    name="featured_image"
+  />
+  <img id="image" />
+  <div class="mb-2">{{ .Human.DOB }}</div>
   <div class="mb-2">
     {{ range .Human.Ethnicity }}
-      <a
-        href="/humans?ethnicity={{ . }}"
-        class="tag rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 hover:scale-125"
-        >{{ . }}</a
-      >
+    <a
+      href="/humans?ethnicity={{ . }}"
+      class="tag rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 hover:scale-125"
+      >{{ . }}</a
+    >
     {{ end }}
   </div>
   <div class="mb-2">
     {{ range .Human.Tags }}
-      <a
-        href="/humans?tag={{ . }}"
-        class="tag rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 hover:scale-125"
-        >{{ . }}
-      </a>
+    <a
+      href="/humans?tag={{ . }}"
+      class="tag rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 hover:scale-125"
+      >{{ . }}
+    </a>
     {{ end }}
   </div>
 

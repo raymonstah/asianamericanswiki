@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Admin | AsianAmericans.wiki</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    {{ template "rollbar.html" . }} {{ template "google-analytics.html" . }}
+    <link href="/output.css" rel="stylesheet" />
+    <script src="/1.9.10.htmx.min.js"></script>
+
+    {{ template "google-ads.html" . }} {{ template "dark-mode.html" . }}
+  </head>
+  <body
+    class="h-full w-full flex flex-col align-middle min-h-screen bg-slate-200 dark:bg-gray-950 dark:text-gray-300"
+  >
+    {{ template "header.html" . }}
+    <div class="flex flex-col justify-center items-center my-2">
+      {{ if .Drafts }}
+      <h1 class="my-2 text-xl text-center">Drafts</h1>
+      <div class="flex flex-col max-w-sm">
+        <table class="table-fixed border border-solid border-collapse">
+          <thead>
+            <tr
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              <th class="p-4 border">ID</th>
+              <th class="p-4 border">Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{ range $human := .Drafts }}
+            <tr>
+              <td class="text-xs p-4 border">{{ .ID }}</td>
+              <td class="p-4 border">
+                <a href="/humans/{{ .Path }}">{{ .Name }}</a>
+              </td>
+            </tr>
+            {{ end}}
+          </tbody>
+        </table>
+      </div>
+      {{ end}}
+      <h1 class="my-2 text-xl text-center">Add a new human</h1>
+    </div>
+    <div class="flex flex-col px-2 justify-center">
+      {{ template "new-human-form.html" . }} {{ template "footer.html" . }}
+    </div>
+  </body>
+</html>

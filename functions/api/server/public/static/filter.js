@@ -56,7 +56,7 @@ function doSearch() {
       ethnicity: ethnicitySelected.value,
       tag: tagSelected.value,
       search: searchInput.value,
-    })
+    }),
   );
   console.log("search parameters", params.toString());
   window.location.href = "/humans/?" + params.toString();

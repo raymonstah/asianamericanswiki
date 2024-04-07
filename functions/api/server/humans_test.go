@@ -27,8 +27,8 @@ func TestServer_HumansList(t *testing.T) {
 
 	humanDAO := humandao.NewDAO(client)
 	s := NewServer(Config{
-		HumansDAO: humanDAO,
-		Logger:    zerolog.New(zerolog.NewTestWriter(t)),
+		HumanDAO: humanDAO,
+		Logger:   zerolog.New(zerolog.NewTestWriter(t)),
 	})
 
 	w := httptest.NewRecorder()
@@ -63,8 +63,8 @@ func TestServer_HumansList_OrderByMostViewed(t *testing.T) {
 	}
 
 	s := NewServer(Config{
-		HumansDAO: humanDAO,
-		Logger:    zerolog.New(zerolog.NewTestWriter(t)),
+		HumanDAO: humanDAO,
+		Logger:   zerolog.New(zerolog.NewTestWriter(t)),
 	})
 
 	w := httptest.NewRecorder()
@@ -108,8 +108,8 @@ func TestServer_HumansByID(t *testing.T) {
 	}
 
 	s := NewServer(Config{
-		UsersDAO:   userDAO,
-		HumansDAO:  humanDAO,
+		UserDAO:    userDAO,
+		HumanDAO:   humanDAO,
 		AuthClient: NoOpAuthorizer{},
 		Logger:     zerolog.New(zerolog.NewTestWriter(t)),
 	})
@@ -165,8 +165,8 @@ func TestServer_HumanWithAffiliateLinks(t *testing.T) {
 	assert.NoError(t, err)
 
 	s := NewServer(Config{
-		UsersDAO:   userDAO,
-		HumansDAO:  humanDAO,
+		UserDAO:    userDAO,
+		HumanDAO:   humanDAO,
 		AuthClient: NoOpAuthorizer{},
 		Logger:     zerolog.New(zerolog.NewTestWriter(t)),
 	})

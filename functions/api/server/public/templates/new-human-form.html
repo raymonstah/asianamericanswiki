@@ -1,0 +1,280 @@
+<form
+  action="/humans/"
+  method="post"
+  id="new-human-form"
+  enctype="multipart/form-data"
+  class="max-w-sm md:max-w-md flex flex-col items-center justify-center content-center self-center gap-y-2 w-full"
+>
+  <script>
+    window.onload = (event) => {
+      initializeImagePreview();
+    };
+    htmx.onLoad(function (elt) {
+      initializeImagePreview();
+    });
+
+    function initializeImagePreview() {
+      const imgElement = document.getElementById("image");
+      // Preview the image
+      featured_image.onchange = (evt) => {
+        imgElement.style.display = "block";
+        const [file] = featured_image.files;
+        if (file) {
+          image.src = URL.createObjectURL(file);
+        }
+      };
+    }
+  </script>
+  <div class="flex flex-col gap-6 mb-6 w-full">
+    <div>
+      <label
+        for="source"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >Source data for ChatGPT</label
+      >
+      <textarea
+        id="source"
+        name="source"
+        class="dark:bg-gray-900 space-y-4 text-wrap break-all w-full rounded border border-gray-300"
+        rows="10"
+      >
+{{ .HumanFormFields.Source }}</textarea
+      >
+      <button
+        class="bg-sky-500 my-2 w-full text-center p-2 rounded-md shadow hover:bg-sky-600 border-transparent text-white font-bold"
+        hx-post="/generate"
+        hx-target="#new-human-form"
+        hx-swap="outerHTML"
+      >
+        Generate
+      </button>
+    </div>
+    <div>
+      <label
+        for="name"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >Name</label
+      >
+      <input
+        class="border p-2 rounded dark:bg-gray-900 w-full"
+        type="text"
+        id="name"
+        name="name"
+        placeholder="Bruce Lee"
+        value="{{ .Human.Name }}"
+      />
+    </div>
+    <div>
+      <label
+        for="featured_image"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >Image</label
+      >
+      <input
+        accept="image/*"
+        type="file"
+        id="featured_image"
+        name="featured_image"
+        class="block w-full text-sm text-gray-900 border border-gray-300 rounded cursor-pointer dark:text-gray-400 focus:outline-none dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 file:border-0 file:bg-gray-100 file:text-black file:dark:bg-gray-900 file:dark:text-gray-100 file:p-2.5 file:cursor-pointer"
+      />
+      <img id="image" class="hidden mx-auto my-1" />
+    </div>
+    <div>
+      <label
+        for="gender"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >Gender</label
+      >
+      <select
+        id="gender"
+        name="gender"
+        class="bg-gray-50 border border-gray-300 text-gray-900 rounded focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+        value="{{ .Human.Gender }}"
+      >
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="nonbinary">Nonbinary</option>
+      </select>
+    </div>
+    <div>
+      <label
+        for="description"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >Description</label
+      >
+      <textarea
+        name="description"
+        id="description"
+        class="dark:bg-gray-900 space-y-4 text-wrap break-all w-full rounded border border-gray-300"
+        rows="10"
+      >
+{{ .Human.Description }}</textarea
+      >
+    </div>
+    <div>
+      <label
+        for="dob"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >Date of Birth</label
+      >
+      <input
+        class="border p-2 rounded dark:bg-gray-900 w-full"
+        type="text"
+        name="dob"
+        id="dob"
+        placeholder="YYYY-MM-DD"
+        value="{{ .Human.DOB }}"
+      />
+    </div>
+    <div>
+      <label
+        for="dod"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >Date of Death</label
+      >
+      <input
+        class="border p-2 rounded dark:bg-gray-900 w-full"
+        type="text"
+        name="dod"
+        id="dod"
+        placeholder="YYYY-MM-DD"
+        value="{{ .Human.DOD }}"
+      />
+    </div>
+    <div>
+      <label
+        for="ethnicity"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >Ethnicity</label
+      >
+      <select
+        id="ethnicity"
+        name="ethnicity"
+        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+        multiple
+        size="25"
+      >
+        {{ range .HumanFormFields.Ethnicities }}
+        <option
+          value="{{ .Ethnicity }}"
+          {{
+          if
+          slicesContains
+          $.Human.Ethnicity
+          .Ethnicity
+          }}
+          selected{{
+          end
+          }}
+        >
+          {{ .Ethnicity}}
+        </option>
+        {{ end }}
+      </select>
+      <input
+        class="border p-2 rounded dark:bg-gray-900 w-full"
+        type="text"
+        name="ethnicity-other"
+        placeholder="Enter other ethnicities here"
+      />
+    </div>
+    <div>
+      <label
+        for="tags"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >Tags</label
+      >
+      <select
+        name="tags"
+        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+        multiple
+        id="tags"
+        size="25"
+      >
+        {{ range .HumanFormFields.Tags }}
+        <option
+          value="{{ . }}"
+          {{
+          if
+          slicesContains
+          $.Human.Tags
+          .
+          }}
+          selected{{
+          end
+          }}
+        >
+          {{ . }}
+        </option>
+        {{ end }}
+      </select>
+      <input
+        class="border p-2 rounded dark:bg-gray-900 w-full"
+        type="text"
+        name="tags-other"
+        placeholder="Enter other tags here, comma-separated"
+      />
+    </div>
+    <div>
+      <label
+        for="imdb"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >IMDB</label
+      >
+      <input
+        class="border p-2 rounded dark:bg-gray-900 w-full"
+        type="text"
+        name="imdb"
+        id="imdb"
+        value="{{ .Human.Socials.IMDB }}"
+      />
+    </div>
+    <div>
+      <label
+        for="x"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >X</label
+      >
+      <input
+        class="border p-2 rounded dark:bg-gray-900 w-full"
+        type="text"
+        name="x"
+        id="x"
+        value="{{ .Human.Socials.X }}"
+      />
+    </div>
+    <div>
+      <label
+        for="website"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >Website</label
+      >
+      <input
+        class="border p-2 rounded dark:bg-gray-900 w-full"
+        type="text"
+        name="website"
+        id="website"
+        value="{{ .Human.Socials.Website }}"
+      />
+    </div>
+    <div>
+      <label
+        for="instagram"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >Instagram</label
+      >
+      <!--todo: add Instagram on backend-->
+      <input
+        class="border p-2 rounded dark:bg-gray-900 w-full"
+        type="text"
+        name="instagram"
+        id="instagram"
+      />
+    </div>
+  </div>
+  <button
+    class="bg-sky-500 my-6 w-full text-center p-2 rounded-md shadow hover:bg-sky-600 border-transparent text-white font-bold"
+  >
+    Submit
+  </button>
+</form>

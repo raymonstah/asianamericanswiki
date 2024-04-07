@@ -523,10 +523,11 @@ var (
 )
 
 type ListHumansInput struct {
-	Limit     int
-	Offset    int
-	OrderBy   OrderBy
-	Direction firestore.Direction
+	Limit         int
+	Offset        int
+	OrderBy       OrderBy
+	Direction     firestore.Direction
+	IncludeDrafts bool
 }
 
 func (d *DAO) ListHumans(ctx context.Context, input ListHumansInput) ([]Human, error) {
@@ -534,8 +535,11 @@ func (d *DAO) ListHumans(ctx context.Context, input ListHumansInput) ([]Human, e
 		OrderByCreatedAt: {},
 		OrderByViews:     {},
 	}
-	query := d.client.Collection(d.humanCollection).
-		Where("draft", "==", false)
+	query := d.client.Collection(d.humanCollection).Query
+
+	if !input.IncludeDrafts {
+		query = query.Where("draft", "==", false)
+	}
 	if input.OrderBy == "" {
 		query = query.OrderBy(string(OrderByCreatedAt), firestore.Desc)
 	} else {

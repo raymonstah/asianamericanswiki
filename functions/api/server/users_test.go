@@ -35,8 +35,8 @@ func TestServer_User(t *testing.T) {
 	assert.NoError(t, err)
 
 	s := NewServer(Config{
-		UsersDAO:   userDAO,
-		HumansDAO:  humanDAO,
+		UserDAO:    userDAO,
+		HumanDAO:   humanDAO,
 		AuthClient: authClient,
 		Logger:     zerolog.New(zerolog.NewTestWriter(t)),
 	})
@@ -96,5 +96,4 @@ func TestServer_User(t *testing.T) {
 	assert.Equal(t, humanID, userResponse.Saved[0].HumanID)
 	assert.Equal(t, 1, len(userResponse.RecentlyViewed))
 	assert.Equal(t, humanID, userResponse.RecentlyViewed[0].HumanID)
-
 }
