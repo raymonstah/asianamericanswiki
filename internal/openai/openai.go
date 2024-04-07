@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/go-json-experiment/json"
-
 	openai "github.com/sashabaranov/go-openai"
+	"github.com/sashabaranov/go-openai/jsonschema"
 )
 
 type Client struct {
@@ -107,12 +107,94 @@ func (c *Client) GenerateHuman(ctx context.Context, input GenerateHumanRequest) 
 		return GeneratedHumanResponse{}, fmt.Errorf("unable to generate response: %v", response)
 	}
 
-	fmt.Println("Generated human from OpenAI:")
-	fmt.Println(response)
 	var generatedHuman GeneratedHumanResponse
 	if err := json.Unmarshal([]byte(response), &generatedHuman, json.DefaultOptionsV2()); err != nil {
 		return GeneratedHumanResponse{}, fmt.Errorf("unable to unmarshal response: %w", err)
 	}
 
 	return generatedHuman, nil
+}
+
+type AddHumanRequest struct {
+	Name        string   `json:"name"`
+	DOB         string   `json:"dob"`
+	DOD         string   `json:"dod"`
+	Ethnicity   []string `json:"ethnicity"`
+	Description string   `json:"description"`
+	Gender      string   `json:"gender"`
+}
+
+type FromTextInput struct {
+	Data string
+}
+
+// FromText generates a human add request by invoking OpenAI with a function so that it can conform to a jsonspec.
+func (c *Client) FromText(ctx context.Context, input FromTextInput) (AddHumanRequest, error) {
+	completion, err := c.openAiClient.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
+		Model: "gpt-3.5-turbo",
+		Messages: []openai.ChatCompletionMessage{
+			{
+				Role:    openai.ChatMessageRoleSystem,
+				Content: fmt.Sprintf("Given the data below, help me generate an add human request.\n\n%s", input.Data),
+			},
+		},
+		Tools: []openai.Tool{
+			{
+				Type: openai.ToolTypeFunction,
+				Function: &openai.FunctionDefinition{
+					Name: "generate-human",
+					Parameters: jsonschema.Definition{
+						Type: jsonschema.Object,
+						Properties: map[string]jsonschema.Definition{
+							"name": {
+								Type:        jsonschema.String,
+								Description: "The name of the human",
+							},
+							"dob": {
+								Type:        jsonschema.String,
+								Description: "The date of birth of the human, in the format of YYYY-MM-DD",
+							},
+							"dod": {
+								Type:        jsonschema.String,
+								Description: "The date the human died (if applicable), in the format of YYYY-MM-DD",
+							},
+							"description": {
+								Type:        jsonschema.String,
+								Description: "A brief summary of the human, in no more than 250 words.",
+							},
+							"gender": {
+								Type:        jsonschema.String,
+								Description: "The gender of the human",
+								Enum:        []string{"male", "female", "nonbinary"},
+							},
+							"ethnicity": {
+								Type:        jsonschema.Array,
+								Description: "A list of the human's ethnicity.",
+								Items: &jsonschema.Definition{
+									Type:        jsonschema.String,
+									Description: "An ethnicity",
+								},
+							},
+						},
+						Required: []string{"name", "gender"},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		return AddHumanRequest{}, fmt.Errorf("unable to generate human from openAI: %w", err)
+	}
+
+	response := completion.Choices[0].Message.ToolCalls[0].Function.Arguments
+	var addHumanRequest AddHumanRequest
+	if err := json.Unmarshal([]byte(response), &addHumanRequest); err != nil {
+		return AddHumanRequest{}, fmt.Errorf("unable to unmarshal json from openAI: %w", err)
+	}
+
+	for i, ethnicity := range addHumanRequest.Ethnicity {
+		addHumanRequest.Ethnicity[i] = strings.ToLower(ethnicity)
+	}
+
+	return addHumanRequest, nil
 }

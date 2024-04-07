@@ -21,8 +21,8 @@ import (
 
 type Config struct {
 	AuthClient    Authorizer
-	HumansDAO     *humandao.DAO
-	UsersDAO      *userdao.DAO
+	HumanDAO      *humandao.DAO
+	UserDAO       *userdao.DAO
 	Logger        zerolog.Logger
 	Version       string
 	OpenAIClient  *openai.Client
@@ -56,8 +56,8 @@ func NewServer(config Config) *Server {
 		logger:        config.Logger,
 		humanCache:    humanCache,
 		rateLimiter:   ratelimiter.New(3, time.Second),
-		humanDAO:      config.HumansDAO,
-		userDAO:       config.UsersDAO,
+		humanDAO:      config.HumanDAO,
+		userDAO:       config.UserDAO,
 		version:       config.Version,
 		openAIClient:  config.OpenAIClient,
 		storageClient: config.StorageClient,
@@ -72,9 +72,14 @@ func NewServer(config Config) *Server {
 		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 	}))
 	s.setupRoutes()
-	htmlServer := NewServerHTML(config.Local, config.HumansDAO, config.Logger, ServerHTMLConfig{
-		AuthClient:   config.AuthClient,
-		RollbarToken: "e1082079233c44628d29032fc1847ca7",
+	htmlServer := NewServerHTML(ServerHTMLConfig{
+		Local:         config.Local,
+		HumanDAO:      config.HumanDAO,
+		Logger:        config.Logger,
+		StorageClient: config.StorageClient,
+		AuthClient:    config.AuthClient,
+		RollbarToken:  "e1082079233c44628d29032fc1847ca7",
+		OpenaiClient:  config.OpenAIClient,
 	})
 	if err := htmlServer.Register(r); err != nil {
 		panic(err)

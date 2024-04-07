@@ -89,8 +89,8 @@ func run(c *cli.Context) error {
 	config := server.Config{
 		OpenAIClient:  openAiClient,
 		AuthClient:    authClient,
-		HumansDAO:     humansDAO,
-		UsersDAO:      userDAO,
+		HumanDAO:      humansDAO,
+		UserDAO:       userDAO,
 		Logger:        logger,
 		Version:       c.String("git-hash"),
 		StorageClient: storageClient,

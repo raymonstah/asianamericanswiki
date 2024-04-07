@@ -6,21 +6,27 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"io"
 	"io/fs"
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
 	"time"
 
+	"cloud.google.com/go/storage"
 	"firebase.google.com/go/v4/auth"
 	"github.com/blevesearch/bleve/v2"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
+	"github.com/raymonstah/asianamericanswiki/functions/api"
 	"github.com/raymonstah/asianamericanswiki/internal/ethnicity"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
+	"github.com/raymonstah/asianamericanswiki/internal/openai"
 	"github.com/rs/zerolog"
 )
 
@@ -28,12 +34,15 @@ import (
 var publicFS embed.FS
 
 type ServerHTML struct {
-	local        bool
-	rollbarToken string
-	authClient   Authorizer
-	humanDAO     *humandao.DAO
-	logger       zerolog.Logger
-	template     *template.Template
+	local         bool
+	rollbarToken  string
+	authClient    Authorizer
+	humanDAO      *humandao.DAO
+	logger        zerolog.Logger
+	template      *template.Template
+	storageClient *storage.Client
+	storageURL    string
+	openaiClient  *openai.Client
 
 	index  bleve.Index
 	humans []humandao.Human
@@ -41,17 +50,30 @@ type ServerHTML struct {
 }
 
 type ServerHTMLConfig struct {
-	AuthClient   Authorizer
-	RollbarToken string
+	Local         bool
+	HumanDAO      *humandao.DAO
+	Logger        zerolog.Logger
+	AuthClient    Authorizer
+	StorageClient *storage.Client
+	OpenaiClient  *openai.Client
+	RollbarToken  string
 }
 
-func NewServerHTML(local bool, humanDAO *humandao.DAO, logger zerolog.Logger, conf ServerHTMLConfig) *ServerHTML {
+func NewServerHTML(conf ServerHTMLConfig) *ServerHTML {
+	storageURL := "https://storage.googleapis.com"
+	if conf.Local {
+		storageURL = "http://localhost:9199"
+	}
+
 	return &ServerHTML{
-		local:        local,
-		authClient:   conf.AuthClient,
-		humanDAO:     humanDAO,
-		logger:       logger,
-		rollbarToken: conf.RollbarToken,
+		local:         conf.Local,
+		authClient:    conf.AuthClient,
+		humanDAO:      conf.HumanDAO,
+		logger:        conf.Logger,
+		rollbarToken:  conf.RollbarToken,
+		storageClient: conf.StorageClient,
+		storageURL:    storageURL,
+		openaiClient:  conf.OpenaiClient,
 	}
 }
 
@@ -66,7 +88,8 @@ func (s *ServerHTML) initializeIndex(ctx context.Context) error {
 	}
 
 	humans, err := s.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
-		Limit: 500,
+		Limit:         500,
+		IncludeDrafts: true,
 	})
 	if err != nil {
 		return err
@@ -102,7 +125,8 @@ func (s *ServerHTML) Register(router chi.Router) error {
 
 	htmlTemplates, err := template.New("").
 		Funcs(template.FuncMap{
-			"year": time.Now().Year,
+			"slicesContains": slicesContain,
+			"year":           time.Now().Year,
 		}).
 		ParseFS(templatesFS, "*.html")
 	if err != nil {
@@ -115,10 +139,14 @@ func (s *ServerHTML) Register(router chi.Router) error {
 	router.Get("/about", HttpHandler(s.HandlerAbout).Serve(s.HandlerError))
 	router.Get("/humans", HttpHandler(s.HandlerHumans).Serve(s.HandlerError))
 	router.Get("/humans/{id}", HttpHandler(s.HandlerHuman).Serve(s.HandlerError))
+	router.Post("/humans", HttpHandler(s.HandlerHumanAdd).Serve(s.HandlerError))
 	router.Post("/humans/{id}", HttpHandler(s.HandlerHumanUpdate).Serve(s.HandlerError))
 	router.Get("/humans/{id}/edit", HttpHandler(s.HandlerHumanEdit).Serve(s.HandlerError))
+	router.Post("/humans/{id}/publish", HttpHandler(s.HandlerPublish).Serve(s.HandlerError))
 	router.Get("/login", HttpHandler(s.HandlerLogin).Serve(s.HandlerError))
 	router.Post("/login", HttpHandler(s.HandlerLogin).Serve(s.HandlerError))
+	router.Get("/admin", HttpHandler(s.HandlerAdmin).Serve(s.HandlerError))
+	router.Post("/generate", HttpHandler(s.HandlerGenerate).Serve(s.HandlerError))
 	// redirect the old search route to the new one
 	router.Get("/search", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/humans", http.StatusMovedPermanently)
@@ -219,11 +247,6 @@ type HTMLResponseHumans struct {
 	Tags        []string
 }
 
-type Ethnicity struct {
-	ID    string
-	Emoji string
-}
-
 func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error {
 	var indexParams struct {
 		Base
@@ -236,8 +259,13 @@ func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error 
 	base := getBase(s, false)
 	indexParams.Base = base
 
-	// deep copy humans
-	humans := append([]humandao.Human(nil), s.humans...)
+	humans := make([]humandao.Human, 0, len(s.humans))
+	for _, human := range s.humans {
+		if !human.Draft {
+			humans = append(humans, human)
+		}
+	}
+
 	for i, human := range humans {
 		humans[i].Path = "/humans/" + human.Path
 	}
@@ -290,9 +318,12 @@ func (s *ServerHTML) HandlerHumans(w http.ResponseWriter, r *http.Request) error
 	)
 	allTags := getTags(s.humans)
 	filters := []humandao.FilterOpt{}
-	// deep copy humans
-	humans := append([]humandao.Human(nil), s.humans...)
-
+	humans := make([]humandao.Human, 0, len(s.humans))
+	for _, human := range s.humans {
+		if !human.Draft {
+			humans = append(humans, human)
+		}
+	}
 	if search != "" {
 		query := bleve.NewMatchQuery(search)
 		query.SetFuzziness(1)
@@ -395,8 +426,9 @@ func (s *ServerHTML) HandlerHuman(w http.ResponseWriter, r *http.Request) error 
 
 	var human humandao.Human
 	for _, h := range s.humans {
-		if h.Path == path {
+		if h.Path == path || h.ID == path {
 			human = h
+			break
 		}
 	}
 	if human.ID == "" {
@@ -415,6 +447,102 @@ func (s *ServerHTML) HandlerHuman(w http.ResponseWriter, r *http.Request) error 
 			s.logger.Error().Err(err).Str("humanName", human.Name).Msg("unable to update human view count")
 		}
 	}()
+
+	return nil
+}
+
+func (s *ServerHTML) HandlerHumanAdd(w http.ResponseWriter, r *http.Request) error {
+	var (
+		token = s.parseOptionalToken(r)
+		admin = IsAdmin(token)
+		path  = chi.URLParamFromCtx(r.Context(), "id")
+		ctx   = r.Context()
+	)
+
+	if !admin {
+		return NewForbiddenError(fmt.Errorf("you are not an admin"))
+	}
+
+	path, err := url.PathUnescape(path)
+	if err != nil {
+		return err
+	}
+	if err := r.ParseMultipartForm(maxMemoryMB); err != nil {
+		return err
+	}
+
+	var (
+		name        = strings.TrimSpace(r.Form.Get("name"))
+		gender      = strings.TrimSpace(r.Form.Get("gender"))
+		description = strings.TrimSpace(r.Form.Get("description"))
+		dob         = strings.TrimSpace(r.Form.Get("dob"))
+		dod         = strings.TrimSpace(r.Form.Get("dod"))
+		ethnicity   = r.Form["ethnicity"]
+		tags        = r.Form["tags"]
+		imdb        = strings.TrimSpace(r.Form.Get("imdb"))
+		x           = strings.TrimSpace(r.Form.Get("x"))
+		website     = strings.TrimSpace(r.Form.Get("website"))
+		_           = strings.TrimSpace(r.Form.Get("instagram")) // todo: use me
+	)
+	var rawImage []byte
+	var imageExtension string
+	file, header, err := r.FormFile("featured_image")
+	if err != http.ErrMissingFile {
+		if err != nil {
+			return NewBadRequestError(fmt.Errorf("invalid image: %w", err))
+		}
+
+		raw, err := io.ReadAll(file)
+		if err != nil {
+			return NewBadRequestError(fmt.Errorf("invalid image: %w", err))
+		}
+		rawImage = raw
+		imageExtension = filepath.Ext(header.Filename)
+	}
+
+	human, err := s.humanDAO.AddHuman(ctx, humandao.AddHumanInput{
+		Name:        name,
+		Gender:      humandao.Gender(gender),
+		DOB:         dob,
+		DOD:         dod,
+		Ethnicity:   ethnicity,
+		Description: description,
+		Website:     website,
+		Twitter:     x,
+		IMDB:        imdb,
+		Tags:        tags,
+		CreatedBy:   token.UID,
+		Draft:       true,
+	})
+	if err != nil {
+		if errors.Is(err, humandao.ErrInvalidGender) {
+			return NewBadRequestError(err)
+		}
+		if errors.Is(err, humandao.ErrHumanAlreadyExists) {
+			return NewBadRequestError(err)
+		}
+		return NewInternalServerError(err)
+	}
+
+	objectID := fmt.Sprintf("%v%v", human.ID, imageExtension)
+	if len(rawImage) > 0 {
+		obj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(objectID)
+		writer := obj.NewWriter(ctx)
+		if _, err := writer.Write(rawImage); err != nil {
+			return err
+		}
+
+		if err := writer.Close(); err != nil {
+			return err
+		}
+		human.FeaturedImage = fmt.Sprintf("%v/%v/%v", s.storageURL, api.ImagesStorageBucket, objectID)
+		if err := s.humanDAO.UpdateHuman(ctx, human); err != nil {
+			return err
+		}
+	}
+
+	_ = s.initializeIndex(ctx)
+	http.Redirect(w, r, fmt.Sprintf("/humans/%s", human.Path), http.StatusSeeOther)
 
 	return nil
 }
@@ -455,7 +583,10 @@ func (s *ServerHTML) HandlerHumanEdit(w http.ResponseWriter, r *http.Request) er
 	return nil
 }
 
+var maxMemoryMB = int64(10 << 20) // 10MB
+
 func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) error {
+	ctx := r.Context()
 	// todo: make this return just a partial template
 	token, err := s.parseToken(r)
 	if err != nil {
@@ -467,20 +598,34 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		return NewForbiddenError(fmt.Errorf("user is not an admin"))
 	}
 
-	if err := r.ParseForm(); err != nil {
+	if err := r.ParseMultipartForm(maxMemoryMB); err != nil {
 		return err
 	}
 
 	description := strings.TrimSpace(r.Form.Get("description"))
+	var rawImage []byte
+	var imageExtension string
+	file, header, err := r.FormFile("featured_image")
+	if err != http.ErrMissingFile {
+		if err != nil {
+			return NewBadRequestError(fmt.Errorf("invalid image: %w", err))
+		}
 
-	path := chi.URLParamFromCtx(r.Context(), "id")
-	ctx := r.Context()
-	path, err = url.PathUnescape(path)
+		raw, err := io.ReadAll(file)
+		if err != nil {
+			return NewBadRequestError(fmt.Errorf("invalid image: %w", err))
+		}
+		rawImage = raw
+		imageExtension = filepath.Ext(header.Filename)
+	}
+
+	humanPath := chi.URLParamFromCtx(r.Context(), "id")
+	humanPath, err = url.PathUnescape(humanPath)
 	if err != nil {
 		return err
 	}
 
-	human, err := s.humanDAO.Human(ctx, humandao.HumanInput{Path: path})
+	human, err := s.humanDAO.Human(ctx, humandao.HumanInput{Path: humanPath})
 	if err != nil {
 		if errors.Is(err, humandao.ErrHumanNotFound) {
 			return NewNotFoundError(err)
@@ -489,6 +634,19 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 	}
 
 	human.Description = description
+	objectID := fmt.Sprintf("%v%v", human.ID, imageExtension)
+	if len(rawImage) > 0 {
+		obj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(objectID)
+		writer := obj.NewWriter(ctx)
+		if _, err := writer.Write(rawImage); err != nil {
+			return err
+		}
+
+		if err := writer.Close(); err != nil {
+			return err
+		}
+		human.FeaturedImage = fmt.Sprintf("%v/%v/%v", s.storageURL, api.ImagesStorageBucket, objectID)
+	}
 	if err := s.humanDAO.UpdateHuman(ctx, human); err != nil {
 		return err
 	}
@@ -555,6 +713,141 @@ func (s *ServerHTML) HandlerLogin(w http.ResponseWriter, r *http.Request) error 
 	return nil
 }
 
+type HTMLResponseAdmin struct {
+	Base
+	AdminName       string
+	Drafts          []humandao.Human
+	HumanFormFields HumanFormFields
+	Human           humandao.Human
+}
+
+// HumanFormFields holds helper data to populate the form to add a new human.
+type HumanFormFields struct {
+	Source      string
+	Ethnicities []ethnicity.Ethnicity
+	Tags        []string
+}
+
+func (s *ServerHTML) HandlerAdmin(w http.ResponseWriter, r *http.Request) error {
+	token, err := s.parseToken(r)
+	if err != nil {
+		return NewUnauthorizedError(err)
+	}
+
+	admin := IsAdmin(token)
+	if !admin {
+		return NewForbiddenError(fmt.Errorf("user is not an admin"))
+	}
+
+	var drafts []humandao.Human
+	for _, human := range s.humans {
+		if human.Draft {
+			drafts = append(drafts, human)
+		}
+	}
+
+	response := HTMLResponseAdmin{
+		Base:      getBase(s, false),
+		AdminName: token.Claims["name"].(string),
+		HumanFormFields: HumanFormFields{
+			Ethnicities: ethnicity.All,
+			Tags:        getTags(s.humans),
+		},
+		Drafts: drafts,
+	}
+	if err := s.template.ExecuteTemplate(w, "admin.html", response); err != nil {
+		s.logger.Error().Err(err).Msg("unable to execute admin template")
+	}
+
+	return nil
+}
+
+// HandlerGenerate takes in the form, and populates it based on the data in the 'source' field.
+func (s *ServerHTML) HandlerGenerate(w http.ResponseWriter, r *http.Request) error {
+	ctx := r.Context()
+	logger := s.logger
+	token, err := s.parseToken(r)
+	if err != nil {
+		return NewUnauthorizedError(err)
+	}
+
+	admin := IsAdmin(token)
+	if !admin {
+		return NewForbiddenError(fmt.Errorf("user is not an admin"))
+	}
+
+	if err := r.ParseForm(); err != nil {
+		return NewBadRequestError(fmt.Errorf("invalid form received: %w", err))
+	}
+
+	source := r.FormValue("source")
+
+	addHumanRequest, err := s.openaiClient.FromText(ctx, openai.FromTextInput{Data: source})
+	if err != nil {
+		return NewInternalServerError(err)
+	}
+	logger.Info().Str("source", source).Any("addHumanRequest", addHumanRequest).Msg("generated response from openai")
+
+	human := humandao.Human{
+		Name:        addHumanRequest.Name,
+		Gender:      humandao.Gender(addHumanRequest.Gender),
+		Ethnicity:   addHumanRequest.Ethnicity,
+		DOB:         addHumanRequest.DOB,
+		DOD:         addHumanRequest.DOD,
+		Description: addHumanRequest.Description,
+	}
+
+	response := HTMLResponseAdmin{
+		HumanFormFields: HumanFormFields{
+			Source:      source,
+			Ethnicities: ethnicity.All,
+			Tags:        getTags(s.humans),
+		},
+		Human: human,
+	}
+	if err := s.template.ExecuteTemplate(w, "new-human-form.html", response); err != nil {
+		s.logger.Error().Err(err).Msg("unable to execute admin template")
+	}
+
+	return nil
+}
+
+func (s *ServerHTML) HandlerPublish(w http.ResponseWriter, r *http.Request) error {
+	ctx := r.Context()
+	path := chi.URLParamFromCtx(r.Context(), "id")
+	token, err := s.parseToken(r)
+	if err != nil {
+		return NewUnauthorizedError(err)
+	}
+
+	admin := IsAdmin(token)
+	if !admin {
+		return NewForbiddenError(fmt.Errorf("user is not an admin"))
+	}
+
+	var human humandao.Human
+	for _, h := range s.humans {
+		if h.Path == path {
+			human = h
+			break
+		}
+	}
+	if human.ID == "" {
+		return NewNotFoundError(humandao.ErrHumanNotFound)
+	}
+
+	if err := s.humanDAO.Publish(ctx, humandao.PublishInput{HumanID: human.ID, UserID: token.UID}); err != nil {
+		return err
+	}
+
+	_ = s.initializeIndex(ctx)
+
+	url := fmt.Sprintf("/humans/%s", human.Path)
+	w.Header().Add("HX-Redirect", url)
+
+	return nil
+}
+
 type HttpHandler func(http.ResponseWriter, *http.Request) error
 
 func (h HttpHandler) Serve(errorHandler func(w http.ResponseWriter, r *http.Request, e ErrorResponse) error) func(http.ResponseWriter, *http.Request) {
@@ -584,4 +877,8 @@ func getBase(s *ServerHTML, admin bool) Base {
 		Local:           s.local,
 	}
 	return base
+}
+
+func slicesContain(haystack []string, needle string) bool {
+	return slices.Contains(haystack, needle)
 }

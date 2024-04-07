@@ -1,12 +1,17 @@
 <!-- For Google Analytics -->
 {{ if .EnableAnalytics }}
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DNWC1SD6ZZ"></script>
+<script
+  async
+  src="https://www.googletagmanager.com/gtag/js?id=G-DNWC1SD6ZZ"
+></script>
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("js", new Date());
 
-  gtag('config', 'G-DNWC1SD6ZZ');
+  gtag("config", "G-DNWC1SD6ZZ");
 </script>
 {{ end }}

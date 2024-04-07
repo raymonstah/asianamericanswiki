@@ -29,7 +29,7 @@ func TestServer_AuthMiddleware_Unauthorized(t *testing.T) {
 
 	s := NewServer(Config{
 		AuthClient: authClient,
-		HumansDAO:  humandao.NewDAO(fsClient),
+		HumanDAO:   humandao.NewDAO(fsClient),
 	})
 
 	w := httptest.NewRecorder()
@@ -60,7 +60,7 @@ func TestServer_AuthMiddleware(t *testing.T) {
 	assert.NoError(t, err)
 	s := NewServer(Config{
 		AuthClient: authClient,
-		HumansDAO:  humandao.NewDAO(fsClient),
+		HumanDAO:   humandao.NewDAO(fsClient),
 	})
 
 	email := fmt.Sprintf("%v@test.com", ksuid.New().String())
@@ -111,7 +111,7 @@ func TestServer_AdminMiddleware(t *testing.T) {
 
 	s := NewServer(Config{
 		AuthClient: authClient,
-		HumansDAO:  humandao.NewDAO(fsClient),
+		HumanDAO:   humandao.NewDAO(fsClient),
 	})
 
 	userRecord, email, password := createTestUser(t, ctx, authClient)
@@ -197,7 +197,7 @@ func Test_ParseToken(t *testing.T) {
 
 	s := NewServer(Config{
 		AuthClient: authClient,
-		HumansDAO:  humandao.NewDAO(fsClient),
+		HumanDAO:   humandao.NewDAO(fsClient),
 	})
 
 	tcs := map[string]struct {

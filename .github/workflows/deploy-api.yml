@@ -14,8 +14,8 @@ name: Deploy API to cloud run
 jobs:
   deploy-api:
     permissions:
-      contents: 'read'
-      id-token: 'write'
+      contents: "read"
+      id-token: "write"
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: us-central1-docker.pkg.dev/asianamericans-wiki/asianamericanswiki-api/api
@@ -26,8 +26,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/firebase/emulators
-          key:
-            ${{ runner.os }}-firebase-emulators-${{
+          key: ${{ runner.os }}-firebase-emulators-${{
             hashFiles('~/.cache/firebase/emulators/**') }}
 
       - name: Setup Go

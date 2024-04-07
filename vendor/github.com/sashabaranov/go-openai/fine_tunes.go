@@ -41,6 +41,8 @@ type FineTune struct {
 	ValidationFiles   []File              `json:"validation_files"`
 	TrainingFiles     []File              `json:"training_files"`
 	UpdatedAt         int64               `json:"updated_at"`
+
+	httpHeader
 }
 
 // Deprecated: On August 22nd, 2023, OpenAI announced the deprecation of the /v1/fine-tunes API.
@@ -69,6 +71,8 @@ type FineTuneHyperParams struct {
 type FineTuneList struct {
 	Object string     `json:"object"`
 	Data   []FineTune `json:"data"`
+
+	httpHeader
 }
 
 // Deprecated: On August 22nd, 2023, OpenAI announced the deprecation of the /v1/fine-tunes API.
@@ -77,6 +81,8 @@ type FineTuneList struct {
 type FineTuneEventList struct {
 	Object string          `json:"object"`
 	Data   []FineTuneEvent `json:"data"`
+
+	httpHeader
 }
 
 // Deprecated: On August 22nd, 2023, OpenAI announced the deprecation of the /v1/fine-tunes API.
@@ -86,6 +92,8 @@ type FineTuneDeleteResponse struct {
 	ID      string `json:"id"`
 	Object  string `json:"object"`
 	Deleted bool   `json:"deleted"`
+
+	httpHeader
 }
 
 // Deprecated: On August 22nd, 2023, OpenAI announced the deprecation of the /v1/fine-tunes API.
@@ -107,6 +115,7 @@ func (c *Client) CreateFineTune(ctx context.Context, request FineTuneRequest) (r
 // This API will be officially deprecated on January 4th, 2024.
 // OpenAI recommends to migrate to the new fine tuning API implemented in fine_tuning_job.go.
 func (c *Client) CancelFineTune(ctx context.Context, fineTuneID string) (response FineTune, err error) {
+	//nolint:goconst // Decreases readability
 	req, err := c.newRequest(ctx, http.MethodPost, c.fullURL("/fine-tunes/"+fineTuneID+"/cancel"))
 	if err != nil {
 		return

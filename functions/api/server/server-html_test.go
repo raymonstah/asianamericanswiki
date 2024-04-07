@@ -21,7 +21,7 @@ func Test_HTMLServer(t *testing.T) {
 	assert.NoError(t, err)
 
 	s := NewServer(Config{
-		HumansDAO: humandao.NewDAO(fsClient),
+		HumanDAO: humandao.NewDAO(fsClient),
 	})
 
 	tcs := map[string]struct {

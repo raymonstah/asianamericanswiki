@@ -130,7 +130,15 @@
       <div class="p-4 space-y-4 text-wrap break-words">
         {{ .Human.Description }}
       </div>
-      {{ end }} {{ if .Admin }}
+      {{ end }} {{ if .Admin }} {{ if .Human.Draft }}
+      <button
+        hx-post="/humans/{{ .Human.Path }}/publish"
+        class="bg-sky-500 text-white my-4 w-3/4 text-center p-2 rounded-md border-gray-500 shadow hover:bg-sky-600 border-transparent border-r-8 outline outline-neutral-700"
+      >
+        Publish
+      </button>
+
+      {{end}}
       <button
         hx-get="/humans/{{ .Human.Path }}/edit"
         class="dark:bg-gray-950 my-4 w-3/4 text-center p-2 rounded-md bg-white border-gray-500 shadow hover:bg-gray-100 border-transparent border-r-8 outline outline-neutral-700"
