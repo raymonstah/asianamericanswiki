@@ -482,7 +482,7 @@ func (s *ServerHTML) HandlerHumanAdd(w http.ResponseWriter, r *http.Request) err
 		imdb        = strings.TrimSpace(r.Form.Get("imdb"))
 		x           = strings.TrimSpace(r.Form.Get("x"))
 		website     = strings.TrimSpace(r.Form.Get("website"))
-		_           = strings.TrimSpace(r.Form.Get("instagram")) // todo: use me
+		instagram   = strings.TrimSpace(r.Form.Get("instagram"))
 	)
 	var rawImage []byte
 	var imageExtension string
@@ -510,6 +510,7 @@ func (s *ServerHTML) HandlerHumanAdd(w http.ResponseWriter, r *http.Request) err
 		Website:     website,
 		Twitter:     x,
 		IMDB:        imdb,
+		Instagram:   instagram,
 		Tags:        tags,
 		CreatedBy:   token.UID,
 		Draft:       true,
