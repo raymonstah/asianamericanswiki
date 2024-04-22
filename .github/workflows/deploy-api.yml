@@ -74,5 +74,8 @@ jobs:
           image: ${{ env.IMAGE_NAME }}:latest
           env_vars: |
             GIT_HASH=${{ steps.vars.outputs.sha_short }}
+          secrets: |-
+            OPEN_AI_TOKEN=projects/424340922093/secrets/asianamericanswiki-openai-token:latest
+
       - name: "Use output"
         run: 'curl "${{ steps.deploy.outputs.url }}"/api/v1/version'
