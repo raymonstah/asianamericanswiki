@@ -89,11 +89,10 @@
         id="gender"
         name="gender"
         class="bg-gray-50 border border-gray-300 text-gray-900 rounded focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-        value="{{ .Human.Gender }}"
       >
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-        <option value="nonbinary">Nonbinary</option>
+      	<option value="male" {{ if eq "male" .Human.Gender }}selected{{ end }}>Male</option>
+      	<option value="female" {{ if eq "female" .Human.Gender }}selected{{ end }}>Female</option>
+	<option value="nonbinary"{{ if eq "nonbinary" .Human.Gender }}selected{{ end }}>Nonbinary</option>
       </select>
     </div>
     <div>
@@ -277,4 +276,4 @@
   >
     Submit
   </button>
-</form>
+</form>new-human
