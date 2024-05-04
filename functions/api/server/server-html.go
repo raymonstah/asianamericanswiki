@@ -603,9 +603,15 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		return err
 	}
 
-	description := strings.TrimSpace(r.Form.Get("description"))
-	var rawImage []byte
-	var imageExtension string
+	var (
+		description    = strings.TrimSpace(r.Form.Get("description"))
+		x              = strings.TrimSpace(r.Form.Get("x"))
+		instagram      = strings.TrimSpace(r.Form.Get("instagram"))
+		website        = strings.TrimSpace(r.Form.Get("website"))
+		imdb           = strings.TrimSpace(r.Form.Get("imdb"))
+		rawImage       []byte
+		imageExtension string
+	)
 	file, header, err := r.FormFile("featured_image")
 	if err != http.ErrMissingFile {
 		if err != nil {
@@ -635,6 +641,11 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 	}
 
 	human.Description = description
+	human.Socials.X = x
+	human.Socials.Instagram = instagram
+	human.Socials.Website = website
+	human.Socials.IMDB = imdb
+
 	objectID := fmt.Sprintf("%v%v", human.ID, imageExtension)
 	if len(rawImage) > 0 {
 		obj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(objectID)
