@@ -622,7 +622,9 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		tags           = r.Form["tags"]
 		tagsOther      = r.Form.Get("tags-other")
 	)
-	tags = append(tags, strings.Split(tagsOther, ",")...)
+	if tagsOther != "" {
+		tags = append(tags, strings.Split(tagsOther, ",")...)
+	}
 
 	file, header, err := r.FormFile("featured_image")
 	if err != http.ErrMissingFile {
