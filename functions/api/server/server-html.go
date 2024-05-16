@@ -401,7 +401,8 @@ func getTags(humans []humandao.Human) []string {
 
 type HTMLResponseHuman struct {
 	Base
-	Human humandao.Human
+	Human           humandao.Human
+	HumanFormFields HumanFormFields
 }
 
 func (s *ServerHTML) HandlerAbout(w http.ResponseWriter, r *http.Request) error {
@@ -576,7 +577,14 @@ func (s *ServerHTML) HandlerHumanEdit(w http.ResponseWriter, r *http.Request) er
 		return err
 	}
 
-	response := HTMLResponseHuman{Human: human, Base: getBase(s, admin)}
+	response := HTMLResponseHuman{
+		Human: human,
+		Base:  getBase(s, admin),
+		HumanFormFields: HumanFormFields{
+			Ethnicities: ethnicity.All,
+			Tags:        getTags(s.humans),
+		},
+	}
 	if err := s.template.ExecuteTemplate(w, "humans-id-edit.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute humans-id-edit.html template")
 	}
@@ -611,7 +619,11 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		imdb           = strings.TrimSpace(r.Form.Get("imdb"))
 		rawImage       []byte
 		imageExtension string
+		tags           = r.Form["tags"]
+		tagsOther      = r.Form.Get("tags-other")
 	)
+	tags = append(tags, strings.Split(tagsOther, ",")...)
+
 	file, header, err := r.FormFile("featured_image")
 	if err != http.ErrMissingFile {
 		if err != nil {
@@ -645,6 +657,7 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 	human.Socials.Instagram = instagram
 	human.Socials.Website = website
 	human.Socials.IMDB = imdb
+	human.Tags = tags
 
 	objectID := fmt.Sprintf("%v%v", human.ID, imageExtension)
 	if len(rawImage) > 0 {

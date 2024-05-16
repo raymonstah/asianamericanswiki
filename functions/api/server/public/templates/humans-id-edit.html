@@ -51,15 +51,43 @@
     >
     {{ end }}
   </div>
-  <div class="mb-2">
-    {{ range .Human.Tags }}
-    <a
-      href="/humans?tag={{ . }}"
-      class="tag rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 hover:scale-125"
-      >{{ . }}
-    </a>
-    {{ end }}
-  </div>
+    <div>
+      <label
+        for="tags"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >Tags</label
+      >
+      <select
+        name="tags"
+        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+        multiple
+        id="tags"
+        size="25"
+      >
+        {{ range .HumanFormFields.Tags }}
+        <option
+          value="{{ . }}"
+          {{
+          if
+          slicesContains
+          $.Human.Tags
+          .
+          }}
+          selected{{
+          end
+          }}
+        >
+          {{ . }}
+        </option>
+        {{ end }}
+      </select>
+      <input
+        class="border p-2 rounded dark:bg-gray-900 w-full"
+        type="text"
+        name="tags-other"
+        placeholder="Enter other tags here, comma-separated"
+      />
+    </div>
 
     <div class="relative">
       <div
