@@ -273,7 +273,7 @@ func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error 
 	if len(humans) >= 10 {
 		indexParams.RecentlyAdded = humans[:10]
 	}
-	musicians := byName(humans, "Samica Jhangiani", "Thuy Tran", "Jonathan Park")
+	musicians := byName(humans, "Russell Llantino", "Thuy Tran", "Jonathan Park")
 	actors := byName(humans, "Michelle Yeoh", "Sung Kang", "Constance Wu")
 	comedians := byName(humans, "Bobby Lee", "Sheng Wang", "Ali Wong")
 	legends := byName(humans, "Bruce Lee", "Anna May Wong", "Yuri Kochiyama")
