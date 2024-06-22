@@ -758,7 +758,8 @@ type HumanFormFields struct {
 func (s *ServerHTML) HandlerAdmin(w http.ResponseWriter, r *http.Request) error {
 	token, err := s.parseToken(r)
 	if err != nil {
-		return NewUnauthorizedError(err)
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return nil
 	}
 
 	admin := IsAdmin(token)
