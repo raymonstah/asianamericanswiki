@@ -255,6 +255,7 @@ func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error 
 		Actors        []humandao.Human
 		Legends       []humandao.Human
 		RecentlyAdded []humandao.Human
+		Count         int
 	}
 	base := getBase(s, false)
 	indexParams.Base = base
@@ -282,6 +283,7 @@ func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error 
 	indexParams.Actors = actors
 	indexParams.Comedians = comedians
 	indexParams.Legends = legends
+	indexParams.Count = len(humans)
 
 	if err := s.template.ExecuteTemplate(w, "index.html", indexParams); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute index.html template")
