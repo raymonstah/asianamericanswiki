@@ -48,6 +48,14 @@
       $human }} {{ end }}
     </div>
 
+    <a class="text-xl font-extrabold my-4 text-center" href="/humans">
+      View more
+      <span
+        class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"
+        >{{ .Count }}
+      </span>
+    </a>
+
     {{ template "footer.html" . }}
   </body>
 </html>
