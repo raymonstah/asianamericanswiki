@@ -8,12 +8,6 @@ import (
 	"github.com/go-chi/httplog"
 )
 
-type contextKey string
-
-var (
-	tokenKey contextKey = "tokenKey"
-)
-
 type Handler func(w http.ResponseWriter, r *http.Request) error
 
 func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
