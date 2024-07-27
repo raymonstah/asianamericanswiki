@@ -17,7 +17,6 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/gocolly/colly/v2"
 	"github.com/raymonstah/asianamericanswiki/functions/api"
-	"github.com/raymonstah/asianamericanswiki/internal/cartoonize"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/sync/errgroup"
@@ -28,8 +27,6 @@ var opts struct {
 	Debug bool
 	Force bool
 	URL   string
-	// AsIs does not cartoonize the image
-	AsIs bool
 	// ID takes precedence over name
 	ID string
 }
@@ -42,7 +39,6 @@ func main() {
 			&cli.StringFlag{Name: "id", Destination: &opts.ID},
 			&cli.StringFlag{Name: "url", Destination: &opts.URL},
 			&cli.BoolFlag{Name: "force", Destination: &opts.Force},
-			&cli.BoolFlag{Name: "as-is", Destination: &opts.AsIs},
 		},
 		Action: run,
 	}
@@ -265,21 +261,10 @@ func (h *Handler) processJob(ctx context.Context, job Job) error {
 
 		resp.Body.Close()
 
-		var raw []byte
 		id := human.ID
-		if !opts.AsIs {
-			cartoonizeClient := cartoonize.Client{
-				Debug: opts.Debug,
-			}
-			raw, err = cartoonizeClient.Do(tempPath)
-			if err != nil {
-				return fmt.Errorf("unable to cartoonize image for %v: %w", name, err)
-			}
-		} else {
-			raw, err = os.ReadFile(tempPath)
-			if err != nil {
-				return err
-			}
+		raw, err := os.ReadFile(tempPath)
+		if err != nil {
+			return err
 		}
 
 		imgName := fmt.Sprintf("%v.jpg", id)
