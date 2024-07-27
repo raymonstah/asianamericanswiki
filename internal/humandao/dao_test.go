@@ -428,10 +428,10 @@ func TestHumanAge(t *testing.T) {
 		ExpectedAge string
 	}{
 		"no-dob":                        {ExpectedAge: ""},
-		"no-dod-partial-dob-year":       {Human: Human{DOB: "2000"}, ExpectedAge: "2000 (age 24 years)"},
-		"no-dod-partial-dob-year-month": {Human: Human{DOB: "1999-12"}, ExpectedAge: "December 1999 (age 24 years)"},
-		"no-dod-full-dob":               {Human: Human{DOB: "2000-01-01"}, ExpectedAge: "January 1, 2000 (age 24 years)"},
-		"full-dod-full-dob":             {Human: Human{DOB: "1940-11-27", DOD: "1973-07-20"}, ExpectedAge: "November 27, 1940 - July 20, 1973 (aged 32)"},
+		"no-dod-partial-dob-year":       {Human: Human{DOB: "2000"}, ExpectedAge: "24 y/o"},
+		"no-dod-partial-dob-year-month": {Human: Human{DOB: "1999-12"}, ExpectedAge: "24 y/o"},
+		"no-dod-full-dob":               {Human: Human{DOB: "2000-01-01"}, ExpectedAge: "24 y/o"},
+		"full-dod-full-dob":             {Human: Human{DOB: "1940-11-27", DOD: "1973-07-20"}, ExpectedAge: "died at 32 y/o"},
 	}
 
 	date20240315 := time.Date(2024, 3, 15, 0, 0, 0, 0, time.Local)

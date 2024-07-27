@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -76,31 +75,11 @@ func (h Human) CurrentAge(inputTime ...time.Time) (string, error) {
 			return "", err
 		}
 		ageInYears, _, _, _, _, _ := diff(died, born)
-		return fmt.Sprintf("%v - %v (aged %v)", displayFormat(h.DOB), displayFormat(h.DOD), ageInYears), nil
+		return fmt.Sprintf("died at %v y/o", ageInYears), nil
 	}
 
 	ageInYears, _, _, _, _, _ := diff(now, born)
-	return fmt.Sprintf("%v (age %v years)", displayFormat(h.DOB), ageInYears), nil
-}
-
-func displayFormat(date string) string {
-	parts := strings.Split(date, "-")
-
-	var month time.Month
-	if len(parts) > 1 {
-		// we have a month
-		monthRaw, err := strconv.Atoi(parts[1])
-		if err != nil {
-			return date
-		}
-		month = time.Month(monthRaw)
-		if len(parts) == 2 {
-			return fmt.Sprintf("%v %v", month, parts[0])
-		}
-		return fmt.Sprintf("%v %v, %v", month, strings.TrimLeft(parts[2], "0"), parts[0])
-	}
-
-	return date
+	return fmt.Sprintf("%v y/o", ageInYears), nil
 }
 
 func parseDateString(date string) (time.Time, error) {
