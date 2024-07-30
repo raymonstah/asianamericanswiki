@@ -82,6 +82,8 @@ func (s *ServerHTML) initializeIndex(ctx context.Context) error {
 		s.logger.Info().Dur("elapsed", time.Since(now)).Msg("index initialized")
 	}(time.Now())
 	mapping := bleve.NewIndexMapping()
+	humansMapping := bleve.NewDocumentMapping()
+	mapping.AddDocumentMapping("humans", humansMapping)
 	index, err := bleve.NewMemOnly(mapping)
 	if err != nil {
 		return err
@@ -100,6 +102,14 @@ func (s *ServerHTML) initializeIndex(ctx context.Context) error {
 			return err
 		}
 	}
+
+	// fields, err := index.Fields()
+	// if err != nil {
+	// return err
+	// }
+	// for _, field := range fields {
+	// fmt.Printf("field: %v\n", field)
+	// }
 
 	s.lock.Lock()
 	defer s.lock.Unlock()
@@ -327,14 +337,23 @@ func (s *ServerHTML) HandlerHumans(w http.ResponseWriter, r *http.Request) error
 		}
 	}
 	if search != "" {
+		nameQuery := bleve.NewPrefixQuery(search)
+		nameQuery.SetField("Name")
+		nameQuery.SetBoost(5.0)
 		query := bleve.NewMatchQuery(search)
 		query.SetFuzziness(1)
-		result, err := s.index.Search(bleve.NewSearchRequest(query))
+
+		queryAll := bleve.NewDisjunctionQuery(query, nameQuery)
+		searchReq := bleve.NewSearchRequest(queryAll)
+		// searchReq.Explain = true
+		result, err := s.index.Search(searchReq)
 		if err != nil {
 			return err
 		}
+		// log.Println(result)
 		hitIDs := make([]string, 0, len(result.Hits))
 		for _, hit := range result.Hits {
+			// fmt.Println(hit.Expl)
 			hitIDs = append(hitIDs, hit.ID)
 		}
 
