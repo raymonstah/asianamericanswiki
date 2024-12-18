@@ -328,7 +328,7 @@ github.com/patrickmn/go-cache
 ## explicit
 github.com/pmezard/go-difflib/difflib
 # github.com/raymonstah/asianamericanswiki v0.0.0-20231228074302-93bb6325ecb2
-## explicit; go 1.22
+## explicit; go 1.23
 # github.com/raymonstah/fsevent v0.0.1
 ## explicit; go 1.18
 github.com/raymonstah/fsevent
