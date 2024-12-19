@@ -20,13 +20,6 @@
       }
     };
   </script>
-  <h1 class="text-3xl font-extrabold my-4 text-center">
-    {{ .Human.Name }}
-    <span class="text-sm">
-      {{ if eq .Human.Gender "male" }} ♂️ {{ else if eq .Human.Gender "female"
-      }} ♀️ {{ else }} ☿️ {{ end }}
-    </span>
-  </h1>
   {{ if .Human.FeaturedImage }}
   <img
     class="mb-2 object-cover h-96"
@@ -41,7 +34,46 @@
     name="featured_image"
   />
   <img id="image" />
-  <div class="mb-2">{{ .Human.DOB }}</div>
+  <div>
+  <input
+    class="block w-full p-4 text-center text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+    type="text"
+    name="id"
+    value="{{ .Human.ID }}"
+    disabled
+    />
+    <div>
+      <label
+        for="name"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >Name</label
+      >
+        <input
+        type="text"
+        name="name"
+        value="{{ .Human.Name }}"
+	placeholder="Human Name"
+        class="block w-full p-4 text-center text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+      />
+  </div>    <span class="text-sm">
+      {{ if eq .Human.Gender "male" }} ♂️ {{ else if eq .Human.Gender "female"
+      }} ♀️ {{ else }} ☿️ {{ end }}
+    </span>
+  </div>
+  <div>
+      <label
+        for="dob"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >Date of birth</label
+      >
+        <input
+        type="text"
+        name="dob"
+        value="{{ .Human.DOB }}"
+	placeholder="dob"
+        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+      />
+  </div>
   <div class="mb-2">
     {{ range .Human.Ethnicity }}
     <a

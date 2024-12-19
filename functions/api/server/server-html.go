@@ -642,6 +642,8 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		imageExtension string
 		tags           = r.Form["tags"]
 		tagsOther      = r.Form.Get("tags-other")
+		dob            = strings.TrimSpace(r.Form.Get("dob"))
+		name           = strings.TrimSpace(r.Form.Get("name"))
 	)
 	if tagsOther != "" {
 		tags = append(tags, strings.Split(tagsOther, ",")...)
@@ -681,6 +683,10 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 	human.Socials.Website = website
 	human.Socials.IMDB = imdb
 	human.Tags = tags
+	human.DOB = dob
+	if name != "" {
+		human.Name = name
+	}
 
 	objectID := fmt.Sprintf("%v%v", human.ID, imageExtension)
 	if len(rawImage) > 0 {

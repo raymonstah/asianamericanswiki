@@ -275,6 +275,7 @@ func (d *DAO) UpdateHuman(ctx context.Context, human Human) error {
 	}
 
 	human.UpdatedAt = time.Now()
+	human.Path = strings.ToLower(strings.ReplaceAll(human.Name, " ", "-"))
 	_, err := d.client.Collection(d.humanCollection).
 		Doc(human.ID).
 		Set(ctx, human)
