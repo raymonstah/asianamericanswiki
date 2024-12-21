@@ -10,6 +10,7 @@ import (
 	firebase "firebase.google.com/go/v4"
 	"github.com/raymonstah/asianamericanswiki/functions/api"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
+	"github.com/segmentio/ksuid"
 	"github.com/tj/assert"
 )
 
@@ -19,10 +20,24 @@ func Test_Server(t *testing.T) {
 	assert.NoError(t, err)
 	fsClient, err := app.Firestore(ctx)
 	assert.NoError(t, err)
-
+	humanCollection := "humans-" + ksuid.New().String()
 	s := NewServer(Config{
-		HumanDAO: humandao.NewDAO(fsClient),
+		HumanDAO: humandao.NewDAO(fsClient, humandao.WithHumanCollectionName(humanCollection)),
 	})
+	t.Cleanup(func() {
+		ctx := context.Background()
+		humanDocs, err := fsClient.Collection(humanCollection).DocumentRefs(ctx).GetAll()
+		assert.NoError(t, err)
+		for _, doc := range humanDocs {
+			_, err := doc.Delete(ctx)
+			assert.NoError(t, err)
+		}
+	})
+
+	// seed database
+	_, err = s.humanDAO.AddHuman(ctx, humandao.AddHumanInput{Name: "Bob", Gender: humandao.GenderMale})
+	assert.NoError(t, err)
+
 	server := httptest.NewServer(s)
 	defer server.Close()
 
