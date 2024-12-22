@@ -1,8 +1,10 @@
 package server
 
 import (
-	"encoding/json"
+	context "context"
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -10,6 +12,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/httplog"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/patrickmn/go-cache"
 	"github.com/rs/zerolog"
 
@@ -89,105 +92,94 @@ func NewServer(config Config) *Server {
 }
 
 func (s *Server) setupRoutes() {
+	humanServer := &HumanServer{
+		logger:     s.logger,
+		humanCache: s.humanCache,
+		humanDAO:   s.humanDAO,
+		version:    s.version,
+	}
+
+	gwmux := runtime.NewServeMux()
+	ctx := context.Background()
+	if err := RegisterHumanServiceHandlerServer(ctx, gwmux, humanServer); err != nil {
+		panic(err)
+	}
+
 	s.router.Group(func(r chi.Router) {
 		r.Use(httplog.RequestLogger(s.logger))
-		r.Route("/api/v1/", func(r chi.Router) {
-			r.Method(http.MethodGet, "/version", Handler(s.Version))
-			r.Method(http.MethodGet, "/humans", Handler(s.Humans))
+		r.HandleFunc("/api/*", func(w http.ResponseWriter, r *http.Request) {
+			r.URL.Path = strings.Replace(r.URL.Path, "/api", "", -1)
+			gwmux.ServeHTTP(w, r)
 		})
 	})
 }
 
-func (s *Server) Version(w http.ResponseWriter, r *http.Request) error {
-	data := map[string]string{
-		"version": s.version,
-		"now":     time.Now().String(),
-	}
-	s.writeData(w, http.StatusOK, data)
-	return nil
+type HumanServer struct {
+	UnimplementedHumanServiceServer // embed by value
+
+	version    string
+	logger     zerolog.Logger
+	humanCache *cache.Cache
+	humanDAO   *humandao.DAO
 }
 
-type Human struct {
-	ID          string          `json:"id"`
-	Name        string          `json:"name"`
-	Path        string          `json:"path"`
-	DOB         string          `json:"dob"`
-	DOD         string          `json:"dod"`
-	Tags        []string        `json:"tags"`
-	Ethnicity   []string        `json:"ethnicity"`
-	Image       string          `json:"image"`
-	Description string          `json:"description"`
-	Socials     HumanSocial     `json:"socials"`
-	Views       int64           `json:"views"`
-	Gender      humandao.Gender `json:"gender"`
+func (s *HumanServer) Version(ctx context.Context, req *VersionRequest) (*VersionResponse, error) {
+	return &VersionResponse{
+		Version:       s.version,
+		Now:           time.Now().String(),
+		unknownFields: []byte{},
+		sizeCache:     0,
+	}, nil
 }
 
-type HumanSocial struct {
-	Instagram string `json:"instagram"`
-	X         string `json:"x"`
-	Website   string `json:"website"`
-	IMDB      string `json:"imdb"`
-}
-
-func (s *Server) Humans(w http.ResponseWriter, r *http.Request) error {
-	ctx := r.Context()
+func (s *HumanServer) Humans(ctx context.Context, req *HumansRequest) (*HumansResponse, error) {
 	humansRaw, ok := s.humanCache.Get("humans")
 	if ok {
 		s.logger.Debug().Msg("cache hit")
-		s.writeData(w, http.StatusOK, humansRaw)
-		return nil
+		humans := convert(humansRaw.([]humandao.Human))
+		return &HumansResponse{
+			Humans: humans,
+		}, nil
 	}
 	humans, err := s.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
 		Limit:  500,
 		Offset: 0,
 	})
 	if err != nil {
-		s.writeData(w, http.StatusInternalServerError, err)
+		return nil, fmt.Errorf("unable to list humans: %w", err)
 	}
-	humansResult := convert(humans)
-	s.humanCache.Set("humans", humansResult, cache.DefaultExpiration)
-	s.writeData(w, http.StatusOK, humans)
-	return nil
+
+	s.humanCache.Set("humans", humans, cache.DefaultExpiration)
+	protoHumans := convert(humans)
+
+	return &HumansResponse{
+		Humans: protoHumans,
+	}, nil
 }
 
-func convert(humans []humandao.Human) []Human {
-	var humansOut []Human
+func convert(humans []humandao.Human) []*Human {
+	var humansOut []*Human
 	for _, human := range humans {
-		humanOut := Human{
-			ID:          human.ID,
+		humanOut := &Human{
+			Id:          human.ID,
 			Name:        human.Name,
 			Path:        human.Path,
-			DOB:         human.DOB,
-			DOD:         human.DOD,
+			Dob:         human.DOB,
+			Dod:         human.DOD,
 			Tags:        human.Tags,
 			Ethnicity:   human.Ethnicity,
 			Image:       human.FeaturedImage,
 			Description: human.Description,
-			Socials: HumanSocial{
+			Socials: &HumanSocial{
 				Instagram: human.Socials.Instagram,
 				X:         human.Socials.X,
 				Website:   human.Socials.Website,
-				IMDB:      human.Socials.IMDB,
+				Imdb:      human.Socials.IMDB,
 			},
-			Views:  human.Views,
-			Gender: human.Gender,
+			Gender: Gender(Gender_value[strings.ToUpper(string(human.Gender))]),
 		}
 		humansOut = append(humansOut, humanOut)
 	}
 
 	return humansOut
-}
-
-func (s *Server) writeData(w http.ResponseWriter, status int, data any) {
-	w.WriteHeader(status)
-	if status != http.StatusNoContent {
-		dataResponse := struct {
-			Data any `json:"data"`
-		}{
-			Data: data,
-		}
-		if err := json.NewEncoder(w).Encode(dataResponse); err != nil {
-			s.logger.Err(err).Msg("error encoding json data response")
-		}
-	}
 }

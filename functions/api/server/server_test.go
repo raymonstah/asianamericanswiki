@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -12,6 +12,7 @@ import (
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/segmentio/ksuid"
 	"github.com/tj/assert"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func Test_Server(t *testing.T) {
@@ -48,11 +49,11 @@ func Test_Server(t *testing.T) {
 	resp, err := http.DefaultClient.Do(req)
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
-	var humansResponse struct {
-		Humans []Human `json:"data"`
-	}
-
-	err = json.NewDecoder(resp.Body).Decode(&humansResponse)
+	var humansResponse HumansResponse
+	raw, err := io.ReadAll(resp.Body)
 	assert.NoError(t, err)
+	err = protojson.Unmarshal(raw, &humansResponse)
+	assert.NoError(t, err)
+
 	assert.NotEmpty(t, humansResponse.Humans, "at least one human should exist.. did you seed the database?")
 }

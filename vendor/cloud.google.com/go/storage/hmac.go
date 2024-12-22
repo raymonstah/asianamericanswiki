@@ -272,7 +272,6 @@ func (it *HMACKeysIterator) fetch(pageSize int, pageToken string) (token string,
 	// TODO: Remove fetch method upon integration. This method is internalized into
 	// httpStorageClient.ListHMACKeys() as it is the only caller.
 	call := it.raw.List(it.projectID)
-	setClientHeader(call.Header())
 	if pageToken != "" {
 		call = call.PageToken(pageToken)
 	}
@@ -289,12 +288,11 @@ func (it *HMACKeysIterator) fetch(pageSize int, pageToken string) (token string,
 		call = call.MaxResults(int64(pageSize))
 	}
 
-	ctx := it.ctx
 	var resp *raw.HmacKeysMetadata
-	err = run(it.ctx, func() error {
+	err = run(it.ctx, func(ctx context.Context) error {
 		resp, err = call.Context(ctx).Do()
 		return err
-	}, it.retry, true, setRetryHeaderHTTP(call))
+	}, it.retry, true)
 	if err != nil {
 		return "", err
 	}

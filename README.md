@@ -50,3 +50,18 @@ npm run prettier
 ## Search
 
 There is a Firestore -> Algolia extension used for the search index.
+
+## Protobufs
+
+```shell
+ protoc -I functions/api/server --go_out ./functions/api/server --go_opt paths=source_relative \
+  --go-grpc_out ./functions/api/server --go-grpc_opt paths=source_relative \
+  --grpc-gateway_out ./functions/api/server --grpc-gateway_opt paths=source_relative \
+  ./functions/api/server/api.proto
+```
+
+## Test GitHub actions workflows locally
+
+```shell
+act push -j validate-proto
+```
