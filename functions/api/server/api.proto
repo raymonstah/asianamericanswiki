@@ -1,0 +1,58 @@
+syntax = "proto3";
+package main;
+option go_package = "./server";
+
+import "google/api/annotations.proto";
+
+service HumanService {
+    rpc Version(VersionRequest) returns (VersionResponse) {
+        option (google.api.http) = {
+            get: "/v1/version"
+        };
+    }
+    rpc Humans(HumansRequest) returns (HumansResponse) {
+        option (google.api.http) = {
+            get: "/v1/humans"
+        };
+    }
+}
+
+message VersionRequest {}
+
+message VersionResponse {
+    string version = 1;
+    string now = 2;
+}
+
+message HumansRequest {}
+
+message HumansResponse {
+    repeated Human humans = 1;
+}
+
+message Human {
+    string id = 1;
+    string name = 2;
+    string path = 3;
+    string dob = 4;
+    string dod = 5;
+    repeated string tags = 6;
+    repeated string ethnicity = 7;
+    string image = 8;
+    string description = 9;
+    HumanSocial socials = 10;
+    Gender gender = 11;
+}
+
+message HumanSocial {
+    string instagram = 1;
+    string x = 2;
+    string website = 3;
+    string imdb = 4;
+}
+
+enum Gender {
+    MALE = 0;
+    FEMALE = 1;
+    NONBINARY = 2;
+}

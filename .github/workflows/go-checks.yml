@@ -26,3 +26,35 @@ jobs:
         uses: golang/govulncheck-action@v1
         with:
           go-version-input: 1.23.4
+
+  validate-proto:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4.1.0
+        with:
+          go-version: "1.23.4"
+
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "29.2"
+
+      - name: Install protoc-gen-go and protoc-gen-go-grpc
+        run: |
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@1.36.0
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1
+
+      - name: Generate protobuf files
+        run: |
+          protoc -I functions/api/server --go_out ./functions/api/server --go_opt paths=source_relative \
+            --go-grpc_out ./functions/api/server --go-grpc_opt paths=source_relative \
+            --grpc-gateway_out ./functions/api/server --grpc-gateway_opt paths=source_relative \
+            ./functions/api/server/api.proto
+
+      - name: Check for diffs
+        run: |
+          git diff --exit-code
