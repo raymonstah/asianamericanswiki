@@ -20,13 +20,11 @@ var dobAfter = urlParams.get("dobAfter");
 
 if (dobBefore != null) {
   let minAge = convertYYYYMMDDToAge(dobBefore);
-  console.log("minAge", minAge);
   var minAgeSelected = document.getElementById("minAge");
   minAgeSelected.value = minAge;
 }
 if (dobAfter != null) {
   let maxAge = convertYYYYMMDDToAge(dobAfter);
-  console.log("maxAge", maxAge);
   var maxAgeSelected = document.getElementById("maxAge");
   maxAgeSelected.value = maxAge;
 }
@@ -56,7 +54,7 @@ function doSearch() {
       ethnicity: ethnicitySelected.value,
       tag: tagSelected.value,
       search: searchInput.value,
-    }),
+    })
   );
   console.log("search parameters", params.toString());
   window.location.href = "/humans/?" + params.toString();
@@ -74,7 +72,8 @@ function convertToYYYYMMDDString(year) {
   const monthString = (targetDate.getMonth() + 1).toString().padStart(2, "0");
   const dayString = targetDate.getDate().toString().padStart(2, "0");
 
-  return `${yearString}-${monthString}-${dayString}`;
+  const result = `${yearString}-${monthString}-${dayString}`;
+  return result;
 }
 
 function convertYYYYMMDDToAge(birthDate) {
@@ -82,9 +81,13 @@ function convertYYYYMMDDToAge(birthDate) {
   const birthDateObject = new Date(birthDate);
   const age = currentDate.getFullYear() - birthDateObject.getFullYear();
   const monthDifference = currentDate.getMonth() - birthDateObject.getMonth();
+  console.log("monthDifference", monthDifference);
+  console.log("currentDate.getDate()", currentDate.getDate());
+  console.log("birthDateObject.getDate()", birthDateObject.getDate());
   if (
     monthDifference < 0 ||
-    (monthDifference === 0 && currentDate.getDate() < birthDateObject.getDate())
+    (monthDifference === 0 &&
+      currentDate.getDate() <= birthDateObject.getDate())
   ) {
     return age - 1;
   }
