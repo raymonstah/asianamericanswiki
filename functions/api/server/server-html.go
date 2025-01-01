@@ -345,15 +345,12 @@ func (s *ServerHTML) HandlerHumans(w http.ResponseWriter, r *http.Request) error
 
 		queryAll := bleve.NewDisjunctionQuery(query, nameQuery)
 		searchReq := bleve.NewSearchRequest(queryAll)
-		// searchReq.Explain = true
 		result, err := s.index.Search(searchReq)
 		if err != nil {
 			return err
 		}
-		// log.Println(result)
 		hitIDs := make([]string, 0, len(result.Hits))
 		for _, hit := range result.Hits {
-			// fmt.Println(hit.Expl)
 			hitIDs = append(hitIDs, hit.ID)
 		}
 
