@@ -49,7 +49,9 @@ func ByAgeOlderThan(age time.Time) FilterOpt {
 	return func(f Filterable) Filterable {
 		filtered := make([]Human, 0, len(f))
 		for _, human := range f {
-			// convert human.DOB into a time.Time
+			if human.DOD != "" {
+				continue
+			}
 			dobTime, err := time.Parse("2006-01-02", human.DOB)
 			if err != nil {
 				continue
@@ -67,7 +69,9 @@ func ByAgeYoungerThan(age time.Time) FilterOpt {
 	return func(f Filterable) Filterable {
 		filtered := make([]Human, 0, len(f))
 		for _, human := range f {
-			// convert human.DOB into a time.Time
+			if human.DOD != "" {
+				continue
+			}
 			dobTime, err := time.Parse("2006-01-02", human.DOB)
 			if err != nil {
 				continue
