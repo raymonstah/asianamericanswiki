@@ -1,0 +1,34 @@
+{{ if .Similar }}
+<h3 class="text-xl font-bold mb-4 text-center">Similar Humans</h3>
+<ul class="flex flex-row justify-center">
+  {{ range .Similar }}
+  <div
+    onclick="window.location='{{ .Path }}'"
+    class="hover:cursor-pointer max-w-sm w-full border-gray-200 rounded-lg shadow items-center flex flex-col hover:bg-gray-300 bg-gray-100 dark:bg-gray-900 dark:border-gray-900 dark:hover:bg-gray-800"
+  >
+    <div class="flex flex-row align-middle">
+      <a href="{{ .Path }}">
+        <h2
+          class="mb-2 text-center text-lg font-bold tracking-tight text-gray-900 dark:text-white"
+        >
+          {{ .Name }}
+          <span class="text-xs">
+            {{ if eq .Gender "male" }} ♂️ {{ else if eq .Gender "female" }} ♀️
+            {{ else }} ☿️ {{ end }}
+          </span>
+        </h2>
+      </a>
+    </div>
+    {{ if .FeaturedImage }}
+    <a href="{{ .Path }}">
+      <img
+        class="object-fill h-16 w-16"
+        src="{{ .FeaturedImage }}"
+        alt="A photo of {{ .Name }}"
+      />
+    </a>
+    {{ end }}
+  </div>
+  {{ end }}
+</ul>
+{{ end }}

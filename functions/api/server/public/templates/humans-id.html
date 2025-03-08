@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <title>{{ .Human.Name }} | AsianAmericans.wiki</title>
@@ -144,7 +144,8 @@
       <div class="p-4 space-y-4 text-wrap break-words">
         {{ .Human.Description }}
       </div>
-      {{ end }} {{ if .Admin }} {{ if .Human.Draft }}
+      {{ end }} {{ template "similar.html" . }} {{ if .Admin }} {{ if
+      .Human.Draft }}
       <button
         hx-post="/humans/{{ .Human.Path }}/publish"
         class="bg-sky-500 text-white my-4 w-3/4 text-center p-2 rounded-md border-gray-500 shadow hover:bg-sky-600 border-transparent border-r-8 outline outline-neutral-700"
