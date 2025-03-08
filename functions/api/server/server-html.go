@@ -421,6 +421,7 @@ type HTMLResponseHuman struct {
 	Base
 	Human           humandao.Human
 	HumanFormFields HumanFormFields
+	Similar         []humandao.Human
 }
 
 func (s *ServerHTML) HandlerAbout(w http.ResponseWriter, r *http.Request) error {
@@ -454,7 +455,16 @@ func (s *ServerHTML) HandlerHuman(w http.ResponseWriter, r *http.Request) error 
 		return NewNotFoundError(fmt.Errorf("%w: %v", humandao.ErrHumanNotFound, path))
 	}
 
-	response := HTMLResponseHuman{Human: human, Base: getBase(s, admin)}
+	var similar []humandao.Human
+	for _, humanID := range human.Similar {
+		for _, h := range s.humans {
+			if h.ID == humanID {
+				similar = append(similar, h)
+			}
+		}
+	}
+
+	response := HTMLResponseHuman{Human: human, Similar: similar, Base: getBase(s, admin)}
 	if err := s.template.ExecuteTemplate(w, "humans-id.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute humans-id template")
 	}
