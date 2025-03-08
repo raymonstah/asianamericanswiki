@@ -53,6 +53,9 @@ type Human struct {
 	Socials     Socials     `firestore:"socials,omitempty"`
 	Views       int64       `firestore:"views,omitempty"`
 	Gender      Gender      `firestore:"gender,omitempty"`
+
+	// Similar is computed using cmd/compute-similar/main.go
+	Similar []string `firestore:"similar,omitempty"`
 }
 
 func (h Human) CurrentAge(inputTime ...time.Time) (string, error) {
