@@ -3,9 +3,8 @@ package humandao
 import "cloud.google.com/go/firestore"
 
 type DAO struct {
-	client             *firestore.Client
-	humanCollection    string
-	reactionCollection string
+	client          *firestore.Client
+	humanCollection string
 }
 
 type Option func(d *DAO)
@@ -16,17 +15,10 @@ func WithHumanCollectionName(name string) Option {
 	}
 }
 
-func WithReactionCollectionName(name string) Option {
-	return func(d *DAO) {
-		d.reactionCollection = name
-	}
-}
-
 func NewDAO(client *firestore.Client, options ...Option) *DAO {
 	dao := &DAO{
-		client:             client,
-		humanCollection:    "humans",
-		reactionCollection: "reactions",
+		client:          client,
+		humanCollection: "humans",
 	}
 
 	for _, opt := range options {

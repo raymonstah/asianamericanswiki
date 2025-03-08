@@ -24,35 +24,31 @@ var (
 	ErrInvalidGender      = errors.New("invalid gender")
 )
 
-type ReactionCount map[string]int
-
 type Human struct {
-	ID            string        `firestore:"-"`
-	Name          string        `firestore:"name"`
-	Path          string        `firestore:"urn_path"`
-	ReactionCount ReactionCount `firestore:"reaction_count"`
-	DOB           string        `firestore:"dob,omitempty"`
-	DOD           string        `firestore:"dod,omitempty"`
-	Tags          []string      `firestore:"tags,omitempty"`
-	Ethnicity     []string      `firestore:"ethnicity,omitempty"`
-	BirthLocation string        `firestore:"birth_location,omitempty"`
-	Location      []string      `firestore:"location,omitempty"`
-	InfluencedBy  []string      `firestore:"influenced_by,omitempty"`
-	FeaturedImage string        `firestore:"featured_image,omitempty"`
-	Draft         bool          `firestore:"draft"`
-	AIGenerated   bool          `firestore:"ai_generated,omitempty"`
-	Description   string        `firestore:"description,omitempty"`
+	ID            string   `firestore:"-"`
+	Name          string   `firestore:"name"`
+	Path          string   `firestore:"urn_path"`
+	DOB           string   `firestore:"dob,omitempty"`
+	DOD           string   `firestore:"dod,omitempty"`
+	Tags          []string `firestore:"tags,omitempty"`
+	Ethnicity     []string `firestore:"ethnicity,omitempty"`
+	BirthLocation string   `firestore:"birth_location,omitempty"`
+	Location      []string `firestore:"location,omitempty"`
+	InfluencedBy  []string `firestore:"influenced_by,omitempty"`
+	FeaturedImage string   `firestore:"featured_image,omitempty"`
+	Draft         bool     `firestore:"draft"`
+	AIGenerated   bool     `firestore:"ai_generated,omitempty"`
+	Description   string   `firestore:"description,omitempty"`
 
 	CreatedAt time.Time `firestore:"created_at"`
 	CreatedBy string    `firestore:"created_by,omitempty"`
 
-	UpdatedAt   time.Time   `firestore:"updated_at"`
-	PublishedBy string      `firestore:"published_by,omitempty"`
-	PublishedAt time.Time   `firestore:"published_at,omitempty"`
-	Affiliates  []Affiliate `firestore:"affiliates,omitempty"`
-	Socials     Socials     `firestore:"socials,omitempty"`
-	Views       int64       `firestore:"views,omitempty"`
-	Gender      Gender      `firestore:"gender,omitempty"`
+	UpdatedAt   time.Time `firestore:"updated_at"`
+	PublishedBy string    `firestore:"published_by,omitempty"`
+	PublishedAt time.Time `firestore:"published_at,omitempty"`
+	Socials     Socials   `firestore:"socials,omitempty"`
+	Views       int64     `firestore:"views,omitempty"`
+	Gender      Gender    `firestore:"gender,omitempty"`
 
 	// Similar is computed using cmd/compute-similar/main.go
 	Similar []string `firestore:"similar,omitempty"`
@@ -172,21 +168,6 @@ type Socials struct {
 	Instagram string `firestore:"instagram,omitempty"`
 }
 
-type Affiliate struct {
-	ID    string `firestore:"id,omitempty"`
-	URL   string `firestore:"url,omitempty"`
-	Image string `firestore:"image,omitempty"`
-	Name  string `firestore:"name,omitempty"`
-}
-
-type Reaction struct {
-	ID           string       `firestore:"-"`
-	UserID       string       `firestore:"user_id,omitempty"`
-	HumanID      string       `firestore:"human_id,omitempty"`
-	ReactionKind ReactionKind `firestore:"reaction_kind,omitempty"`
-	CreatedAt    time.Time    `firestore:"created_at,omitempty"`
-}
-
 type HumanInput struct {
 	HumanID string
 	Path    string
@@ -271,12 +252,6 @@ func (d *DAO) HumansByID(ctx context.Context, input HumansByIDInput) ([]Human, e
 }
 
 func (d *DAO) UpdateHuman(ctx context.Context, human Human) error {
-	for i, affiliate := range human.Affiliates {
-		if affiliate.ID == "" {
-			human.Affiliates[i].ID = ksuid.New().String()
-		}
-	}
-
 	human.UpdatedAt = time.Now()
 	human.Path = strings.ToLower(strings.ReplaceAll(human.Name, " ", "-"))
 	_, err := d.client.Collection(d.humanCollection).
@@ -304,7 +279,6 @@ type AddHumanInput struct {
 	Tags        []string
 	Draft       bool
 	CreatedBy   string
-	Affiliates  []Affiliate
 	Gender      Gender
 }
 
@@ -322,12 +296,6 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 	}
 	if err == nil {
 		return Human{}, ErrHumanAlreadyExists
-	}
-
-	for i, affiliate := range input.Affiliates {
-		if affiliate.ID == "" {
-			input.Affiliates[i].ID = ksuid.New().String()
-		}
 	}
 
 	_, ok := ValidGenders[input.Gender]
@@ -349,7 +317,6 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 		CreatedBy:   input.CreatedBy,
 		Path:        path,
 		UpdatedAt:   now,
-		Affiliates:  input.Affiliates,
 		Socials: Socials{
 			Website:   input.Website,
 			X:         input.Twitter,
@@ -373,132 +340,6 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 }
 
 var ErrUnauthorized = errors.New("user is not authorized to perform this operation")
-
-type ReactionKind string
-
-var (
-	ReactionKindLove   ReactionKind = "love"
-	ReactionKindFire   ReactionKind = "fire"
-	ReactionKindJoy    ReactionKind = "joy"
-	ReactionKindFlower ReactionKind = "flower"
-)
-
-var validReactionKinds = map[ReactionKind]struct{}{
-	ReactionKindLove:   {},
-	ReactionKindFire:   {},
-	ReactionKindJoy:    {},
-	ReactionKindFlower: {},
-}
-
-var AllReactionKinds = []ReactionKind{ReactionKindLove, ReactionKindFire, ReactionKindJoy}
-
-func ToReactionKind(kind string) (ReactionKind, error) {
-	if _, ok := validReactionKinds[ReactionKind(kind)]; !ok {
-		return "", fmt.Errorf("invalid reaction kind")
-	}
-
-	return ReactionKind(kind), nil
-}
-
-type ReactInput struct {
-	UserID       string
-	HumanID      string
-	ReactionKind ReactionKind
-}
-
-func (d *DAO) React(ctx context.Context, input ReactInput) (Reaction, error) {
-	data := Reaction{
-		UserID:       input.UserID,
-		HumanID:      input.HumanID,
-		ReactionKind: input.ReactionKind,
-		CreatedAt:    time.Now(),
-	}
-
-	err := d.client.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
-		reactionRef := d.client.Collection(d.reactionCollection).NewDoc()
-		if err := tx.Create(reactionRef, data); err != nil {
-			return fmt.Errorf("unable to create reaction: %w", err)
-		}
-		humanRef := d.client.Collection(d.humanCollection).Doc(input.HumanID)
-		if err := tx.Update(humanRef, []firestore.Update{
-			{
-				Path:  fmt.Sprintf("reaction_count.%v", input.ReactionKind),
-				Value: firestore.Increment(1),
-			},
-		}); err != nil {
-			return fmt.Errorf("unable to update reaction count: %w", err)
-		}
-		data.ID = reactionRef.ID
-		return nil
-	})
-	if err != nil {
-		return Reaction{}, err
-	}
-
-	return data, nil
-}
-
-type ReactUndoInput struct {
-	UserID     string
-	ReactionID string
-}
-
-func (d *DAO) ReactUndo(ctx context.Context, input ReactUndoInput) error {
-	doc := d.client.Collection(d.reactionCollection).Doc(input.ReactionID)
-	reactionRef, err := doc.Get(ctx)
-	if err != nil {
-		if status.Code(err) == codes.NotFound {
-			return nil
-		}
-		return fmt.Errorf("unable to find reaction by id: %v: %w", input.ReactionID, err)
-	}
-	reaction, err := convertReactionDoc(reactionRef)
-	if err != nil {
-		return err
-	}
-
-	if reaction.UserID != input.UserID {
-		return ErrUnauthorized
-	}
-
-	err = d.client.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
-		if err := tx.Delete(doc, firestore.Exists); err != nil {
-			return fmt.Errorf("error deleting reaction: %w", err)
-		}
-		humanRef := d.client.Collection(d.humanCollection).Doc(reaction.HumanID)
-		if err := tx.Update(humanRef, []firestore.Update{
-			{
-				Path:  fmt.Sprintf("reaction_count.%v", reaction.ReactionKind),
-				Value: firestore.Increment(-1),
-			},
-		}); err != nil {
-			return fmt.Errorf("error decrementing reaction count: %w", err)
-		}
-
-		return nil
-	})
-	if err != nil {
-		return fmt.Errorf("error running transaction: %w", err)
-	}
-
-	return nil
-}
-
-type GetReactionsInput struct {
-	UserID string
-}
-
-func (d *DAO) GetReactions(ctx context.Context, input GetReactionsInput) ([]Reaction, error) {
-	docs, err := d.client.Collection(d.reactionCollection).
-		Where("user_id", "==", input.UserID).
-		OrderBy("created_at", firestore.Asc).
-		Documents(ctx).GetAll()
-	if err != nil {
-		return nil, fmt.Errorf("unable to get reactions for user %s: %w", input.UserID, err)
-	}
-
-	return convertReactionDocs(docs)
-}
 
 type OrderBy string
 

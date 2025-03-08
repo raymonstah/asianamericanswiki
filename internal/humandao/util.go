@@ -6,28 +6,6 @@ import (
 	"cloud.google.com/go/firestore"
 )
 
-func convertReactionDocs(docs []*firestore.DocumentSnapshot) ([]Reaction, error) {
-	reactions := make([]Reaction, 0, len(docs))
-	for _, doc := range docs {
-		reaction, err := convertReactionDoc(doc)
-		if err != nil {
-			return nil, err
-		}
-		reactions = append(reactions, reaction)
-	}
-
-	return reactions, nil
-}
-
-func convertReactionDoc(doc *firestore.DocumentSnapshot) (Reaction, error) {
-	var reaction Reaction
-	if err := doc.DataTo(&reaction); err != nil {
-		return Reaction{}, fmt.Errorf("unable to convert document to reaction: %w", err)
-	}
-	reaction.ID = doc.Ref.ID
-	return reaction, nil
-}
-
 func convertHumansDocs(docs []*firestore.DocumentSnapshot) ([]Human, error) {
 	humans := make([]Human, 0, len(docs))
 	for _, doc := range docs {
