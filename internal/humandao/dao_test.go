@@ -32,17 +32,13 @@ func WithDAO(t *testing.T, do func(ctx context.Context, dao *DAO)) {
 	assert.NoError(t, err)
 
 	humanCollection := ksuid.New().String()
-	reactionCollection := ksuid.New().String()
-	dao := NewDAO(client, WithHumanCollectionName(humanCollection), WithReactionCollectionName(reactionCollection))
+	dao := NewDAO(client, WithHumanCollectionName(humanCollection))
 
 	t.Cleanup(func() {
 		ctx := context.Background()
 		humanDocs, err := client.Collection(humanCollection).DocumentRefs(ctx).GetAll()
 		assert.NoError(t, err)
-		reactionDocs, err := client.Collection(reactionCollection).DocumentRefs(ctx).GetAll()
-		assert.NoError(t, err)
-		docs := append(humanDocs, reactionDocs...)
-		for _, doc := range docs {
+		for _, doc := range humanDocs {
 			_, err := doc.Delete(ctx)
 			assert.NoError(t, err)
 		}
@@ -51,92 +47,11 @@ func WithDAO(t *testing.T, do func(ctx context.Context, dao *DAO)) {
 	do(ctx, dao)
 }
 
-func TestDAO(t *testing.T) {
-	WithDAO(t, func(ctx context.Context, dao *DAO) {
-		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond", Gender: GenderMale})
-		assert.NoError(t, err)
-
-		n := 100
-		var reactions []Reaction
-		for i := 0; i < n; i++ {
-			reaction, err := dao.React(ctx, ReactInput{UserID: "abc", HumanID: human.ID, ReactionKind: ReactionKindFire})
-			assert.NoError(t, err)
-			reactions = append(reactions, reaction)
-		}
-
-		human, err = dao.Human(ctx, HumanInput{HumanID: human.ID})
-		assert.NoError(t, err)
-		assert.Equal(t, n, human.ReactionCount[string(ReactionKindFire)])
-
-		for _, reaction := range reactions {
-			err = dao.ReactUndo(ctx, ReactUndoInput{UserID: "abc", ReactionID: reaction.ID})
-			assert.NoError(t, err)
-		}
-
-		human, err = dao.Human(ctx, HumanInput{HumanID: human.ID})
-		assert.NoError(t, err)
-		assert.Equal(t, 0, human.ReactionCount[string(ReactionKindFire)])
-	})
-}
-
-func TestDAOReactions(t *testing.T) {
-	WithDAO(t, func(ctx context.Context, dao *DAO) {
-		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond", Gender: GenderMale})
-		assert.NoError(t, err)
-
-		userID := "user123"
-		reaction, err := dao.React(ctx, ReactInput{
-			UserID:       userID,
-			HumanID:      human.ID,
-			ReactionKind: ReactionKindFire,
-		})
-		assert.NoError(t, err)
-		assert.NotZero(t, reaction.ID)
-
-		reactions, err := dao.GetReactions(ctx, GetReactionsInput{UserID: userID})
-		assert.NoError(t, err)
-		assert.Len(t, reactions, 1)
-
-		err = dao.ReactUndo(ctx, ReactUndoInput{UserID: userID, ReactionID: reaction.ID})
-		assert.NoError(t, err)
-
-		reactions, err = dao.GetReactions(ctx, GetReactionsInput{UserID: userID})
-		assert.NoError(t, err)
-		assert.Len(t, reactions, 0)
-	})
-}
-
 func TestDAO_HumanNotFound(t *testing.T) {
 	WithDAO(t, func(ctx context.Context, dao *DAO) {
 		human, err := dao.Human(ctx, HumanInput{HumanID: "human123"})
 		assert.EqualError(t, err, "human not found: human123")
 		assert.Zero(t, human)
-	})
-}
-
-func TestDAO_ReactionNotFound(t *testing.T) {
-	WithDAO(t, func(ctx context.Context, dao *DAO) {
-		err := dao.ReactUndo(ctx, ReactUndoInput{UserID: "user123", ReactionID: "fake-reaction-id"})
-		assert.NoError(t, err)
-	})
-}
-
-func TestDAO_ReactionUndo_Unauthorized(t *testing.T) {
-	WithDAO(t, func(ctx context.Context, dao *DAO) {
-		human, err := dao.AddHuman(ctx, AddHumanInput{Name: "Raymond", Gender: GenderMale})
-		assert.NoError(t, err)
-
-		userID := "user123"
-		reaction, err := dao.React(ctx, ReactInput{
-			UserID:       userID,
-			HumanID:      human.ID,
-			ReactionKind: ReactionKindFire,
-		})
-		assert.NoError(t, err)
-		assert.NotZero(t, reaction.ID)
-
-		err = dao.ReactUndo(ctx, ReactUndoInput{UserID: "fake-user", ReactionID: reaction.ID})
-		assert.EqualError(t, err, "user is not authorized to perform this operation")
 	})
 }
 
@@ -343,35 +258,6 @@ func TestDAO_HumansByID(t *testing.T) {
 		}
 
 		assert.Equal(t, ids, gotIDs)
-	})
-}
-
-func TestDAO_Affiliates(t *testing.T) {
-	WithDAO(t, func(ctx context.Context, dao *DAO) {
-		assertions := func(human Human, err error) {
-			assert.NoError(t, err)
-			assert.Len(t, human.Affiliates, 3)
-			assert.NotEmpty(t, human.Affiliates[0].ID)
-			assert.NotEqual(t, human.Affiliates[0].ID, human.Affiliates[1].ID)
-			assert.NotEqual(t, human.Affiliates[1].ID, human.Affiliates[2].ID)
-		}
-
-		human, err := dao.AddHuman(ctx, AddHumanInput{
-			Name:   "Human",
-			Gender: GenderFemale,
-			Affiliates: []Affiliate{
-				{URL: "https://url.com/1"},
-				{URL: "https://url.com/2"},
-				{URL: "https://url.com/3"},
-			},
-		})
-
-		assertions(human, err)
-
-		t.Run("find-should-include-affiliates-too", func(t *testing.T) {
-			human, err := dao.Human(ctx, HumanInput{HumanID: human.ID})
-			assertions(human, err)
-		})
 	})
 }
 

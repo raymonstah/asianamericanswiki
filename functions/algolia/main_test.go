@@ -110,9 +110,6 @@ var updateEvent = `{
       "name": {
         "stringValue": "Eugene Lee Yang"
       },
-      "reaction_count": {
-        "nullValue": null
-      },
       "tags": {
         "arrayValue": {
           "values": [
