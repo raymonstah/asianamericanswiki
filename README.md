@@ -39,13 +39,6 @@ docker push $IMAGE_NAME
 gcloud run deploy apiv2 --max-instances 1 --timeout 10 --region us-central1 --memory 128Mi --image ${IMAGE_NAME}:latest --allow-unauthenticated
 ```
 
-## Formatting
-
-All source code should be formatted with prettier for consistency.
-
-```shell
-npm run prettier
-```
 
 ## Search
 
