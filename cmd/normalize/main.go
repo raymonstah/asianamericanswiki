@@ -164,6 +164,12 @@ func (h *Handler) Tags(ctx context.Context) error {
 				"olympics":          "olympian",
 				"photography":       "photographer",
 				"music":             "musician",
+				"activism":          "activist",
+				"actress":           "actor",
+				"comedy":            "comedian",
+				"youtube":           "youtuber",
+				"entertainment":     "entertainer",
+				"lgbt":              "lgbtq",
 			}
 
 			normalizedTag, ok := normalizeValues[tag]
