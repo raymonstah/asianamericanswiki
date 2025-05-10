@@ -9,7 +9,7 @@ Source code for AsianAmericans.wiki.
 To run tailwind watcher:
 
 ```shell
- npx tailwindcss -i functions/api/server/public/static/input.css -o ./functions/api/server/public/static/output.css --watch
+npx @tailwindcss/cli -i functions/api/server/public/static/input.css -o ./functions/api/server/public/static/output.css --watch
 ```
 
 To run the emulators:
