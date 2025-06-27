@@ -36,7 +36,7 @@
   <img id="image" />
   <div>
   <input
-    class="block w-full p-4 text-center text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+    class="block w-full p-4 text-center text-sm text-gray-900 border border-gray-300 rounded-lg bg-[var(--color-background-light)] dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text-light)]"
     type="text"
     name="id"
     value="{{ .Human.ID }}"
@@ -45,7 +45,7 @@
     <div>
       <label
         for="name"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text-light"
         >Name</label
       >
         <input
@@ -53,7 +53,7 @@
         name="name"
         value="{{ .Human.Name }}"
 	placeholder="Human Name"
-        class="block w-full p-4 text-center text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+        class="block w-full p-4 text-center text-sm text-gray-900 border border-gray-300 rounded-lg bg-[var(--color-background-light)] dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text-light)]"
       />
   </div>    <span class="text-sm">
       {{ if eq .Human.Gender "male" }} ♂️ {{ else if eq .Human.Gender "female"
@@ -63,7 +63,7 @@
   <div>
       <label
         for="dob"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text-light"
         >Date of birth</label
       >
         <input
@@ -71,14 +71,14 @@
         name="dob"
         value="{{ .Human.DOB }}"
 	placeholder="dob"
-        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-[var(--color-background-light)] dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text-light)]"
       />
   </div>
   <div class="mb-2">
     {{ range .Human.Ethnicity }}
     <a
       href="/humans?ethnicity={{ . }}"
-      class="tag rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 hover:scale-125"
+      class="tag rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 text-[var(--color-text-light)] dark:hover:bg-gray-600 hover:scale-125"
       >{{ . }}</a
     >
     {{ end }}
@@ -86,12 +86,12 @@
     <div>
       <label
         for="tags"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text-light"
         >Tags</label
       >
       <select
         name="tags"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+        class="bg-[var(--color-background-light)] border border-gray-300 text-gray-900 text-sm rounded focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text-light)] dark:focus:ring-gray-500 dark:focus:border-gray-500"
         multiple
         id="tags"
         size="25"
@@ -114,7 +114,7 @@
         {{ end }}
       </select>
       <input
-        class="border p-2 rounded dark:bg-gray-900 w-full"
+        class="border p-2 rounded bg-[var(--color-background-light)] w-full"
         type="text"
         name="tags-other"
         placeholder="Enter other tags here, comma-separated"
@@ -142,7 +142,7 @@
         name="x"
         value="{{ .Human.Socials.X }}"
 	placeholder="x"
-        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-[var(--color-background-light)] dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text-light)]"
       />
     </div>
   </div>
@@ -167,7 +167,7 @@
         name="imdb"
         value="{{ .Human.Socials.IMDB }}"
 	placeholder="imdb"
-        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-[var(--color-background-light)] dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text-light)]"
       />
     </div>
   </div>
@@ -192,7 +192,7 @@
         name="instagram"
 	placeholder="instagram"
         value="{{ .Human.Socials.Instagram }}"
-        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-[var(--color-background-light)] dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text-light)]"
       />
     </div>
   </div>
@@ -217,7 +217,7 @@
         name="website"
 	placeholder="website"
         value="{{ .Human.Socials.Website }}"
-        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-[var(--color-background-light)] dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text-light)]"
       />
     </div>
   </div>
@@ -225,19 +225,19 @@
 
   <textarea
     name="description"
-    class="m-2 p-2 w-72 dark:bg-gray-900 space-y-4 text-wrap break-all"
+    class="m-2 p-2 w-72 bg-[var(--color-background-light)] space-y-4 text-wrap break-all"
     rows="10"
   >
 {{ .Human.Description }}</textarea
   >
 
   <button
-    class="dark:bg-gray-950 my-4 w-full text-center p-2 rounded-md bg-white border-gray-500 shadow hover:bg-gray-100 border-transparent border-r-8 outline outline-neutral-700"
+    class="bg-[var(--color-background-light)] my-4 w-full text-center p-2 rounded-md bg-white border-gray-500 shadow hover:bg-gray-100 border-transparent border-r-8 outline outline-neutral-700"
   >
     Submit
   </button>
   <button
-    class="dark:bg-gray-950 my-4 w-full text-center p-2 rounded-md bg-white border-gray-500 shadow hover:bg-gray-100 border-transparent border-r-8 outline outline-neutral-700"
+    class="bg-[var(--color-background-light)] my-4 w-full text-center p-2 rounded-md bg-white border-gray-500 shadow hover:bg-gray-100 border-transparent border-r-8 outline outline-neutral-700"
     type="button"
     onclick="location.reload();"
   >

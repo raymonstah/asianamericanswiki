@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="h-full">
   <head>
     <title>AsianAmericans.wiki</title>
     <meta charset="UTF-8" />
@@ -11,35 +11,34 @@
   </head>
 
   <body
-    class="h-full w-full flex flex-col align-middle min-h-screen bg-slate-200 dark:bg-gray-950 dark:text-gray-300"
+    class="h-full w-full flex flex-col align-middle min-h-screen bg-[var(--color-background-light)] text-[var(--color-text-light)] font-sans"
   >
     {{ template "header.html" . }}
 
+    
+
     <div class="flex flex-col items-center align-middle gap-y-4 mx-2 mb-4">
-      <h1 class="text-3xl font-extrabold my-4 text-center">
-        Discover and learn about Asian Americans
-      </h1>
-      <h2 class="text-3xl font-extrabold mt-4 text-center">
+      <h2 class="text-3xl font-extrabold mt-4 text-center font-heading">
         <a href="/humans?tag=music">Musicians</a>
       </h2>
       {{ range $human := .Musicians }} {{ template "component-card.html" $human
       }} {{ end }}
-      <h2 class="text-3xl font-extrabold mt-4 text-center">
+      <h2 class="text-3xl font-extrabold mt-4 text-center font-heading">
         <a href="/humans?tag=comedian">Comedians</a>
       </h2>
       {{ range $human := .Comedians }} {{ template "component-card.html" $human
       }} {{ end }}
-      <h2 class="text-3xl font-extrabold mt-4 text-center">
+      <h2 class="text-3xl font-extrabold mt-4 text-center font-heading">
         <a href="/humans?tag=actor">Actors</a>
       </h2>
       {{ range $human := .Actors }} {{ template "component-card.html" $human }}
       {{ end }}
-      <h2 class="text-3xl font-extrabold mt-4 text-center">
+      <h2 class="text-3xl font-extrabold mt-4 text-center font-heading">
         <a href="/humans?search=legend">Legends</a>
       </h2>
       {{ range $human := .Legends }} {{ template "component-card.html" $human }}
       {{ end }}
-      <h1 class="text-3xl font-extrabold mt-4 text-center">
+      <h1 class="text-3xl font-extrabold mt-4 text-center font-heading">
         <a href="/humans">Recently Added</a>
       </h1>
       {{ range $human := .RecentlyAdded }} {{ template "component-card.html"
@@ -49,7 +48,7 @@
     <a class="text-xl font-extrabold my-4 text-center" href="/humans">
       View more
       <span
-        class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"
+        class="inline-flex items-center rounded-md bg-[var(--color-background-light)] px-2 py-1 text-xs font-medium text-[var(--color-text-light)] ring-1 ring-inset ring-gray-500/10"
         >{{ .Count }}
       </span>
     </a>
