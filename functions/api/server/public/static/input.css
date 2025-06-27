@@ -1,2 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap');
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --color-primary-light: #214620;
+  --color-primary-dark: #AEC2B6;
+  --color-secondary-light: #D4AF37;
+  --color-secondary-dark: #D4AF37;
+  --color-text-light: #333333;
+  --color-text-dark: #F5F5F5;
+  --color-background-light: #F5F5F5;
+  --color-background-dark: #111827;
+}
+
+.dark {
+  --color-primary-light: #AEC2B6;
+  --color-primary-dark: #214620;
+  --color-secondary-light: #D4AF37;
+  --color-secondary-dark: #D4AF37;
+  --color-text-light: #F5F5F5;
+  --color-text-dark: #333333;
+  --color-background-light: #111827;
+  --color-background-dark: #F5F5F5;
+}

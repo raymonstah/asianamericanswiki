@@ -4,12 +4,12 @@
   {{ range .Similar }}
   <li
     onclick="window.location='{{ .Path }}'"
-    class="hover:cursor-pointer border-gray-200 rounded-lg shadow items-center flex flex-col hover:bg-gray-300 bg-gray-100 dark:bg-gray-900 dark:border-gray-900 dark:hover:bg-gray-800 h-full p-2"
+    class="hover:cursor-pointer border-gray-200 rounded-lg shadow items-center flex flex-col hover:bg-gray-300 bg-[var(--color-background-light)] dark:border-gray-900 dark:hover:bg-gray-800 h-full p-2"
   >
     <div class="flex flex-row align-middle min-h-[50px]">
       <a href="{{ .Path }}">
         <h2
-          class="mb-2 text-center text-lg font-bold tracking-tight text-gray-900 dark:text-white"
+          class="mb-2 text-center text-lg font-bold tracking-tight text-gray-900 text-[var(--color-text-light)]"
         >
           {{ .Name }}
           <span class="text-xs">
