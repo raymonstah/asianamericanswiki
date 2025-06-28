@@ -3,23 +3,17 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --color-primary-light: #214620;
-  --color-primary-dark: #AEC2B6;
-  --color-secondary-light: #D4AF37;
-  --color-secondary-dark: #D4AF37;
-  --color-text-light: #333333;
-  --color-text-dark: #F5F5F5;
-  --color-background-light: #F5F5F5;
-  --color-background-dark: #111827;
+  --color-primary: #214620;
+  --color-secondary: #D4AF37;
+  --color-text: #333333;
+  --color-background: #F5F5F5;
+  --color-border: #e5e7eb;
 }
 
 .dark {
-  --color-primary-light: #AEC2B6;
-  --color-primary-dark: #214620;
-  --color-secondary-light: #D4AF37;
-  --color-secondary-dark: #D4AF37;
-  --color-text-light: #F5F5F5;
-  --color-text-dark: #333333;
-  --color-background-light: #111827;
-  --color-background-dark: #F5F5F5;
+  --color-primary: #AEC2B6;
+  --color-secondary: #D4AF37;
+  --color-text: #F5F5F5;
+  --color-background: #111827;
+  --color-border: #374151;
 }

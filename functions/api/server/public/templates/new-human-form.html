@@ -29,19 +29,19 @@
     <div>
       <label
         for="source"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text-light"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
         >Source data for ChatGPT</label
       >
       <textarea
         id="source"
         name="source"
-        class="bg-[var(--color-background-light)] space-y-4 text-wrap break-all w-full rounded border border-gray-300"
+        class="bg-[var(--color-background)] space-y-4 text-wrap break-all w-full rounded border border-gray-300"
         rows="10"
       >
 {{ .HumanFormFields.Source }}</textarea
       >
       <button
-        class="bg-sky-500 my-2 w-full text-center p-2 rounded-md shadow hover:bg-sky-600 border-transparent text-[var(--color-text-light)] font-bold"
+        class="bg-sky-500 my-2 w-full text-center p-2 rounded-md shadow hover:bg-sky-600 border-transparent text-[var(--color-text)] font-bold"
         hx-post="/generate"
         hx-target="#new-human-form"
         hx-swap="outerHTML"
@@ -52,11 +52,11 @@
     <div>
       <label
         for="name"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text-light"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
         >Name</label
       >
       <input
-        class="border p-2 rounded bg-[var(--color-background-light)] w-full"
+        class="border p-2 rounded bg-[var(--color-background)] w-full"
         type="text"
         id="name"
         name="name"
@@ -67,7 +67,7 @@
     <div>
       <label
         for="featured_image"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text-light"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
         >Image</label
       >
       <input
@@ -82,13 +82,13 @@
     <div>
       <label
         for="gender"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text-light"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
         >Gender</label
       >
       <select
         id="gender"
         name="gender"
-        class="bg-gray-50 border border-gray-300 text-gray-900 rounded focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-text-light dark:focus:ring-gray-500 dark:focus:border-gray-500"
+        class="bg-gray-50 border border-gray-300 text-gray-900 rounded focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-text dark:focus:ring-gray-500 dark:focus:border-gray-500"
       >
       	<option value="male" {{ if eq "male" .Human.Gender }}selected{{ end }}>Male</option>
       	<option value="female" {{ if eq "female" .Human.Gender }}selected{{ end }}>Female</option>
@@ -98,13 +98,13 @@
     <div>
       <label
         for="description"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text-light"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
         >Description</label
       >
       <textarea
         name="description"
         id="description"
-        class="bg-[var(--color-background-light)] space-y-4 text-wrap break-all w-full rounded border border-gray-300"
+        class="bg-[var(--color-background)] space-y-4 text-wrap break-all w-full rounded border border-gray-300"
         rows="10"
       >
 {{ .Human.Description }}</textarea
@@ -113,11 +113,11 @@
     <div>
       <label
         for="dob"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text-light"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
         >Date of Birth</label
       >
       <input
-        class="border p-2 rounded bg-[var(--color-background-light)] w-full"
+        class="border p-2 rounded bg-[var(--color-background)] w-full"
         type="text"
         name="dob"
         id="dob"
@@ -128,11 +128,11 @@
     <div>
       <label
         for="dod"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text-light"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
         >Date of Death</label
       >
       <input
-        class="border p-2 rounded bg-[var(--color-background-light)] w-full"
+        class="border p-2 rounded bg-[var(--color-background)] w-full"
         type="text"
         name="dod"
         id="dod"
@@ -143,13 +143,13 @@
     <div>
       <label
         for="ethnicity"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text-light"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
         >Ethnicity</label
       >
       <select
         id="ethnicity"
         name="ethnicity"
-        class="class="bg-gray-50 border border-gray-300 text-gray-900 rounded focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text-light)] dark:focus:ring-gray-500 dark:focus:border-gray-500""
+        class="class="bg-gray-50 border border-gray-300 text-gray-900 rounded focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text)] dark:focus:ring-gray-500 dark:focus:border-gray-500""
         multiple
         size="25"
       >
@@ -171,7 +171,7 @@
         {{ end }}
       </select>
       <input
-        class="border p-2 rounded bg-[var(--color-background-light)] w-full"
+        class="border p-2 rounded bg-[var(--color-background)] w-full"
         type="text"
         name="ethnicity-other"
         placeholder="Enter other ethnicities here"
@@ -180,12 +180,12 @@
     <div>
       <label
         for="tags"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text-light"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
         >Tags</label
       >
       <select
         name="tags"
-        class="class="bg-gray-50 border border-gray-300 text-gray-900 rounded focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text-light)] dark:focus:ring-gray-500 dark:focus:border-gray-500""
+        class="class="bg-gray-50 border border-gray-300 text-gray-900 rounded focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text)] dark:focus:ring-gray-500 dark:focus:border-gray-500""
         multiple
         id="tags"
         size="25"
@@ -208,7 +208,7 @@
         {{ end }}
       </select>
       <input
-        class="border p-2 rounded bg-[var(--color-background-light)] w-full"
+        class="border p-2 rounded bg-[var(--color-background)] w-full"
         type="text"
         name="tags-other"
         placeholder="Enter other tags here, comma-separated"
@@ -217,11 +217,11 @@
     <div>
       <label
         for="imdb"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text-light"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
         >IMDB</label
       >
       <input
-        class="border p-2 rounded bg-[var(--color-background-light)] w-full"
+        class="border p-2 rounded bg-[var(--color-background)] w-full"
         type="text"
         name="imdb"
         id="imdb"
@@ -231,11 +231,11 @@
     <div>
       <label
         for="x"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text-light"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
         >X</label
       >
       <input
-        class="border p-2 rounded bg-[var(--color-background-light)] w-full"
+        class="border p-2 rounded bg-[var(--color-background)] w-full"
         type="text"
         name="x"
         id="x"
@@ -245,11 +245,11 @@
     <div>
       <label
         for="website"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text-light"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
         >Website</label
       >
       <input
-        class="border p-2 rounded bg-[var(--color-background-light)] w-full"
+        class="border p-2 rounded bg-[var(--color-background)] w-full"
         type="text"
         name="website"
         id="website"
@@ -259,11 +259,11 @@
     <div>
       <label
         for="instagram"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text-light"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
         >Instagram</label
       >
       <input
-        class="border p-2 rounded bg-[var(--color-background-light)] w-full"
+        class="border p-2 rounded bg-[var(--color-background)] w-full"
         type="text"
         name="instagram"
         id="instagram"
@@ -271,7 +271,7 @@
     </div>
   </div>
   <button
-    class="bg-sky-500 my-6 w-full text-center p-2 rounded-md shadow hover:bg-sky-600 border-transparent text-[var(--color-text-light)] font-bold"
+    class="bg-sky-500 my-6 w-full text-center p-2 rounded-md shadow hover:bg-sky-600 border-transparent text-[var(--color-text)] font-bold"
   >
     Submit
   </button>
