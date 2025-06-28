@@ -1,7 +1,7 @@
 {{ define "component-card.html" }}
 <div
   onclick="window.location='{{ .Path }}'"
-  class="hover:cursor-pointer max-w-sm w-full rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 bg-[var(--color-background)] border border-[var(--color-border)] dark:border-[var(--color-border-dark)] overflow-hidden"
+  class="hover:cursor-pointer max-w-sm w-full rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 bg-[var(--color-background)] border border-[var(--color-border)] overflow-hidden"
 >
   <div class="flex flex-col items-center p-4">
     <div class="flex flex-row align-middle">
@@ -41,7 +41,7 @@
       {{ range .Tags }}
       <a
         href="/humans?tag={{ . }}"
-        class="tag rounded-full px-3 py-1 text-sm font-semibold bg-[var(--color-secondary)] text-[var(--color-text)] hover:bg-[var(--color-secondary)] hover:text-[var(--color-text)] transition-colors duration-200 border border-[var(--color-secondary)]"
+        class="tag rounded-full px-3 py-1 text-sm font-semibold bg-[var(--color-secondary)] text-[var(--color-text)] hover:bg-[var(--color-secondary)] hover:text-[var(--color-text-secondary)] border border-[var(--color-secondary)]"
         >{{ . }}</a>
       {{ end }}
     </div>

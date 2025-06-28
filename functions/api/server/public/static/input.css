@@ -6,6 +6,7 @@
   --color-primary: #214620;
   --color-secondary: #D4AF37;
   --color-text: #333333;
+  --color-text-secondary: #556677;
   --color-background: #F5F5F5;
   --color-border: #e5e7eb;
 }
@@ -14,6 +15,7 @@
   --color-primary: #AEC2B6;
   --color-secondary: #D4AF37;
   --color-text: #F5F5F5;
+  --color-text-secondary: #AAAAAA;
   --color-background: #111827;
   --color-border: #374151;
 }
