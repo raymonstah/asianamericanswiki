@@ -33,7 +33,7 @@
     <meta name="twitter:image" content="{{ .Human.FeaturedImage }}" />
   </head>
   <body
-    class="h-full w-full flex flex-col align-middle min-h-screen bg-[var(--color-background-light)] text-[var(--color-text-light)] font-sans"
+    class="h-full w-full flex flex-col align-middle min-h-screen bg-[var(--color-background)] text-[var(--color-text)] font-sans"
   >
     {{ template "header.html" . }}
 
@@ -63,7 +63,7 @@
         {{ range .Human.Ethnicity }}
         <a
           href="/humans?ethnicity={{ . }}"
-          class="tag rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 text-[var(--color-text-light)] dark:hover:bg-gray-600 hover:scale-125"
+          class="tag rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 text-[var(--color-text)] dark:hover:bg-gray-600 hover:scale-125"
           >{{ . }}</a
         >
         {{ end }}
@@ -72,7 +72,7 @@
         {{ range .Human.Tags }}
         <a
           href="/humans?tag={{ . }}"
-          class="tag rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 text-[var(--color-text-light)] dark:hover:bg-gray-600 hover:scale-125"
+          class="tag rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 text-[var(--color-text)] dark:hover:bg-gray-600 hover:scale-125"
           >{{ . }}
         </a>
         {{ end }}
@@ -147,7 +147,7 @@
       .Human.Draft }}
       <button
         hx-post="/humans/{{ .Human.Path }}/publish"
-        class="bg-sky-500 text-text-light my-4 w-3/4 text-center p-2 rounded-md border-gray-500 shadow hover:bg-sky-600 border-transparent border-r-8 outline outline-neutral-700"
+        class="bg-sky-500 text-text my-4 w-3/4 text-center p-2 rounded-md border-gray-500 shadow hover:bg-sky-600 border-transparent border-r-8 outline outline-neutral-700"
       >
         Publish
       </button>
@@ -155,7 +155,7 @@
       {{end}}
       <button
         hx-get="/humans/{{ .Human.Path }}/edit"
-        class="bg-[var(--color-background-light)] my-4 w-3/4 text-center p-2 rounded-md bg-white border-gray-500 shadow hover:bg-gray-100 border-transparent border-r-8 outline outline-neutral-700"
+        class="bg-[var(--color-background)] my-4 w-3/4 text-center p-2 rounded-md bg-white border-gray-500 shadow hover:bg-gray-100 border-transparent border-r-8 outline outline-neutral-700"
       >
         Edit
       </button>
