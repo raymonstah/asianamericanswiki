@@ -35,7 +35,6 @@ var publicFS embed.FS
 
 type ServerHTML struct {
 	local         bool
-	rollbarToken  string
 	authClient    Authorizer
 	humanDAO      *humandao.DAO
 	logger        zerolog.Logger
@@ -56,7 +55,6 @@ type ServerHTMLConfig struct {
 	AuthClient    Authorizer
 	StorageClient *storage.Client
 	OpenaiClient  *openai.Client
-	RollbarToken  string
 }
 
 func NewServerHTML(conf ServerHTMLConfig) *ServerHTML {
@@ -70,7 +68,6 @@ func NewServerHTML(conf ServerHTMLConfig) *ServerHTML {
 		authClient:    conf.AuthClient,
 		humanDAO:      conf.HumanDAO,
 		logger:        conf.Logger,
-		rollbarToken:  conf.RollbarToken,
 		storageClient: conf.StorageClient,
 		storageURL:    storageURL,
 		openaiClient:  conf.OpenaiClient,
@@ -245,7 +242,6 @@ type Base struct {
 	Local           bool
 	EnableAds       bool
 	EnableAnalytics bool
-	RollbarToken    string
 	Admin           bool
 }
 
@@ -935,7 +931,6 @@ func getBase(s *ServerHTML, admin bool) Base {
 		EnableAds:       false,
 		EnableAnalytics: !s.local,
 		Admin:           admin,
-		RollbarToken:    s.rollbarToken,
 		Local:           s.local,
 	}
 	return base
