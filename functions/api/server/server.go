@@ -81,7 +81,6 @@ func NewServer(config Config) *Server {
 		Logger:        config.Logger,
 		StorageClient: config.StorageClient,
 		AuthClient:    config.AuthClient,
-		RollbarToken:  "e1082079233c44628d29032fc1847ca7",
 		OpenaiClient:  config.OpenAIClient,
 	})
 	if err := htmlServer.Register(r); err != nil {
