@@ -6,6 +6,6 @@ WORKDIR /build
 COPY . .
 RUN go build -o app functions/api/cmd/*go
 
-FROM alpine:latest
+FROM gcr.io/distroless/static
 COPY --from=builder /build/app /app
 ENTRYPOINT ["/app"]
