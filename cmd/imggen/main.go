@@ -7,12 +7,10 @@ import (
 	"errors"
 	"fmt"
 	_ "image/jpeg"
-	"io"
 	"io/fs"
 	"log"
 	"math"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -47,7 +45,7 @@ func main() {
 					&cli.StringFlag{Name: "name", Required: true, Destination: &opts.Name},
 					&cli.BoolFlag{Name: "webp", Destination: &opts.Webp},
 				},
-				Action: run,
+				Action: actionUpload,
 			},
 			{
 				Name:  "migrate-thumbnails",
@@ -56,7 +54,13 @@ func main() {
 					&cli.PathFlag{Name: "dir", Required: true, Usage: "input directory of images to generate thumbnails for"},
 					&cli.PathFlag{Name: "cache", Usage: "a cache file of detected faces", Value: ".detected-faces.json"},
 				},
-				Action: migrateThumbnails,
+				Action: actionMigrateThumbnails,
+			},
+			{
+				Name:   "migrate-images-struct",
+				Usage:  "migrate from the deprecated FeaturedImage field to the Images struct",
+				Flags:  []cli.Flag{},
+				Action: actionMigrateImagesStruct,
 			},
 		},
 		Flags: []cli.Flag{
@@ -68,28 +72,13 @@ func main() {
 	}
 }
 
-type Handler struct {
-	storageClient *storage.Client
-	fsClient      *firestore.Client
-	humanDAO      *humandao.DAO
-}
-
-// migrateThumbnails takes all images in a local directory and generates thumbnails for them using libvips.
-// It writes to a new folder for inspection.
-// If dry mode is enabled, it does not push the newly generated thumbnails upstream.
-func migrateThumbnails(c *cli.Context) error {
+// actionMigrateThumbnails takes all images in a local directory and generates thumbnails for them using libvips.
+// It writes to the original directory. If dry mode is enabled, it writes to a temporary directory.
+func actionMigrateThumbnails(c *cli.Context) error {
 	vips.LoggingSettings(nil, vips.LogLevelError)
 	vips.Startup(nil)
 	defer vips.Shutdown()
 	ctx := c.Context
-	if !opts.Dry {
-		storageClient, err := storage.NewClient(ctx)
-		if err != nil {
-			return fmt.Errorf("unable to create storage client: %w", err)
-		}
-		bucket := storageClient.Bucket(api.ImagesStorageBucket)
-		_ = bucket // todo: leave bucket unused for now, until we need to write to the bucket
-	}
 
 	dir := c.String("dir")
 	log.Printf("migrating thumbnails dry=%v dir=%s", opts.Dry, dir)
@@ -474,138 +463,63 @@ func detectFaceGoogleVision(ctx context.Context, input DetectFaceInput) (Detecte
 	return DetectedFaceResults{Faces: detectedFaces}, nil
 }
 
-func run(c *cli.Context) error {
+func actionUpload(c *cli.Context) error {
 	ctx := c.Context
 	fsClient, err := firestore.NewClient(ctx, api.ProjectID)
 	if err != nil {
 		return fmt.Errorf("unable to create firestore client: %w", err)
 	}
-
+	humanDAO := humandao.NewDAO(fsClient)
 	client, err := storage.NewClient(ctx)
 	if err != nil {
 		return fmt.Errorf("unable to create storage client: %w", err)
 	}
+	_ = client
+	_ = humanDAO
 
-	humanDAO := humandao.NewDAO(fsClient)
-	h := Handler{
-		fsClient:      fsClient,
-		storageClient: client,
-		humanDAO:      humanDAO,
-	}
-
-	if err := h.Do(ctx); err != nil {
-		return err
-	}
+	panic("not implemented yet")
 
 	return nil
 }
 
-func (h *Handler) Do(ctx context.Context) error {
-	path := strings.ToLower(opts.Name)
-	path = strings.ReplaceAll(path, " ", "-")
-	human, err := h.humanDAO.Human(ctx, humandao.HumanInput{Path: path})
+func actionMigrateImagesStruct(c *cli.Context) error {
+	ctx := c.Context
+	fsClient, err := firestore.NewClient(ctx, api.ProjectID)
 	if err != nil {
-		return fmt.Errorf("unable to get human: %w", err)
+		return fmt.Errorf("unable to create firestore client: %w", err)
 	}
-
-	id := human.ID
-	pathToImage := opts.Image
-
-	if opts.Webp {
-		tempDir, err := os.MkdirTemp(os.TempDir(), "webp")
-		if err != nil {
-			return fmt.Errorf("unable to create temp dir: %w", err)
-		}
-
-		// no image provided, use the image from Cloud Storage
-		if pathToImage == "" {
-			cloudStoragePath := filepath.Base(human.FeaturedImage)
-			fmt.Println("cloudStoragePath:", cloudStoragePath)
-			object := h.storageClient.Bucket(api.ImagesStorageBucket).Object(cloudStoragePath)
-			reader, err := object.NewReader(ctx)
-			if err != nil {
-				return fmt.Errorf("unable to read image from cloud storage path %v: %w", cloudStoragePath, err)
-			}
-			parts := strings.Split(cloudStoragePath, ".")
-			extension := ""
-			if len(parts) == 1 {
-				attrs, err := object.Attrs(ctx)
-				if err != nil {
-					return fmt.Errorf("unable to get image attrs: %w", err)
-				}
-				if strings.Contains(attrs.ContentType, "jpeg") {
-					extension = ".jpeg"
-				} else if strings.Contains(attrs.ContentType, "png") {
-					extension = ".png"
-				} else {
-					return fmt.Errorf("unsupported file type: %v", attrs.ContentType)
-				}
-			}
-			pathToImage = filepath.Join(tempDir, cloudStoragePath+extension)
-			dest, err := os.Create(pathToImage)
-			if err != nil {
-				return fmt.Errorf("unable to write image from cloud storage: %w", err)
-			}
-			fmt.Println("wrote image from cloud storage to temp dir", pathToImage)
-			if _, err := io.Copy(dest, reader); err != nil {
-				return fmt.Errorf("unable to copy image from cloud storage: %w", err)
-			}
-			defer func() {
-				if len(parts) == 1 {
-					fmt.Println("overwrite happened -- skipping delete")
-					return
-				}
-				fmt.Printf("deleting old image %v", cloudStoragePath)
-				if err := object.Delete(ctx); err != nil {
-					log.Default().Panic("error deleting image", err)
-				}
-			}()
-
-		}
-
-		fileName := filepath.Base(pathToImage)
-		fileNameParts := strings.Split(fileName, ".")
-		fileNameWithoutExtension := fileNameParts[0]
-		webpImage := fileNameWithoutExtension + ".webp"
-		sourceImagePath := filepath.Join(tempDir, fileName)
-		pathToWebp := filepath.Join(tempDir, webpImage)
-		args := []string{"-path", tempDir, "-format", "webp", "-quality", "10", sourceImagePath}
-		cmd := exec.Command("mogrify", args...)
-		if err := cmd.Run(); err != nil {
-			fmt.Printf("mogrify %v\n", strings.Join(args, " "))
-			return fmt.Errorf("unable to convert image to webp: %w", err)
-		}
-		fmt.Printf("wrote webp image to %v\n", pathToWebp)
-		pathToImage = pathToWebp
-	}
-
-	raw, err := os.ReadFile(pathToImage)
+	humanDAO := humandao.NewDAO(fsClient)
+	client, err := storage.NewClient(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to create storage client: %w", err)
+	}
+	_ = client
+	_ = humanDAO
+
+	allHumans, err := humanDAO.ListHumans(ctx, humandao.ListHumansInput{Limit: 500, IncludeDrafts: true})
+	if err != nil {
+		return fmt.Errorf("unable to list humans: %w", err)
 	}
 
-	if opts.Dry {
-		fmt.Println("dry mode detected -- exiting.")
-		return nil
+	bucketURL := "https://storage.googleapis.com/asianamericanswiki-images"
+
+	for _, human := range allHumans {
+		// not all humans have an existing image
+		if human.FeaturedImage != "" {
+			human.Images.Featured = fmt.Sprintf("%v/%v/%v", bucketURL, human.ID, "original.webp")
+			human.Images.Thumbnail = fmt.Sprintf("%v/%v/%v", bucketURL, human.ID, "thumbnail.webp")
+			if !opts.Dry {
+				if err := humanDAO.UpdateHuman(ctx, human); err != nil {
+					return fmt.Errorf("unable to set human images: %w", err)
+				}
+				log.Printf("updated %v (%v) images", human.Path, human.ID)
+			} else {
+				log.Printf("DRY mode: %v (%v)", human.Path, human.ID)
+				log.Printf("\t%v\n\t%v\n", human.Images.Featured, human.Images.Thumbnail)
+			}
+		}
 	}
 
-	imgName := fmt.Sprintf("%v", id)
-	obj := h.storageClient.Bucket(api.ImagesStorageBucket).Object(imgName)
-	writer := obj.NewWriter(ctx)
-	if _, err := writer.Write(raw); err != nil {
-		return err
-	}
-
-	if err := writer.Close(); err != nil {
-		return err
-	}
-
-	featuredImageURL := fmt.Sprintf("https://storage.googleapis.com/%v/%v", api.ImagesStorageBucket, imgName)
-	human.FeaturedImage = featuredImageURL
-	if err := h.humanDAO.UpdateHuman(ctx, human); err != nil {
-		return fmt.Errorf("unable to update human: %w", err)
-	}
-
-	log.Println("done: ", featuredImageURL)
+	log.Println("done.")
 	return nil
 }

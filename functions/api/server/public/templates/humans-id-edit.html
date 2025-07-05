@@ -20,10 +20,10 @@
       }
     };
   </script>
-  {{ if .Human.FeaturedImage }}
+  {{ if .Human.Images.Featured }}
   <img
     class="mb-2 object-cover h-96"
-    src="{{ .Human.FeaturedImage }}"
+    src="{{ .Human.Images.Featured }}"
     alt="A photo of {{ .Human.Name }}"
   />
   {{ end }}

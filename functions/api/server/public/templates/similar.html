@@ -19,11 +19,11 @@
         </h2>
       </a>
     </div>
-    {{ if .FeaturedImage }}
+    {{ if .Images.Thumbnail }}
     <a href="{{ .Path }}">
       <img
         class="object-cover h-16 w-16"
-        src="{{ .FeaturedImage }}"
+        src="{{ .Images.Thumbnail }}"
         alt="A photo of {{ .Name }}"
       />
     </a>
