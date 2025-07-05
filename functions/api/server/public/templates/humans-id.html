@@ -20,7 +20,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:title" content="{{ .Human.Name }}" />
     <meta property="og:description" content="{{ .Human.Description }}" />
-    <meta property="og:image" content="{{ .Human.FeaturedImage }}" />
+    <meta property="og:image" content="{{ .Human.Images.Thumbnail }}" />
 
     <!-- Twitter Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -30,7 +30,7 @@
     />
     <meta name="twitter:title" content="{{ .Human.Name }}" />
     <meta name="twitter:description" content="{{ .Human.Description }}" />
-    <meta name="twitter:image" content="{{ .Human.FeaturedImage }}" />
+    <meta name="twitter:image" content="{{ .Human.Images.Thumbnail }}" />
   </head>
   <body
     class="h-full w-full flex flex-col align-middle min-h-screen bg-[var(--color-background)] text-[var(--color-text)] font-sans"
@@ -49,10 +49,10 @@
           "female" }} ♀️ {{ else }} ☿️ {{ end }}
         </span>
       </h1>
-      {{ if .Human.FeaturedImage }}
+      {{ if .Human.Images.Featured }}
       <img
         class="mb-2 object-cover h-96"
-        src="{{ .Human.FeaturedImage }}"
+        src="{{ .Human.Images.Featured }}"
         alt="A photo of {{ .Human.Name }}"
       />
       {{ end }}

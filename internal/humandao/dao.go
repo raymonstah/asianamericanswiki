@@ -35,10 +35,11 @@ type Human struct {
 	BirthLocation string   `firestore:"birth_location,omitempty"`
 	Location      []string `firestore:"location,omitempty"`
 	InfluencedBy  []string `firestore:"influenced_by,omitempty"`
-	FeaturedImage string   `firestore:"featured_image,omitempty"`
-	Draft         bool     `firestore:"draft"`
-	AIGenerated   bool     `firestore:"ai_generated,omitempty"`
-	Description   string   `firestore:"description,omitempty"`
+	// deprecated: use Images instead.
+	FeaturedImage string `firestore:"featured_image,omitempty"`
+	Draft         bool   `firestore:"draft"`
+	AIGenerated   bool   `firestore:"ai_generated,omitempty"`
+	Description   string `firestore:"description,omitempty"`
 
 	CreatedAt time.Time `firestore:"created_at"`
 	CreatedBy string    `firestore:"created_by,omitempty"`
@@ -52,6 +53,13 @@ type Human struct {
 
 	// Similar is computed using cmd/compute-similar/main.go
 	Similar []string `firestore:"similar,omitempty"`
+
+	Images Images `firestore:"images,omitempty"`
+}
+
+type Images struct {
+	Featured  string `firestore:"featured,omitempty"`
+	Thumbnail string `firestore:"thumbnail,omitempty"`
 }
 
 func (h Human) CurrentAge(inputTime ...time.Time) (string, error) {
