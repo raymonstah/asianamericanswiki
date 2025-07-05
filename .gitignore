@@ -21,4 +21,5 @@ node_modules
 
 go.work
 go.work.sum
-tmp/main
+.detected-faces.json
+tmp/*
