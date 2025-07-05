@@ -14,6 +14,12 @@ jobs:
         with:
           go-version-file: "go.mod"
 
+      - name: Install libvips
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvips-dev
+
+
       - name: Check go.mod and go.sum tidiness
         run: |
           go mod tidy && go mod vendor
