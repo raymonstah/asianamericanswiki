@@ -4,36 +4,20 @@
   enctype="multipart/form-data"
   class="max-w-sm md:max-w-md flex flex-col items-center justify-center content-center self-center gap-y-2"
 >
-  <script>
-    const imgElement = document.getElementById("image");
-    console.log("image", imgElement);
-    if (imgElement.src === "" || imgElement.src === "about:blank") {
-      // Hide the img element
-      imgElement.style.display = "none";
-    }
-
-    featured_image.onchange = (evt) => {
-      imgElement.style.display = "block";
-      const [file] = featured_image.files;
-      if (file) {
-        image.src = URL.createObjectURL(file);
-      }
-    };
-  </script>
-  {{ if .Human.Images.Featured }}
-  <img
-    class="mb-2 object-cover h-96"
-    src="{{ .Human.Images.Featured }}"
-    alt="A photo of {{ .Human.Name }}"
-  />
-  {{ end }}
-  <input
+    <input
     accept="image/*"
     type="file"
     id="featured_image"
-    name="featured_image"
+    name="upload"
   />
-  <img id="image" />
+
+  <!-- Hidden fields to be filled -->
+  <input type="file" name="featured_image" id="featured_image_field" style="display: none;" />
+  <input type="file" name="thumbnail" id="thumbnail_field" style="display: none;" />
+
+  <div class="max-w-md max-h-96 overflow-hidden mx-auto">
+    <img id="image" class="max-h-48" style="display: none;" />
+  </div>
   <div>
   <input
     class="block w-full p-4 text-center text-sm text-gray-900 border border-gray-300 rounded-lg bg-[var(--color-background)] dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text)]"
@@ -244,3 +228,78 @@
     Cancel
   </button>
 </form>
+<!-- CropperJS -->
+<link href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet" />
+<script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
+
+<script>
+  const fileInput = document.getElementById("featured_image");
+  const image = document.getElementById("image");
+  const fieldFeatured = document.getElementById("featured_image_field");
+  const fieldThumb = document.getElementById("thumbnail_field");
+
+  let cropper;
+
+  fileInput.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    image.src = URL.createObjectURL(file);
+    image.style.display = "block";
+
+    const setFileInput = (input, file) => {
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      input.files = dt.files;
+    };
+
+    if (cropper) cropper.destroy();
+
+    await new Promise((resolve) => {
+      image.onload = () => {
+        cropper = new Cropper(image, {
+          aspectRatio: 1,
+          viewMode: 1,
+          autoCropArea: 1,
+          cropend: async function (event) {
+            console.log("user stopped interacting with cropper")
+            // Convert cropped thumbnail to WebP
+            const croppedCanvas = cropper.getCroppedCanvas({
+              width: 256,
+              height: 256,
+              imageSmoothingEnabled: true,
+              imageSmoothingQuality: "high",
+            });
+
+            const croppedBlob = await new Promise((resolve) => {
+              croppedCanvas.toBlob((blob) => resolve(blob), "image/webp", 0.9);
+            });
+            const thumbFile = new File([croppedBlob], "thumbnail.webp", { type: "image/webp" });
+            setFileInput(fieldThumb, thumbFile);
+          },
+        });
+        resolve();
+      };
+    });
+
+    // Convert full image to WebP
+    const originalBlob = await new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        canvas.toBlob((blob) => resolve(blob), "image/webp", 0.9);
+      };
+      img.src = image.src;
+    });
+
+
+    // Inject blobs into hidden file inputs using DataTransfer
+    const featuredFile = new File([originalBlob], "featured.webp", { type: "image/webp" });
+
+    setFileInput(fieldFeatured, featuredFile);
+  });
+</script>

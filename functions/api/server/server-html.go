@@ -239,10 +239,8 @@ func (s *ServerHTML) HandlerError(w http.ResponseWriter, r *http.Request, e Erro
 }
 
 type Base struct {
-	Local           bool
-	EnableAds       bool
-	EnableAnalytics bool
-	Admin           bool
+	Local bool
+	Admin bool
 }
 
 type HTMLResponseHumans struct {
@@ -509,20 +507,41 @@ func (s *ServerHTML) HandlerHumanAdd(w http.ResponseWriter, r *http.Request) err
 		website     = strings.TrimSpace(r.Form.Get("website"))
 		instagram   = strings.TrimSpace(r.Form.Get("instagram"))
 	)
-	var rawImage []byte
-	var imageExtension string
-	file, header, err := r.FormFile("featured_image")
+	var rawFeaturedImage []byte
+	var rawThumbnail []byte
+
+	featuredImageFile, header, err := r.FormFile("featured_image")
 	if err != http.ErrMissingFile {
 		if err != nil {
 			return NewBadRequestError(fmt.Errorf("invalid image: %w", err))
 		}
 
-		raw, err := io.ReadAll(file)
+		raw, err := io.ReadAll(featuredImageFile)
 		if err != nil {
 			return NewBadRequestError(fmt.Errorf("invalid image: %w", err))
 		}
-		rawImage = raw
-		imageExtension = filepath.Ext(header.Filename)
+		rawFeaturedImage = raw
+		imageExtension := filepath.Ext(header.Filename)
+		if imageExtension != ".webp" {
+			return NewBadRequestError(fmt.Errorf("featured image should be in webp format"))
+		}
+	}
+
+	thumbnailFile, header, err := r.FormFile("thumbnail")
+	if err != http.ErrMissingFile {
+		if err != nil {
+			return NewBadRequestError(fmt.Errorf("invalid image: %w", err))
+		}
+
+		raw, err := io.ReadAll(thumbnailFile)
+		if err != nil {
+			return NewBadRequestError(fmt.Errorf("invalid image: %w", err))
+		}
+		rawThumbnail = raw
+		imageExtension := filepath.Ext(header.Filename)
+		if imageExtension != ".webp" {
+			return NewBadRequestError(fmt.Errorf("thumbnail image should be in webp format"))
+		}
 	}
 
 	human, err := s.humanDAO.AddHuman(ctx, humandao.AddHumanInput{
@@ -550,18 +569,33 @@ func (s *ServerHTML) HandlerHumanAdd(w http.ResponseWriter, r *http.Request) err
 		return NewInternalServerError(err)
 	}
 
-	objectID := fmt.Sprintf("%v%v", human.ID, imageExtension)
-	if len(rawImage) > 0 {
-		obj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(objectID)
-		writer := obj.NewWriter(ctx)
-		if _, err := writer.Write(rawImage); err != nil {
-			return err
-		}
+	if len(rawThumbnail) > 0 || len(rawFeaturedImage) > 0 {
+		if len(rawThumbnail) > 0 {
+			objectID := fmt.Sprintf("%s/thumbnail.webp", human.ID)
+			obj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(objectID)
+			writer := obj.NewWriter(ctx)
+			if _, err := writer.Write(rawThumbnail); err != nil {
+				return err
+			}
 
-		if err := writer.Close(); err != nil {
-			return err
+			if err := writer.Close(); err != nil {
+				return err
+			}
+			human.Images.Thumbnail = fmt.Sprintf("%v/%v/%s", s.storageURL, api.ImagesStorageBucket, objectID)
 		}
-		human.FeaturedImage = fmt.Sprintf("%v/%v/%v", s.storageURL, api.ImagesStorageBucket, objectID)
+		if len(rawFeaturedImage) > 0 {
+			objectID := fmt.Sprintf("%s/original.webp", human.ID)
+			obj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(objectID)
+			writer := obj.NewWriter(ctx)
+			if _, err := writer.Write(rawFeaturedImage); err != nil {
+				return err
+			}
+
+			if err := writer.Close(); err != nil {
+				return err
+			}
+			human.Images.Featured = fmt.Sprintf("%v/%v/%s", s.storageURL, api.ImagesStorageBucket, objectID)
+		}
 		if err := s.humanDAO.UpdateHuman(ctx, human); err != nil {
 			return err
 		}
@@ -636,34 +670,55 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 	}
 
 	var (
-		description    = strings.TrimSpace(r.Form.Get("description"))
-		x              = strings.TrimSpace(r.Form.Get("x"))
-		instagram      = strings.TrimSpace(r.Form.Get("instagram"))
-		website        = strings.TrimSpace(r.Form.Get("website"))
-		imdb           = strings.TrimSpace(r.Form.Get("imdb"))
-		rawImage       []byte
-		imageExtension string
-		tags           = r.Form["tags"]
-		tagsOther      = r.Form.Get("tags-other")
-		dob            = strings.TrimSpace(r.Form.Get("dob"))
-		name           = strings.TrimSpace(r.Form.Get("name"))
+		description = strings.TrimSpace(r.Form.Get("description"))
+		x           = strings.TrimSpace(r.Form.Get("x"))
+		instagram   = strings.TrimSpace(r.Form.Get("instagram"))
+		website     = strings.TrimSpace(r.Form.Get("website"))
+		imdb        = strings.TrimSpace(r.Form.Get("imdb"))
+		tags        = r.Form["tags"]
+		tagsOther   = r.Form.Get("tags-other")
+		dob         = strings.TrimSpace(r.Form.Get("dob"))
+		name        = strings.TrimSpace(r.Form.Get("name"))
 	)
 	if tagsOther != "" {
 		tags = append(tags, strings.Split(tagsOther, ",")...)
 	}
 
-	file, header, err := r.FormFile("featured_image")
+	var rawFeaturedImage []byte
+	var rawThumbnail []byte
+
+	featuredImageFile, header, err := r.FormFile("featured_image")
 	if err != http.ErrMissingFile {
 		if err != nil {
 			return NewBadRequestError(fmt.Errorf("invalid image: %w", err))
 		}
 
-		raw, err := io.ReadAll(file)
+		raw, err := io.ReadAll(featuredImageFile)
 		if err != nil {
 			return NewBadRequestError(fmt.Errorf("invalid image: %w", err))
 		}
-		rawImage = raw
-		imageExtension = filepath.Ext(header.Filename)
+		rawFeaturedImage = raw
+		imageExtension := filepath.Ext(header.Filename)
+		if imageExtension != ".webp" {
+			return NewBadRequestError(fmt.Errorf("featured image should be in webp format"))
+		}
+	}
+
+	thumbnailFile, header, err := r.FormFile("thumbnail")
+	if err != http.ErrMissingFile {
+		if err != nil {
+			return NewBadRequestError(fmt.Errorf("invalid image: %w", err))
+		}
+
+		raw, err := io.ReadAll(thumbnailFile)
+		if err != nil {
+			return NewBadRequestError(fmt.Errorf("invalid image: %w", err))
+		}
+		rawThumbnail = raw
+		imageExtension := filepath.Ext(header.Filename)
+		if imageExtension != ".webp" {
+			return NewBadRequestError(fmt.Errorf("thumbnail image should be in webp format"))
+		}
 	}
 
 	humanPath := chi.URLParamFromCtx(r.Context(), "id")
@@ -691,18 +746,33 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		human.Name = name
 	}
 
-	objectID := fmt.Sprintf("%v%v", human.ID, imageExtension)
-	if len(rawImage) > 0 {
-		obj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(objectID)
-		writer := obj.NewWriter(ctx)
-		if _, err := writer.Write(rawImage); err != nil {
-			return err
-		}
+	if len(rawThumbnail) > 0 || len(rawFeaturedImage) > 0 {
+		if len(rawThumbnail) > 0 {
+			objectID := fmt.Sprintf("%s/thumbnail.webp", human.ID)
+			obj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(objectID)
+			writer := obj.NewWriter(ctx)
+			if _, err := writer.Write(rawThumbnail); err != nil {
+				return err
+			}
 
-		if err := writer.Close(); err != nil {
-			return err
+			if err := writer.Close(); err != nil {
+				return err
+			}
+			human.Images.Thumbnail = fmt.Sprintf("%v/%v/%s", s.storageURL, api.ImagesStorageBucket, objectID)
 		}
-		human.FeaturedImage = fmt.Sprintf("%v/%v/%v", s.storageURL, api.ImagesStorageBucket, objectID)
+		if len(rawFeaturedImage) > 0 {
+			objectID := fmt.Sprintf("%s/original.webp", human.ID)
+			obj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(objectID)
+			writer := obj.NewWriter(ctx)
+			if _, err := writer.Write(rawFeaturedImage); err != nil {
+				return err
+			}
+
+			if err := writer.Close(); err != nil {
+				return err
+			}
+			human.Images.Featured = fmt.Sprintf("%v/%v/%s", s.storageURL, api.ImagesStorageBucket, objectID)
+		}
 	}
 	if err := s.humanDAO.UpdateHuman(ctx, human); err != nil {
 		return err
@@ -928,10 +998,8 @@ func (h HttpHandler) Serve(errorHandler func(w http.ResponseWriter, r *http.Requ
 
 func getBase(s *ServerHTML, admin bool) Base {
 	base := Base{
-		EnableAds:       false,
-		EnableAnalytics: !s.local,
-		Admin:           admin,
-		Local:           s.local,
+		Admin: admin,
+		Local: s.local,
 	}
 	return base
 }
