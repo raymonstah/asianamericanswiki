@@ -1,57 +1,124 @@
 <!doctype html>
-<html lang="en" class="h-full">
+<html lang="en" class="h-full antialiased">
   <head>
     <title>AsianAmericans.wiki</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-    <link href="/output.css" rel="stylesheet" />
+    <link href="/output.css?v=2" rel="stylesheet" />
     <script src="/1.9.10.htmx.min.js"></script>
     {{ template "dark-mode.html" . }}
   </head>
 
   <body
-    class="h-full w-full flex flex-col align-middle min-h-screen bg-[var(--color-background)] text-[var(--color-text)] font-sans"
+    class="flex flex-col min-h-screen bg-[var(--color-background)] text-[var(--color-text)] font-body selection:bg-[var(--color-primary)] selection:text-white"
   >
     {{ template "header.html" . }}
 
-    
+    <main class="flex-grow">
+      <!-- Hero Section -->
+      <section class="relative bg-[var(--color-card-bg)] border-b border-[var(--color-border)] overflow-hidden">
+        <div class="absolute inset-0 opacity-5 bg-[url('/pattern.svg')]"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center relative">
+          <h1 class="text-4xl sm:text-6xl font-extrabold text-[var(--color-text)] font-heading tracking-tight mb-4">
+            Celebrating <span class="text-[var(--color-primary)]">Asian American</span> Excellence
+          </h1>
+          <p class="mt-4 max-w-2xl mx-auto text-xl text-[var(--color-text-secondary)]">
+            Discover the stories, achievements, and contributions of Asian Americans across history and culture.
+          </p>
+          <div class="mt-8 flex justify-center gap-4">
+            <a href="/humans" class="px-6 py-3 rounded-lg bg-[var(--color-primary)] text-white font-semibold hover:bg-[var(--color-primary-hover)] transition-colors shadow-lg shadow-[var(--color-primary)]/20">
+              Explore All Humans
+            </a>
+            <a href="/about" class="px-6 py-3 rounded-lg bg-[var(--color-background)] text-[var(--color-text)] font-semibold border border-[var(--color-border)] hover:bg-[var(--color-border)] transition-colors">
+              Learn More
+            </a>
+          </div>
+        </div>
+      </section>
 
-    <div class="flex flex-col items-center align-middle gap-y-4 mx-2 mb-4">
-      <h2 class="text-3xl font-extrabold mt-4 text-center font-heading">
-        <a href="/humans?tag=music">Musicians</a>
-      </h2>
-      {{ range $human := .Musicians }} {{ template "component-card.html" $human
-      }} {{ end }}
-      <h2 class="text-3xl font-extrabold mt-4 text-center font-heading">
-        <a href="/humans?tag=comedian">Comedians</a>
-      </h2>
-      {{ range $human := .Comedians }} {{ template "component-card.html" $human
-      }} {{ end }}
-      <h2 class="text-3xl font-extrabold mt-4 text-center font-heading">
-        <a href="/humans?tag=actor">Actors</a>
-      </h2>
-      {{ range $human := .Actors }} {{ template "component-card.html" $human }}
-      {{ end }}
-      <h2 class="text-3xl font-extrabold mt-4 text-center font-heading">
-        <a href="/humans?search=legend">Legends</a>
-      </h2>
-      {{ range $human := .Legends }} {{ template "component-card.html" $human }}
-      {{ end }}
-      <h1 class="text-3xl font-extrabold mt-4 text-center font-heading">
-        <a href="/humans">Recently Added</a>
-      </h1>
-      {{ range $human := .RecentlyAdded }} {{ template "component-card.html"
-      $human }} {{ end }}
-    </div>
+      <!-- Content Sections -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
+        
+        <!-- Recently Added -->
+        <section>
+          <div class="flex items-center justify-between mb-6">
+             <h2 class="text-2xl font-bold font-heading text-[var(--color-text)]">Recently Added</h2>
+             <a href="/humans" class="text-sm font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] group flex items-center">
+               View All <span class="ml-1 transition-transform group-hover:translate-x-1">→</span>
+             </a>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            {{ range $human := .RecentlyAdded }}
+              {{ template "component-card.html" $human }}
+            {{ end }}
+          </div>
+        </section>
 
-    <a class="text-xl font-extrabold my-4 text-center" href="/humans">
-      View more
-      <span
-        class="inline-flex items-center rounded-md bg-[var(--color-background)] px-2 py-1 text-xs font-medium text-[var(--color-text)] ring-1 ring-inset ring-gray-500/10"
-        >{{ .Count }}
-      </span>
-    </a>
+        <!-- Categories -->
+        <div class="grid md:grid-cols-2 gap-12">
+            <!-- Musicians -->
+            <section>
+              <h2 class="text-2xl font-bold font-heading text-[var(--color-text)] mb-6">
+                <a href="/humans?tag=music" class="hover:underline decoration-[var(--color-primary)] decoration-2 underline-offset-4">Musicians</a>
+              </h2>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                {{ range $human := .Musicians }}
+                  {{ template "component-card.html" $human }}
+                {{ end }}
+              </div>
+            </section>
+
+            <!-- Comedians -->
+            <section>
+              <h2 class="text-2xl font-bold font-heading text-[var(--color-text)] mb-6">
+                <a href="/humans?tag=comedian" class="hover:underline decoration-[var(--color-primary)] decoration-2 underline-offset-4">Comedians</a>
+              </h2>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                {{ range $human := .Comedians }}
+                  {{ template "component-card.html" $human }}
+                {{ end }}
+              </div>
+            </section>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-12">
+            <!-- Actors -->
+            <section>
+              <h2 class="text-2xl font-bold font-heading text-[var(--color-text)] mb-6">
+                <a href="/humans?tag=actor" class="hover:underline decoration-[var(--color-primary)] decoration-2 underline-offset-4">Actors</a>
+              </h2>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                {{ range $human := .Actors }}
+                  {{ template "component-card.html" $human }}
+                {{ end }}
+              </div>
+            </section>
+
+            <!-- Legends -->
+            <section>
+               <h2 class="text-2xl font-bold font-heading text-[var(--color-text)] mb-6">
+                <a href="/humans?search=legend" class="hover:underline decoration-[var(--color-primary)] decoration-2 underline-offset-4">Legends</a>
+              </h2>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                {{ range $human := .Legends }}
+                  {{ template "component-card.html" $human }}
+                {{ end }}
+              </div>
+            </section>
+        </div>
+        
+        <div class="text-center pt-8 border-t border-[var(--color-border)]">
+           <a class="inline-flex flex-col items-center group" href="/humans">
+            <span class="text-3xl font-extrabold text-[var(--color-text)] mb-2 group-hover:text-[var(--color-primary)] transition-colors">
+              {{ .Count }} Humans
+            </span>
+            <span class="text-[var(--color-text-secondary)] text-sm">and counting...</span>
+          </a>
+        </div>
+
+      </div>
+    </main>
 
     {{ template "footer.html" . }}
   </body>

@@ -1,34 +1,10 @@
 {{ if .Similar }}
-<h3 class="text-xl font-bold mb-4 text-center">Similar Humans</h3>
-<ul class="grid grid-cols-3 gap-4">
-  {{ range .Similar }}
-  <li
-    onclick="window.location='{{ .Path }}'"
-    class="hover:cursor-pointer border-[var(--color-border)] rounded-lg shadow items-center flex flex-col hover:bg-[var(--color-border)] hover:text-[var(--color-text)] [var(--color-background)] h-full p-2"
-  >
-    <div class="flex flex-row align-middle min-h-[50px]">
-      <a href="{{ .Path }}">
-        <h2
-          class="mb-2 text-center text-lg font-bold tracking-tight"
-        >
-          {{ .Name }}
-          <span class="text-xs">
-            {{ if eq .Gender "male" }} ♂️ {{ else if eq .Gender "female" }} ♀️
-            {{ else }} ☿️ {{ end }}
-          </span>
-        </h2>
-      </a>
-    </div>
-    {{ if .Images.Thumbnail }}
-    <a href="{{ .Path }}">
-      <img
-        class="object-cover h-16 w-16"
-        src="{{ .Images.Thumbnail }}"
-        alt="A photo of {{ .Name }}"
-      />
-    </a>
+<section class="mt-12 border-t border-[var(--color-border)] pt-8">
+  <h2 class="text-2xl font-bold font-heading text-[var(--color-text)] mb-6">Similar Humans</h2>
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+    {{ range .Similar }}
+      {{ template "component-card.html" . }}
     {{ end }}
-  </li>
-  {{ end }}
-</ul>
+  </div>
+</section>
 {{ end }}

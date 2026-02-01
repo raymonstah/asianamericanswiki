@@ -1,21 +1,44 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-heading: 'Poppins', sans-serif;
+  --font-body: 'Lato', sans-serif;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --color-primary: #214620;
-  --color-secondary: #D4AF37;
-  --color-text: #333333;
-  --color-text-secondary: #556677;
-  --color-background: #F5F5F5;
-  --color-border: #e5e7eb;
+  --color-primary: #0f766e; /* teal-700 */
+  --color-primary-hover: #0d9488; /* teal-600 */
+  --color-secondary: #f59e0b; /* amber-500 */
+  --color-text: #1e293b; /* slate-800 */
+  --color-text-secondary: #64748b; /* slate-500 */
+  --color-background: #f8fafc; /* slate-50 */
+  --color-card-bg: #ffffff;
+  --color-border: #e2e8f0; /* slate-200 */
 }
 
 .dark {
-  --color-primary: #AEC2B6;
-  --color-secondary: #D4AF37;
-  --color-text: #F5F5F5;
-  --color-text-secondary: #AAAAAA;
-  --color-background: #111827;
-  --color-border: #374151;
+  --color-primary: #2dd4bf; /* teal-400 */
+  --color-primary-hover: #5eead4; /* teal-300 */
+  --color-secondary: #fbbf24; /* amber-400 */
+  --color-text: #f1f5f9; /* slate-100 */
+  --color-text-secondary: #94a3b8; /* slate-400 */
+  --color-background: #0f172a; /* slate-900 */
+  --color-card-bg: #1e293b; /* slate-800 */
+  --color-border: #334155; /* slate-700 */
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+.tag {
+  transition: all 0.2s ease-in-out;
 }
