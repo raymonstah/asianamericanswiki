@@ -4,7 +4,7 @@
 //  \ V  V /  __/ (_| |\ V /| | (_| | ||  __/
 //   \_/\_/ \___|\__,_| \_/ |_|\__,_|\__\___|
 //
-//  Copyright © 2016 - 2024 Weaviate B.V. All rights reserved.
+//  Copyright © 2016 - 2025 Weaviate B.V. All rights reserved.
 //
 //  CONTACT: hello@weaviate.io
 //
@@ -28,13 +28,13 @@ import (
 // swagger:model StopwordConfig
 type StopwordConfig struct {
 
-	// stopwords to be considered additionally
+	// Stopwords to be considered additionally (default: []). Can be any array of custom strings.
 	Additions []string `json:"additions"`
 
-	// pre-existing list of common words by language
+	// Pre-existing list of common words by language (default: 'en'). Options: ['en', 'none'].
 	Preset string `json:"preset,omitempty"`
 
-	// stopwords to be removed from consideration
+	// Stopwords to be removed from consideration (default: []). Can be any array of custom strings.
 	Removals []string `json:"removals"`
 }
 

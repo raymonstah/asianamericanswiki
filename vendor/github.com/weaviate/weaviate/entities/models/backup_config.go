@@ -4,7 +4,7 @@
 //  \ V  V /  __/ (_| |\ V /| | (_| | ||  __/
 //   \_/\_/ \___|\__,_| \_/ |_|\__,_|\__\___|
 //
-//  Copyright © 2016 - 2024 Weaviate B.V. All rights reserved.
+//  Copyright © 2016 - 2025 Weaviate B.V. All rights reserved.
 //
 //  CONTACT: hello@weaviate.io
 //
@@ -31,19 +31,26 @@ import (
 // swagger:model BackupConfig
 type BackupConfig struct {
 
+	// Name of the bucket, container, volume, etc
+	Bucket string `json:"Bucket,omitempty"`
+
 	// Desired CPU core utilization ranging from 1%-80%
 	// Maximum: 80
 	// Minimum: 1
 	CPUPercentage int64 `json:"CPUPercentage,omitempty"`
 
-	// Weaviate will attempt to come close the specified size, with a minimum of 2MB, default of 128MB, and a maximum of 512MB
-	// Maximum: 512
-	// Minimum: 2
+	// Deprecated, has no effect.
 	ChunkSize int64 `json:"ChunkSize,omitempty"`
 
 	// compression level used by compression algorithm
-	// Enum: [DefaultCompression BestSpeed BestCompression]
+	// Enum: [DefaultCompression BestSpeed BestCompression ZstdDefaultCompression ZstdBestSpeed ZstdBestCompression NoCompression]
 	CompressionLevel string `json:"CompressionLevel,omitempty"`
+
+	// name of the endpoint, e.g. s3.amazonaws.com
+	Endpoint string `json:"Endpoint,omitempty"`
+
+	// Path or key within the bucket
+	Path string `json:"Path,omitempty"`
 }
 
 // Validate validates this backup config
@@ -51,10 +58,6 @@ func (m *BackupConfig) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateCPUPercentage(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateChunkSize(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -84,27 +87,11 @@ func (m *BackupConfig) validateCPUPercentage(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *BackupConfig) validateChunkSize(formats strfmt.Registry) error {
-	if swag.IsZero(m.ChunkSize) { // not required
-		return nil
-	}
-
-	if err := validate.MinimumInt("ChunkSize", "body", m.ChunkSize, 2, false); err != nil {
-		return err
-	}
-
-	if err := validate.MaximumInt("ChunkSize", "body", m.ChunkSize, 512, false); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 var backupConfigTypeCompressionLevelPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["DefaultCompression","BestSpeed","BestCompression"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["DefaultCompression","BestSpeed","BestCompression","ZstdDefaultCompression","ZstdBestSpeed","ZstdBestCompression","NoCompression"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -122,6 +109,18 @@ const (
 
 	// BackupConfigCompressionLevelBestCompression captures enum value "BestCompression"
 	BackupConfigCompressionLevelBestCompression string = "BestCompression"
+
+	// BackupConfigCompressionLevelZstdDefaultCompression captures enum value "ZstdDefaultCompression"
+	BackupConfigCompressionLevelZstdDefaultCompression string = "ZstdDefaultCompression"
+
+	// BackupConfigCompressionLevelZstdBestSpeed captures enum value "ZstdBestSpeed"
+	BackupConfigCompressionLevelZstdBestSpeed string = "ZstdBestSpeed"
+
+	// BackupConfigCompressionLevelZstdBestCompression captures enum value "ZstdBestCompression"
+	BackupConfigCompressionLevelZstdBestCompression string = "ZstdBestCompression"
+
+	// BackupConfigCompressionLevelNoCompression captures enum value "NoCompression"
+	BackupConfigCompressionLevelNoCompression string = "NoCompression"
 )
 
 // prop value enum

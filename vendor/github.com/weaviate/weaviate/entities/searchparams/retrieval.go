@@ -4,7 +4,7 @@
 //  \ V  V /  __/ (_| |\ V /| | (_| | ||  __/
 //   \_/\_/ \___|\__,_| \_/ |_|\__,_|\__\___|
 //
-//  Copyright © 2016 - 2024 Weaviate B.V. All rights reserved.
+//  Copyright © 2016 - 2025 Weaviate B.V. All rights reserved.
 //
 //  CONTACT: hello@weaviate.io
 //
@@ -15,16 +15,18 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/weaviate/weaviate/entities/search"
+
 	"github.com/weaviate/weaviate/entities/models"
 	"github.com/weaviate/weaviate/entities/schema"
 )
 
 type NearVector struct {
-	Certainty     float64     `json:"certainty"`
-	Distance      float64     `json:"distance"`
-	WithDistance  bool        `json:"-"`
-	Vectors       [][]float32 `json:"vectors"`
-	TargetVectors []string    `json:"targetVectors"`
+	Certainty     float64         `json:"certainty"`
+	Distance      float64         `json:"distance"`
+	WithDistance  bool            `json:"-"`
+	Vectors       []models.Vector `json:"vectors"`
+	TargetVectors []string        `json:"targetVectors"`
 }
 
 type KeywordRanking struct {
@@ -32,6 +34,8 @@ type KeywordRanking struct {
 	Properties             []string `json:"properties"`
 	Query                  string   `json:"query"`
 	AdditionalExplanations bool     `json:"additionalExplanations"`
+	MinimumOrTokensMatch   int      `json:"minimumOrTokensMatch"`
+	SearchOperator         string   `json:"searchOperator"`
 }
 
 // Indicates whether property should be indexed
@@ -72,7 +76,7 @@ func GetPropertyByName(c *models.Class, propName string) (*models.Property, erro
 			return prop, nil
 		}
 	}
-	return nil, fmt.Errorf("Property %v not found %v", propName, c.Class)
+	return nil, fmt.Errorf("property %v not found %v", propName, c.Class)
 }
 
 func (k *KeywordRanking) ChooseSearchableProperties(class *models.Class) {
@@ -96,18 +100,20 @@ type WeightedSearchResult struct {
 }
 
 type HybridSearch struct {
-	SubSearches      interface{} `json:"subSearches"`
-	Type             string      `json:"type"`
-	Alpha            float64     `json:"alpha"`
-	Query            string      `json:"query"`
-	Vector           []float32   `json:"vector"`
-	Properties       []string    `json:"properties"`
-	TargetVectors    []string    `json:"targetVectors"`
-	FusionAlgorithm  int         `json:"fusionalgorithm"`
-	Distance         float32     `json:"distance"`
-	WithDistance     bool        `json:"withDistance"`
-	NearTextParams   *NearTextParams
-	NearVectorParams *NearVector
+	SubSearches          interface{}   `json:"subSearches"`
+	Type                 string        `json:"type"`
+	Alpha                float64       `json:"alpha"`
+	Query                string        `json:"query"`
+	Vector               models.Vector `json:"vector"`
+	Properties           []string      `json:"properties"`
+	TargetVectors        []string      `json:"targetVectors"`
+	FusionAlgorithm      int           `json:"fusionalgorithm"`
+	Distance             float32       `json:"distance"`
+	WithDistance         bool          `json:"withDistance"`
+	MinimumOrTokensMatch int           `json:"minimumOrTokenMatch"`
+	SearchOperator       string        `json:"searchOperator"`
+	NearTextParams       *NearTextParams
+	NearVectorParams     *NearVector
 }
 
 type NearObject struct {
@@ -148,4 +154,5 @@ type GroupBy struct {
 	Property        string
 	Groups          int
 	ObjectsPerGroup int
+	Properties      search.SelectProperties
 }

@@ -64,6 +64,9 @@ type Registry struct {
 	// with gRPC-Gateway response, if it uses json tags for marshaling.
 	useJSONNamesForFields bool
 
+	// useProto3FieldSemantics if true proto3 field semantics are used for generating fields in OpenAPI definitions.
+	useProto3FieldSemantics bool
+
 	// openAPINamingStrategy is the naming strategy to use for assigning OpenAPI field and parameter names. This can be one of the following:
 	// - `legacy`: use the legacy naming strategy from protoc-gen-swagger, that generates unique but not necessarily
 	//             maximally concise names. Components are concatenated directly, e.g., `MyOuterMessageMyNestedMessage`.
@@ -154,6 +157,10 @@ type Registry struct {
 	// properties
 	useAllOfForRefs bool
 
+	// omitArrayItemTypeWhenRefSibling, if set, will omit 'type: object' in array items when $ref is present
+	// to avoid no-$ref-siblings violations in OpenAPI v2
+	omitArrayItemTypeWhenRefSibling bool
+
 	// allowPatchFeature determines whether to use PATCH feature involving update masks (using google.protobuf.FieldMask).
 	allowPatchFeature bool
 
@@ -163,6 +170,9 @@ type Registry struct {
 
 	// enableRpcDeprecation whether to process grpc method's deprecated option
 	enableRpcDeprecation bool
+
+	// enableFieldDeprecation whether to process proto field's deprecated option
+	enableFieldDeprecation bool
 
 	// expandSlashedPathPatterns, if true, for a path parameter carrying a sub-path, described via parameter pattern (i.e.
 	// the pattern contains forward slashes), this will expand the _pattern_ into the URI and will _replace_ the parameter
@@ -175,6 +185,9 @@ type Registry struct {
 	// This leads to more compliant and readable OpenAPI suitable for documentation, but may complicate client
 	// implementation if you want to pass the original "name" parameter.
 	expandSlashedPathPatterns bool
+
+	// generateXGoType is a global generator option for generating x-go-type annotations
+	generateXGoType bool
 }
 
 type repeatedFieldSeparator struct {
@@ -397,6 +410,14 @@ func (r *Registry) LookupFile(name string) (*File, error) {
 		return nil, fmt.Errorf("no such file given: %s", name)
 	}
 	return f, nil
+}
+
+func (r *Registry) GetUseProto3FieldSemantics() bool {
+	return r.useProto3FieldSemantics
+}
+
+func (r *Registry) SetUseProto3FieldSemantics(useProto3FieldSemantics bool) {
+	r.useProto3FieldSemantics = useProto3FieldSemantics
 }
 
 // LookupExternalHTTPRules looks up external http rules by fully qualified service method name
@@ -871,6 +892,16 @@ func (r *Registry) GetUseAllOfForRefs() bool {
 	return r.useAllOfForRefs
 }
 
+// SetOmitArrayItemTypeWhenRefSibling sets omitArrayItemTypeWhenRefSibling
+func (r *Registry) SetOmitArrayItemTypeWhenRefSibling(omit bool) {
+	r.omitArrayItemTypeWhenRefSibling = omit
+}
+
+// GetOmitArrayItemTypeWhenRefSibling returns omitArrayItemTypeWhenRefSibling
+func (r *Registry) GetOmitArrayItemTypeWhenRefSibling() bool {
+	return r.omitArrayItemTypeWhenRefSibling
+}
+
 // SetAllowPatchFeature sets allowPatchFeature
 func (r *Registry) SetAllowPatchFeature(allow bool) {
 	r.allowPatchFeature = allow
@@ -901,10 +932,28 @@ func (r *Registry) GetEnableRpcDeprecation() bool {
 	return r.enableRpcDeprecation
 }
 
+// SetEnableFieldDeprecation sets enableFieldDeprecation
+func (r *Registry) SetEnableFieldDeprecation(enable bool) {
+	r.enableFieldDeprecation = enable
+}
+
+// GetEnableFieldDeprecation returns enableFieldDeprecation
+func (r *Registry) GetEnableFieldDeprecation() bool {
+	return r.enableFieldDeprecation
+}
+
 func (r *Registry) SetExpandSlashedPathPatterns(expandSlashedPathPatterns bool) {
 	r.expandSlashedPathPatterns = expandSlashedPathPatterns
 }
 
 func (r *Registry) GetExpandSlashedPathPatterns() bool {
 	return r.expandSlashedPathPatterns
+}
+
+func (r *Registry) SetGenerateXGoType(generateXGoType bool) {
+	r.generateXGoType = generateXGoType
+}
+
+func (r *Registry) GetGenerateXGoType() bool {
+	return r.generateXGoType
 }
