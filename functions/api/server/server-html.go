@@ -1156,12 +1156,24 @@ func (s *ServerHTML) HandlerXAIGenerate(w http.ResponseWriter, r *http.Request) 
 		}
 	}
 
+	if prompt == "" {
+		prompt = fmt.Sprintf("A cinematic portrait of %s, black background, high quality, 8k, highly detailed, professional lighting.", human.Name)
+	}
+
 	imageURLs, err := s.xaiClient.GenerateImage(ctx, xai.GenerateImageInput{
 		Prompt: prompt,
 		N:      numImages,
 		Image:  baseImage,
 	})
 	if err != nil {
+		if strings.Contains(err.Error(), "(status 429)") {
+			w.WriteHeader(http.StatusTooManyRequests)
+			w.Write([]byte(`<div class="col-span-full p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-800">
+                <p class="font-bold">xAI is currently overloaded</p>
+                <p class="text-sm">The model is experiencing high demand. Please wait a few minutes and try again.</p>
+            </div>`))
+			return nil
+		}
 		return NewInternalServerError(err)
 	}
 
@@ -1259,6 +1271,7 @@ func (s *ServerHTML) HandlerXAIUpload(w http.ResponseWriter, r *http.Request) er
 
 	_ = s.initializeIndex(ctx)
 
-	w.Write([]byte("Successfully uploaded and updated human record!"))
+	s.logger.Info().Str("id", human.ID).Str("name", human.Name).Msg("successfully updated human with AI image")
+	w.Header().Add("HX-Redirect", fmt.Sprintf("/humans/%s", human.Path))
 	return nil
 }

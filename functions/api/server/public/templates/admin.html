@@ -14,7 +14,13 @@
     class="h-full w-full flex flex-col align-middle min-h-screen bg-[var(--color-background)] text-[var(--color-text)]"
   >
     {{ template "header.html" . }}
-    <div class="flex flex-col justify-center items-center my-2">
+    <div class="flex flex-col justify-center items-center my-2 gap-4">
+      <div class="w-full max-w-sm px-4">
+        <a href="/admin/xai" class="block w-full bg-[var(--color-primary)] text-white text-center font-bold py-3 rounded-xl hover:bg-[var(--color-primary-hover)] transition-all shadow-lg shadow-[var(--color-primary)]/20">
+            xAI Image Generation
+        </a>
+      </div>
+
       {{ if .Drafts }}
       <h1 class="my-2 text-xl text-center">Drafts</h1>
       <div class="flex flex-col max-w-sm">
