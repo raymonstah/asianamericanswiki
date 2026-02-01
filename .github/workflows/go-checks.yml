@@ -52,10 +52,10 @@ jobs:
       - name: Install protoc-gen-go and protoc-gen-go-grpc
         run: |
           go install \
-                github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
-                github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
-                google.golang.org/protobuf/cmd/protoc-gen-go \
-                google.golang.org/grpc/cmd/protoc-gen-go-grpc
+                github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.27.7 \
+                github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.27.7 \
+                google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11 \
+                google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.6.0
 
       - name: Generate protobuf files
         run: |
