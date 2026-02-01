@@ -20,6 +20,7 @@ import (
 	"github.com/raymonstah/asianamericanswiki/internal/openai"
 	"github.com/raymonstah/asianamericanswiki/internal/ratelimiter"
 	"github.com/raymonstah/asianamericanswiki/internal/userdao"
+	"github.com/raymonstah/asianamericanswiki/internal/xai"
 )
 
 type Config struct {
@@ -29,6 +30,7 @@ type Config struct {
 	Logger        zerolog.Logger
 	Version       string
 	OpenAIClient  *openai.Client
+	XAIClient     *xai.Client
 	StorageClient *storage.Client
 	Local         bool
 }
@@ -43,6 +45,7 @@ type Server struct {
 	userDAO       *userdao.DAO
 	version       string
 	openAIClient  *openai.Client
+	xaiClient     *xai.Client
 	storageClient *storage.Client
 }
 
@@ -63,6 +66,7 @@ func NewServer(config Config) *Server {
 		userDAO:       config.UserDAO,
 		version:       config.Version,
 		openAIClient:  config.OpenAIClient,
+		xaiClient:     config.XAIClient,
 		storageClient: config.StorageClient,
 	}
 
@@ -82,6 +86,7 @@ func NewServer(config Config) *Server {
 		StorageClient: config.StorageClient,
 		AuthClient:    config.AuthClient,
 		OpenaiClient:  config.OpenAIClient,
+		XAIClient:     config.XAIClient,
 	})
 	if err := htmlServer.Register(r); err != nil {
 		panic(err)

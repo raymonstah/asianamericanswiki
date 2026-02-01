@@ -1,305 +1,217 @@
-<form
-  action="/humans/{{ .Human.Path }}"
-  method="post"
-  enctype="multipart/form-data"
-  class="max-w-sm md:max-w-md flex flex-col items-center justify-center content-center self-center gap-y-2"
->
-    <input
-    accept="image/*"
-    type="file"
-    id="featured_image"
-    name="upload"
-  />
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+    <title>Edit {{ .Human.Name }} | AsianAmericans.wiki</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link href="/output.css?v=2" rel="stylesheet" />
+    <script src="/1.9.10.htmx.min.js"></script>
+    {{ template "dark-mode.html" . }}
+</head>
+<body class="flex flex-col min-h-screen bg-[var(--color-background)] text-[var(--color-text)] font-body">
+    {{ template "header.html" . }}
 
-  <!-- Hidden fields to be filled -->
-  <input type="file" name="featured_image" id="featured_image_field" style="display: none;" />
-  <input type="file" name="thumbnail" id="thumbnail_field" style="display: none;" />
+    <main class="flex-grow container mx-auto px-4 py-12">
+        <div class="max-w-4xl mx-auto bg-[var(--color-card-bg)] rounded-2xl shadow-lg border border-[var(--color-border)] p-8">
+            <h1 class="text-3xl font-bold font-heading text-[var(--color-text)] mb-8 text-center">Edit Human: {{ .Human.Name }}</h1>
 
-  <div class="max-w-md max-h-96 overflow-hidden mx-auto">
-    <img id="image" class="max-h-48" style="display: none;" />
-  </div>
-  <div>
-  <input
-    class="block w-full p-4 text-center text-sm text-gray-900 border border-gray-300 rounded-lg bg-[var(--color-background)] dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text)]"
-    type="text"
-    name="id"
-    value="{{ .Human.ID }}"
-    disabled
-    />
-    <div>
-      <label
-        for="name"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
-        >Name</label
-      >
-        <input
-        type="text"
-        name="name"
-        value="{{ .Human.Name }}"
-	placeholder="Human Name"
-        class="block w-full p-4 text-center text-sm text-gray-900 border border-gray-300 rounded-lg bg-[var(--color-background)] dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text)]"
-      />
-  </div>    <span class="text-sm">
-      {{ if eq .Human.Gender "male" }} ♂️ {{ else if eq .Human.Gender "female"
-      }} ♀️ {{ else }} ☿️ {{ end }}
-    </span>
-  </div>
-  <div>
-      <label
-        for="dob"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
-        >Date of birth</label
-      >
-        <input
-        type="text"
-        name="dob"
-        value="{{ .Human.DOB }}"
-	placeholder="dob"
-        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-[var(--color-background)] dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text)]"
-      />
-  </div>
-  <div class="mb-2">
-    {{ range .Human.Ethnicity }}
-    <a
-      href="/humans?ethnicity={{ . }}"
-      class="tag rounded-full px-3 py-1 mr-2 text-sm font-semibold bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 text-[var(--color-text)] dark:hover:bg-gray-600 hover:scale-125"
-      >{{ . }}</a
-    >
-    {{ end }}
-  </div>
-    <div>
-      <label
-        for="tags"
-        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
-        >Tags</label
-      >
-      <select
-        name="tags"
-        class="bg-[var(--color-background)] border border-gray-300 text-gray-900 text-sm rounded focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text)] dark:focus:ring-gray-500 dark:focus:border-gray-500"
-        multiple
-        id="tags"
-        size="25"
-      >
-        {{ range .HumanFormFields.Tags }}
-        <option
-          value="{{ . }}"
-          {{
-          if
-          slicesContains
-          $.Human.Tags
-          .
-          }}
-          selected{{
-          end
-          }}
-        >
-          {{ . }}
-        </option>
-        {{ end }}
-      </select>
-      <input
-        class="border p-2 rounded bg-[var(--color-background)] w-full"
-        type="text"
-        name="tags-other"
-        placeholder="Enter other tags here, comma-separated"
-      />
-    </div>
+            <form action="/humans/{{ .Human.ID }}" method="post" enctype="multipart/form-data" class="space-y-6">
+                <!-- Image Upload & Preview -->
+                <div class="flex flex-col items-center gap-4 py-6 border-b border-[var(--color-border)]">
+                    <div class="relative group">
+                        <div class="w-48 h-48 rounded-xl overflow-hidden border-2 border-dashed border-[var(--color-border)] bg-[var(--color-background)] flex items-center justify-center">
+                            <img id="image" class="w-full h-full object-cover hidden" />
+                            {{ if .Human.Images.Featured }}
+                                <img src="{{ .Human.Images.Featured }}" class="w-full h-full object-cover group-[.new-image-loaded]:hidden" id="current-featured" />
+                            {{ else }}
+                                <span class="text-[var(--color-text-secondary)] group-[.new-image-loaded]:hidden">No image</span>
+                            {{ end }}
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col items-center">
+                        <label class="cursor-pointer bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors text-sm font-semibold">
+                            Change Featured Image
+                            <input type="file" id="featured_image" name="upload" class="hidden" accept="image/*" />
+                        </label>
+                        <p class="text-[var(--color-text-secondary)] text-xs mt-2">Recommended: Square aspect ratio, high resolution</p>
+                    </div>
 
-    <div class="relative">
-      <div
-        class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
-      >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="currentColor"
-        height="1.5em"
-        viewBox="0 0 512 512"
-      >
-        <!-- Font Awesome icon paths -->
-        <path
-          d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"
-        />
-      </svg>
-      </div>
-      <input
-        type="text"
-        name="x"
-        value="{{ .Human.Socials.X }}"
-	placeholder="x"
-        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-[var(--color-background)] dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text)]"
-      />
-    </div>
-  </div>
-    <div class="relative">
-      <div
-        class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
-      >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        height="2em"
-        fill="currentColor"
-        viewBox="0 0 448 512"
-      >
-        <!-- Font Awesome icon paths -->
-        <path
-          d="M89.5 323.6H53.93V186.2H89.5V323.6zM156.1 250.5L165.2 186.2H211.5V323.6H180.5V230.9L167.1 323.6H145.8L132.8 232.9L132.7 323.6H101.5V186.2H147.6C148.1 194.5 150.4 204.3 151.9 215.6L156.1 250.5zM223.7 323.6V186.2H250.3C267.3 186.2 277.3 187.1 283.3 188.6C289.4 190.3 294 192.8 297.2 196.5C300.3 199.8 302.3 203.1 303 208.5C303.9 212.9 304.4 221.6 304.4 234.7V282.9C304.4 295.2 303.7 303.4 302.5 307.6C301.4 311.7 299.4 315 296.5 317.3C293.7 319.7 290.1 321.4 285.8 322.3C281.6 323.1 275.2 323.6 266.7 323.6H223.7zM259.2 209.7V299.1C264.3 299.1 267.5 298.1 268.6 296.8C269.7 294.8 270.4 289.2 270.4 280.1V226.8C270.4 220.6 270.3 216.6 269.7 214.8C269.4 213 268.5 211.8 267.1 210.1C265.7 210.1 263 209.7 259.2 209.7V209.7zM316.5 323.6V186.2H350.6V230.1C353.5 227.7 356.7 225.2 360.1 223.5C363.7 222 368.9 221.1 372.9 221.1C377.7 221.1 381.8 221.9 385.2 223.3C388.6 224.8 391.2 226.8 393.2 229.5C394.9 232.1 395.9 234.8 396.3 237.3C396.7 239.9 396.1 245.3 396.1 253.5V292.1C396.1 300.3 396.3 306.4 395.3 310.5C394.2 314.5 391.5 318.1 387.5 320.1C383.4 324 378.6 325.4 372.9 325.4C368.9 325.4 363.7 324.5 360.2 322.9C356.7 321.1 353.5 318.4 350.6 314.9L348.5 323.6L316.5 323.6zM361.6 302.9C362.3 301.1 362.6 296.9 362.6 290.4V255C362.6 249.4 362.3 245.5 361.5 243.8C360.8 241.9 357.8 241.1 355.7 241.1C353.7 241.1 352.3 241.9 351.6 243.4C351 244.9 350.6 248.8 350.6 255V291.4C350.6 297.5 351 301.4 351.8 303C352.4 304.7 353.9 305.5 355.9 305.5C358.1 305.5 360.1 304.7 361.6 302.9L361.6 302.9zM418.4 32.04C434.1 33.27 447.1 47.28 447.1 63.92V448.1C447.1 464.5 435.2 478.5 418.9 479.1C418.6 479.1 418.4 480 418.1 480H29.88C29.6 480 29.32 479.1 29.04 479.9C13.31 478.5 1.093 466.1 0 449.7L.0186 61.78C1.081 45.88 13.82 33.09 30.26 31.1H417.7C417.9 31.1 418.2 32.01 418.4 32.04L418.4 32.04zM30.27 41.26C19 42.01 10.02 51.01 9.257 62.4V449.7C9.63 455.1 11.91 460.2 15.7 464C19.48 467.9 24.51 470.3 29.89 470.7H418.1C429.6 469.7 438.7 459.1 438.7 448.1V63.91C438.7 58.17 436.6 52.65 432.7 48.45C428.8 44.24 423.4 41.67 417.7 41.26L30.27 41.26z"
-        />
-      </svg>
-      </div>
-      <input
-        type="text"
-        name="imdb"
-        value="{{ .Human.Socials.IMDB }}"
-	placeholder="imdb"
-        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-[var(--color-background)] dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text)]"
-      />
-    </div>
-  </div>
-    <div class="relative">
-      <div
-        class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          height="1.5em"
-          fill="currentColor"
-          viewBox="0 0 448 512"
-        >
-          <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-          <path
-            d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"
-          />
-        </svg>
-      </div>
-      <input
-        type="text"
-        name="instagram"
-	placeholder="instagram"
-        value="{{ .Human.Socials.Instagram }}"
-        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-[var(--color-background)] dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text)]"
-      />
-    </div>
-  </div>
-    <div class="relative">
-      <div
-        class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
-      >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        height="1.5em"
-        fill="currentColor"
-        viewBox="0 0 576 512"
-      >
-        <!-- Font Awesome icon paths -->
-        <path
-          d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"
-        />
-      </svg>
-      </div>
-      <input
-        type="text"
-        name="website"
-	placeholder="website"
-        value="{{ .Human.Socials.Website }}"
-        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-[var(--color-background)] dark:border-gray-600 dark:placeholder-gray-400 text-[var(--color-text)]"
-      />
-    </div>
-  </div>
+                    <!-- Hidden fields for processed images -->
+                    <input type="file" name="featured_image" id="featured_image_field" class="hidden" />
+                    <input type="file" name="thumbnail" id="thumbnail_field" class="hidden" />
+                </div>
 
+                <!-- Description -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">Description</label>
+                    <textarea name="description" id="description" rows="12" class="w-full p-4 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none transition-all leading-relaxed">{{ .Human.Description }}</textarea>
+                </div>
 
-  <textarea
-    name="description"
-    class="m-2 p-2 w-72 bg-[var(--color-background)] space-y-4 text-wrap break-all"
-    rows="10"
-  >
-{{ .Human.Description }}</textarea
-  >
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-[var(--color-border)]">
+                    <!-- ID (Read only) -->
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">ID</label>
+                        <input type="text" value="{{ .Human.ID }}" disabled class="w-full p-3 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-text-secondary)] opacity-60 cursor-not-allowed text-sm" />
+                    </div>
 
-  <button
-    class="bg-[var(--color-background)] my-4 w-full text-center p-2 rounded-md bg-white border-gray-500 shadow hover:bg-gray-100 border-transparent border-r-8 outline outline-neutral-700"
-  >
-    Submit
-  </button>
-  <button
-    class="bg-[var(--color-background)] my-4 w-full text-center p-2 rounded-md bg-white border-gray-500 shadow hover:bg-gray-100 border-transparent border-r-8 outline outline-neutral-700"
-    type="button"
-    onclick="location.reload();"
-  >
-    Cancel
-  </button>
-</form>
-<!-- CropperJS -->
-<link href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet" />
-<script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
+                    <!-- Name -->
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">Name</label>
+                        <input type="text" name="name" id="name" value="{{ .Human.Name }}" required class="w-full p-3 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none transition-all" />
+                    </div>
 
-<script>
-  const fileInput = document.getElementById("featured_image");
-  const image = document.getElementById("image");
-  const fieldFeatured = document.getElementById("featured_image_field");
-  const fieldThumb = document.getElementById("thumbnail_field");
+                    <!-- Date of Birth -->
+                    <div>
+                        <label for="dob" class="block text-sm font-medium text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">Date of Birth</label>
+                        <input type="text" name="dob" id="dob" value="{{ .Human.DOB }}" placeholder="YYYY-MM-DD" class="w-full p-3 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none transition-all" />
+                    </div>
 
-  let cropper;
+                    <!-- Gender -->
+                    <div>
+                        <label for="gender" class="block text-sm font-medium text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">Gender</label>
+                        <select name="gender" id="gender" class="w-full p-3 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none transition-all">
+                            <option value="male" {{ if eq .Human.Gender "male" }}selected{{ end }}>Male ♂️</option>
+                            <option value="female" {{ if eq .Human.Gender "female" }}selected{{ end }}>Female ♀️</option>
+                            <option value="nonbinary" {{ if eq .Human.Gender "nonbinary" }}selected{{ end }}>Non-binary ☿️</option>
+                        </select>
+                    </div>
+                </div>
 
-  fileInput.addEventListener("change", async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+                <!-- Ethnicity -->
+                <div class="pt-6 border-t border-[var(--color-border)]">
+                    <label class="block text-sm font-medium text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">Ethnicity</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                        {{$humanEth := .Human.Ethnicity}}
+                        {{ range $eth := .HumanFormFields.Ethnicities }}
+                        <label class="flex items-center space-x-2 p-2 rounded-lg hover:bg-[var(--color-background)] cursor-pointer border border-transparent hover:border-[var(--color-border)] transition-all">
+                            <input type="checkbox" name="ethnicity" value="{{ $eth.Ethnicity }}" {{ if slicesContains $humanEth $eth.Ethnicity }}checked{{ end }} class="rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]" />
+                            <span class="text-sm text-[var(--color-text)] capitalize">{{ $eth.Ethnicity }} {{ $eth.Emoji }}</span>
+                        </label>
+                        {{ end }}
+                    </div>
+                </div>
 
-    image.src = URL.createObjectURL(file);
-    image.style.display = "block";
+                <!-- Tags -->
+                <div class="pt-6 border-t border-[var(--color-border)]">
+                    <label for="tags" class="block text-sm font-medium text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">Tags</label>
+                    {{$humanTags := .Human.Tags}}
+                    <select name="tags" id="tags" multiple size="8" class="w-full p-3 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none transition-all mb-2">
+                        {{ range .HumanFormFields.Tags }}
+                        <option value="{{ . }}" {{ if slicesContains $humanTags . }}selected{{ end }}>{{ . }}</option>
+                        {{ end }}
+                    </select>
+                    <input type="text" name="tags-other" placeholder="Add other tags (comma separated)..." class="w-full p-3 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none transition-all text-sm" />
+                </div>
 
-    const setFileInput = (input, file) => {
-      const dt = new DataTransfer();
-      dt.items.add(file);
-      input.files = dt.files;
-    };
+                <!-- Socials -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-[var(--color-border)]">
+                    <div>
+                        <label for="x" class="block text-sm font-medium text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">X (Twitter) URL</label>
+                        <input type="text" name="x" id="x" value="{{ .Human.Socials.X }}" placeholder="https://x.com/username" class="w-full p-3 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none transition-all text-sm" />
+                    </div>
+                    <div>
+                        <label for="instagram" class="block text-sm font-medium text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">Instagram URL</label>
+                        <input type="text" name="instagram" id="instagram" value="{{ .Human.Socials.Instagram }}" placeholder="https://instagram.com/username" class="w-full p-3 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none transition-all text-sm" />
+                    </div>
+                    <div>
+                        <label for="imdb" class="block text-sm font-medium text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">IMDB URL</label>
+                        <input type="text" name="imdb" id="imdb" value="{{ .Human.Socials.IMDB }}" placeholder="https://imdb.com/name/nm..." class="w-full p-3 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none transition-all text-sm" />
+                    </div>
+                    <div>
+                        <label for="website" class="block text-sm font-medium text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">Website URL</label>
+                        <input type="text" name="website" id="website" value="{{ .Human.Socials.Website }}" placeholder="https://example.com" class="w-full p-3 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none transition-all text-sm" />
+                    </div>
+                </div>
 
-    if (cropper) cropper.destroy();
+                <!-- Actions -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-[var(--color-border)]">
+                    <button type="submit" class="flex-grow bg-[var(--color-primary)] text-white font-bold py-3 px-6 rounded-xl hover:bg-[var(--color-primary-hover)] transition-all shadow-lg shadow-[var(--color-primary)]/20">
+                        Save Changes
+                    </button>
+                    <button type="button" onclick="window.history.back();" class="flex-grow bg-[var(--color-background)] text-[var(--color-text)] font-bold py-3 px-6 rounded-xl border border-[var(--color-border)] hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
 
-    await new Promise((resolve) => {
-      image.onload = () => {
-        cropper = new Cropper(image, {
-          aspectRatio: 1,
-          viewMode: 1,
-          autoCropArea: 1,
-          cropend: async function (event) {
-            console.log("user stopped interacting with cropper")
-            // Convert cropped thumbnail to WebP
-            const croppedCanvas = cropper.getCroppedCanvas({
-              width: 256,
-              height: 256,
-              imageSmoothingEnabled: true,
-              imageSmoothingQuality: "high",
+    {{ template "footer.html" . }}
+
+    <!-- CropperJS -->
+    <link href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet" />
+    <script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
+
+    <script>
+      const fileInput = document.getElementById("featured_image");
+      const image = document.getElementById("image");
+      const currentFeatured = document.getElementById("current-featured");
+      const fieldFeatured = document.getElementById("featured_image_field");
+      const fieldThumb = document.getElementById("thumbnail_field");
+
+      let cropper;
+
+      fileInput.addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        image.src = URL.createObjectURL(file);
+        image.style.display = "block";
+        if (currentFeatured) currentFeatured.style.display = "none";
+        document.querySelector('.group').classList.add('new-image-loaded');
+
+        const setFileInput = (input, file) => {
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          input.files = dt.files;
+        };
+
+        if (cropper) cropper.destroy();
+
+        await new Promise((resolve) => {
+          image.onload = () => {
+            cropper = new Cropper(image, {
+              aspectRatio: 1,
+              viewMode: 1,
+              autoCropArea: 1,
+              cropend: async function (event) {
+                const croppedCanvas = cropper.getCroppedCanvas({
+                  width: 256,
+                  height: 256,
+                  imageSmoothingEnabled: true,
+                  imageSmoothingQuality: "high",
+                });
+
+                const croppedBlob = await new Promise((resolve) => {
+                  croppedCanvas.toBlob((blob) => resolve(blob), "image/webp", 0.9);
+                });
+                const thumbFile = new File([croppedBlob], "thumbnail.webp", { type: "image/webp" });
+                setFileInput(fieldThumb, thumbFile);
+              },
             });
-
-            const croppedBlob = await new Promise((resolve) => {
-              croppedCanvas.toBlob((blob) => resolve(blob), "image/webp", 0.9);
-            });
-            const thumbFile = new File([croppedBlob], "thumbnail.webp", { type: "image/webp" });
-            setFileInput(fieldThumb, thumbFile);
-          },
+            resolve();
+          };
         });
-        resolve();
-      };
-    });
 
-    // Convert full image to WebP
-    const originalBlob = await new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0);
-        canvas.toBlob((blob) => resolve(blob), "image/webp", 0.9);
-      };
-      img.src = image.src;
-    });
+        // Convert full image to WebP
+        const originalBlob = await new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+            canvas.toBlob((blob) => resolve(blob), "image/webp", 0.9);
+          };
+          img.src = image.src;
+        });
 
-
-    // Inject blobs into hidden file inputs using DataTransfer
-    const featuredFile = new File([originalBlob], "featured.webp", { type: "image/webp" });
-
-    setFileInput(fieldFeatured, featuredFile);
-  });
-</script>
+        const featuredFile = new File([originalBlob], "featured.webp", { type: "image/webp" });
+        setFileInput(fieldFeatured, featuredFile);
+      });
+    </script>
+</body>
+</html>

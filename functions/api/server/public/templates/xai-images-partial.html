@@ -1,0 +1,23 @@
+{{$humanID := .HumanID}}
+{{range .Images}}
+<div class="group relative bg-[var(--color-card-bg)] p-2 rounded-xl border border-[var(--color-border)] shadow-sm hover:border-[var(--color-primary)] transition-all cursor-pointer">
+    <form hx-post="/admin/xai/upload" 
+          hx-target="this" 
+          hx-swap="outerHTML" 
+          hx-confirm="Are you sure you want to overwrite the existing source image for this human with this generated one?">
+        <input type="hidden" name="image_path" value="{{.}}">
+        <input type="hidden" name="human_id" value="{{$humanID}}">
+        
+        <button type="submit" class="w-full h-full p-0 border-none bg-transparent cursor-pointer block">
+            <img src="{{.}}" class="w-full h-auto rounded-lg shadow-inner block" alt="Generated Image">
+            
+            <!-- Hover Overlay -->
+            <div class="absolute inset-0 rounded-xl bg-[var(--color-primary)]/0 group-hover:bg-[var(--color-primary)]/10 flex items-center justify-center transition-all">
+                <div class="bg-[var(--color-primary)] text-white px-4 py-2 rounded-full font-bold text-sm opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all shadow-lg">
+                    Click to Overwrite Source
+                </div>
+            </div>
+        </button>
+    </form>
+</div>
+{{end}}

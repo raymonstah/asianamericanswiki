@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"embed"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"html/template"
@@ -27,6 +28,7 @@ import (
 	"github.com/raymonstah/asianamericanswiki/internal/ethnicity"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/raymonstah/asianamericanswiki/internal/openai"
+	"github.com/raymonstah/asianamericanswiki/internal/xai"
 	"github.com/rs/zerolog"
 )
 
@@ -42,6 +44,7 @@ type ServerHTML struct {
 	storageClient *storage.Client
 	storageURL    string
 	openaiClient  *openai.Client
+	xaiClient     *xai.Client
 
 	index  bleve.Index
 	humans []humandao.Human
@@ -55,6 +58,7 @@ type ServerHTMLConfig struct {
 	AuthClient    Authorizer
 	StorageClient *storage.Client
 	OpenaiClient  *openai.Client
+	XAIClient     *xai.Client
 }
 
 func NewServerHTML(conf ServerHTMLConfig) *ServerHTML {
@@ -71,6 +75,7 @@ func NewServerHTML(conf ServerHTMLConfig) *ServerHTML {
 		storageClient: conf.StorageClient,
 		storageURL:    storageURL,
 		openaiClient:  conf.OpenaiClient,
+		xaiClient:     conf.XAIClient,
 	}
 }
 
@@ -154,6 +159,11 @@ func (s *ServerHTML) Register(router chi.Router) error {
 	router.Post("/login", HttpHandler(s.HandlerLogin).Serve(s.HandlerError))
 	router.Get("/admin", HttpHandler(s.HandlerAdmin).Serve(s.HandlerError))
 	router.Post("/generate", HttpHandler(s.HandlerGenerate).Serve(s.HandlerError))
+	router.Get("/admin/xai", HttpHandler(s.HandlerXAIAdmin).Serve(s.HandlerError))
+	router.Get("/admin/xai/human/{id}", HttpHandler(s.HandlerXAIHuman).Serve(s.HandlerError))
+	router.Post("/admin/xai/generate", HttpHandler(s.HandlerXAIGenerate).Serve(s.HandlerError))
+	router.Post("/admin/xai/upload", HttpHandler(s.HandlerXAIUpload).Serve(s.HandlerError))
+	router.Handle("/xai-generations/*", http.StripPrefix("/xai-generations/", http.FileServer(http.Dir("tmp/xai_generations"))))
 	// redirect the old search route to the new one
 	router.Get("/search", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/humans", http.StatusMovedPermanently)
@@ -679,6 +689,8 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		tagsOther   = r.Form.Get("tags-other")
 		dob         = strings.TrimSpace(r.Form.Get("dob"))
 		name        = strings.TrimSpace(r.Form.Get("name"))
+		ethnicity   = r.Form["ethnicity"]
+		gender      = strings.TrimSpace(r.Form.Get("gender"))
 	)
 	if tagsOther != "" {
 		tags = append(tags, strings.Split(tagsOther, ",")...)
@@ -721,18 +733,23 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		}
 	}
 
-	humanPath := chi.URLParamFromCtx(r.Context(), "id")
-	humanPath, err = url.PathUnescape(humanPath)
+	humanPathOrID := chi.URLParamFromCtx(r.Context(), "id")
+	humanPathOrID, err = url.PathUnescape(humanPathOrID)
 	if err != nil {
 		return err
 	}
 
-	human, err := s.humanDAO.Human(ctx, humandao.HumanInput{Path: humanPath})
+	var human humandao.Human
+	// Try looking up by ID first, then Path
+	human, err = s.humanDAO.Human(ctx, humandao.HumanInput{HumanID: humanPathOrID})
 	if err != nil {
-		if errors.Is(err, humandao.ErrHumanNotFound) {
-			return NewNotFoundError(err)
+		human, err = s.humanDAO.Human(ctx, humandao.HumanInput{Path: humanPathOrID})
+		if err != nil {
+			if errors.Is(err, humandao.ErrHumanNotFound) {
+				return NewNotFoundError(err)
+			}
+			return err
 		}
-		return err
 	}
 
 	human.Description = description
@@ -742,6 +759,10 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 	human.Socials.IMDB = imdb
 	human.Tags = tags
 	human.DOB = dob
+	human.Ethnicity = ethnicity
+	if gender != "" {
+		human.Gender = humandao.Gender(gender)
+	}
 	if name != "" {
 		human.Name = name
 	}
@@ -780,12 +801,8 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 
 	_ = s.initializeIndex(ctx)
 
-	response := HTMLResponseHuman{Human: human, Base: getBase(s, admin)}
-	if err := s.template.ExecuteTemplate(w, "humans-id.html", response); err != nil {
-		s.logger.Error().Err(err).Msg("unable to execute humans-id template")
-	}
-
 	s.logger.Info().Str("id", human.ID).Str("name", human.Name).Msg("successfully updated human")
+	http.Redirect(w, r, fmt.Sprintf("/humans/%s", human.Path), http.StatusSeeOther)
 	return nil
 }
 
@@ -1006,4 +1023,242 @@ func getBase(s *ServerHTML, admin bool) Base {
 
 func slicesContain(haystack []string, needle string) bool {
 	return slices.Contains(haystack, needle)
+}
+
+type HTMLResponseXAIAdmin struct {
+	Base
+	Humans []humandao.Human
+}
+
+func (s *ServerHTML) HandlerXAIAdmin(w http.ResponseWriter, r *http.Request) error {
+	token, err := s.parseToken(r)
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return nil
+	}
+
+	admin := IsAdmin(token)
+	if !admin {
+		return NewForbiddenError(fmt.Errorf("user is not an admin"))
+	}
+
+	response := HTMLResponseXAIAdmin{
+		Base:   getBase(s, admin),
+		Humans: s.humans,
+	}
+	if err := s.template.ExecuteTemplate(w, "xai-admin.html", response); err != nil {
+		s.logger.Error().Err(err).Msg("unable to execute xai-admin template")
+	}
+
+	return nil
+}
+
+type HTMLResponseXAIHuman struct {
+	Base
+	Human          humandao.Human
+	ExistingImages []string
+}
+
+func (s *ServerHTML) HandlerXAIHuman(w http.ResponseWriter, r *http.Request) error {
+	token, err := s.parseToken(r)
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return nil
+	}
+
+	admin := IsAdmin(token)
+	if !admin {
+		return NewForbiddenError(fmt.Errorf("user is not an admin"))
+	}
+
+	id := chi.URLParam(r, "id")
+	var human humandao.Human
+	for _, h := range s.humans {
+		if h.ID == id || h.Path == id {
+			human = h
+			break
+		}
+	}
+	if human.ID == "" {
+		return NewNotFoundError(fmt.Errorf("human not found"))
+	}
+
+	// Scan for existing local images
+	var existingImages []string
+	localDir := filepath.Join("tmp", "xai_generations", human.ID)
+	files, err := os.ReadDir(localDir)
+	if err == nil {
+		for _, file := range files {
+			if !file.IsDir() && strings.HasSuffix(file.Name(), ".webp") {
+				existingImages = append(existingImages, "/xai-generations/"+human.ID+"/"+file.Name())
+			}
+		}
+	}
+	// Sort to show newest first if they have timestamps in names
+	sort.Slice(existingImages, func(i, j int) bool {
+		return existingImages[i] > existingImages[j]
+	})
+
+	response := HTMLResponseXAIHuman{
+		Base:           getBase(s, admin),
+		Human:          human,
+		ExistingImages: existingImages,
+	}
+	if err := s.template.ExecuteTemplate(w, "xai-human.html", response); err != nil {
+		s.logger.Error().Err(err).Msg("unable to execute xai-human template")
+	}
+
+	return nil
+}
+
+func (s *ServerHTML) HandlerXAIGenerate(w http.ResponseWriter, r *http.Request) error {
+	ctx := r.Context()
+	token, err := s.parseToken(r)
+	if err != nil {
+		return NewUnauthorizedError(err)
+	}
+
+	admin := IsAdmin(token)
+	if !admin {
+		return NewForbiddenError(fmt.Errorf("user is not an admin"))
+	}
+
+	if err := r.ParseForm(); err != nil {
+		return NewBadRequestError(err)
+	}
+
+	humanID := r.FormValue("human_id")
+	prompt := r.FormValue("prompt")
+	numImagesStr := r.FormValue("num_images")
+	numImages := 1
+	fmt.Sscanf(numImagesStr, "%d", &numImages)
+
+	// Fetch human to get source images
+	var human humandao.Human
+	for _, h := range s.humans {
+		if h.ID == humanID {
+			human = h
+			break
+		}
+	}
+
+	baseImage := human.Images.Featured
+	if baseImage != "" && (strings.Contains(baseImage, "localhost") || strings.Contains(baseImage, "127.0.0.1")) {
+		resp, err := http.Get(baseImage)
+		if err == nil {
+			defer resp.Body.Close()
+			data, err := io.ReadAll(resp.Body)
+			if err == nil {
+				base64Data := base64.StdEncoding.EncodeToString(data)
+				mimeType := http.DetectContentType(data)
+				baseImage = fmt.Sprintf("data:%s;base64,%s", mimeType, base64Data)
+			}
+		}
+	}
+
+	imageURLs, err := s.xaiClient.GenerateImage(ctx, xai.GenerateImageInput{
+		Prompt: prompt,
+		N:      numImages,
+		Image:  baseImage,
+	})
+	if err != nil {
+		return NewInternalServerError(err)
+	}
+
+	// Save images locally
+	localDir := filepath.Join("tmp", "xai_generations", humanID)
+	if err := os.MkdirAll(localDir, 0755); err != nil {
+		return NewInternalServerError(err)
+	}
+
+	var localPaths []string
+	for i, url := range imageURLs {
+		resp, err := http.Get(url)
+		if err != nil {
+			continue
+		}
+		defer resp.Body.Close()
+
+		filename := fmt.Sprintf("%d_%d.webp", time.Now().Unix(), i)
+		localPath := filepath.Join(localDir, filename)
+		out, err := os.Create(localPath)
+		if err != nil {
+			continue
+		}
+		defer out.Close()
+		io.Copy(out, resp.Body)
+		localPaths = append(localPaths, "/xai-generations/"+humanID+"/"+filename)
+	}
+
+	var data = struct {
+		Images  []string
+		HumanID string
+	}{
+		Images:  localPaths,
+		HumanID: humanID,
+	}
+
+	if err := s.template.ExecuteTemplate(w, "xai-images-partial.html", data); err != nil {
+		s.logger.Error().Err(err).Msg("unable to execute xai-images-partial template")
+	}
+
+	return nil
+}
+
+func (s *ServerHTML) HandlerXAIUpload(w http.ResponseWriter, r *http.Request) error {
+	ctx := r.Context()
+	token, err := s.parseToken(r)
+	if err != nil {
+		return NewUnauthorizedError(err)
+	}
+
+	admin := IsAdmin(token)
+	if !admin {
+		return NewForbiddenError(fmt.Errorf("user is not an admin"))
+	}
+
+	if err := r.ParseForm(); err != nil {
+		return NewBadRequestError(err)
+	}
+
+	humanID := r.FormValue("human_id")
+	imagePath := r.FormValue("image_path") // e.g. /xai-generations/human_id/filename.webp
+
+	// Convert local path back to filesystem path
+	fsPath := filepath.Join("tmp", "xai_generations", strings.TrimPrefix(imagePath, "/xai-generations/"))
+
+	raw, err := os.ReadFile(fsPath)
+	if err != nil {
+		return NewInternalServerError(err)
+	}
+
+	// Upload to GCS - Overwrite original.webp
+	objectID := fmt.Sprintf("%s/original.webp", humanID)
+	obj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(objectID)
+	writer := obj.NewWriter(ctx)
+	if _, err := writer.Write(raw); err != nil {
+		return NewInternalServerError(err)
+	}
+	if err := writer.Close(); err != nil {
+		return NewInternalServerError(err)
+	}
+
+	storageURL := fmt.Sprintf("%v/%v/%s", s.storageURL, api.ImagesStorageBucket, objectID)
+
+	// Update human record
+	human, err := s.humanDAO.Human(ctx, humandao.HumanInput{HumanID: humanID})
+	if err != nil {
+		return NewInternalServerError(err)
+	}
+
+	human.Images.Featured = storageURL
+	human.AIGenerated = true
+	if err := s.humanDAO.UpdateHuman(ctx, human); err != nil {
+		return NewInternalServerError(err)
+	}
+
+	_ = s.initializeIndex(ctx)
+
+	w.Write([]byte("Successfully uploaded and updated human record!"))
+	return nil
 }
