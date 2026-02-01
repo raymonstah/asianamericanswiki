@@ -4,7 +4,7 @@
 //  \ V  V /  __/ (_| |\ V /| | (_| | ||  __/
 //   \_/\_/ \___|\__,_| \_/ |_|\__,_|\__\___|
 //
-//  Copyright © 2016 - 2024 Weaviate B.V. All rights reserved.
+//  Copyright © 2016 - 2025 Weaviate B.V. All rights reserved.
 //
 //  CONTACT: hello@weaviate.io
 //
@@ -34,6 +34,9 @@ type BackupCreateResponse struct {
 	// Backup backend name e.g. filesystem, gcs, s3.
 	Backend string `json:"backend,omitempty"`
 
+	// Name of the bucket, container, volume, etc
+	Bucket string `json:"bucket,omitempty"`
+
 	// The list of classes for which the backup creation process was started
 	Classes []string `json:"classes"`
 
@@ -43,7 +46,7 @@ type BackupCreateResponse struct {
 	// The ID of the backup. Must be URL-safe and work as a filesystem path, only lowercase, numbers, underscore, minus characters allowed.
 	ID string `json:"id,omitempty"`
 
-	// destination path of backup files proper to selected backend
+	// Path within bucket of backup
 	Path string `json:"path,omitempty"`
 
 	// phase of backup creation process

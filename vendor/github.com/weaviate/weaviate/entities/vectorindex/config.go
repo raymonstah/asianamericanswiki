@@ -4,7 +4,7 @@
 //  \ V  V /  __/ (_| |\ V /| | (_| | ||  __/
 //   \_/\_/ \___|\__,_| \_/ |_|\__,_|\__\___|
 //
-//  Copyright © 2016 - 2024 Weaviate B.V. All rights reserved.
+//  Copyright © 2016 - 2025 Weaviate B.V. All rights reserved.
 //
 //  CONTACT: hello@weaviate.io
 //
@@ -29,18 +29,18 @@ const (
 
 // ParseAndValidateConfig from an unknown input value, as this is not further
 // specified in the API to allow of exchanging the index type
-func ParseAndValidateConfig(input interface{}, vectorIndexType string) (schemaConfig.VectorIndexConfig, error) {
+func ParseAndValidateConfig(input interface{}, vectorIndexType string, isMultiVector bool) (schemaConfig.VectorIndexConfig, error) {
 	if len(vectorIndexType) == 0 {
 		vectorIndexType = DefaultVectorIndexType
 	}
 
 	switch vectorIndexType {
 	case VectorIndexTypeHNSW:
-		return hnsw.ParseAndValidateConfig(input)
+		return hnsw.ParseAndValidateConfig(input, isMultiVector)
 	case VectorIndexTypeFLAT:
 		return flat.ParseAndValidateConfig(input)
 	case VectorIndexTypeDYNAMIC:
-		return dynamic.ParseAndValidateConfig(input)
+		return dynamic.ParseAndValidateConfig(input, isMultiVector)
 	default:
 		return nil, fmt.Errorf("invalid vector index %q. Supported types are hnsw and flat", vectorIndexType)
 	}

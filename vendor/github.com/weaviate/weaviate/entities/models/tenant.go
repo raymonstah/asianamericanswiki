@@ -4,7 +4,7 @@
 //  \ V  V /  __/ (_| |\ V /| | (_| | ||  __/
 //   \_/\_/ \___|\__,_| \_/ |_|\__,_|\__\___|
 //
-//  Copyright © 2016 - 2024 Weaviate B.V. All rights reserved.
+//  Copyright © 2016 - 2025 Weaviate B.V. All rights reserved.
 //
 //  CONTACT: hello@weaviate.io
 //
@@ -35,7 +35,7 @@ type Tenant struct {
 	// Enum: [ACTIVE INACTIVE OFFLOADED OFFLOADING ONLOADING HOT COLD FROZEN FREEZING UNFREEZING]
 	ActivityStatus string `json:"activityStatus,omitempty"`
 
-	// name of the tenant
+	// The name of the tenant (required).
 	Name string `json:"name,omitempty"`
 }
 

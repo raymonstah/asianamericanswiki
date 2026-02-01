@@ -16,21 +16,20 @@
       
       <!-- Desktop Menu -->
       <div class="hidden md:block">
-        <div class="ml-10 flex items-baseline space-x-4">
+        <div class="ml-10 flex items-center space-x-4">
           <a href="/" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-[var(--color-background)] hover:text-[var(--color-primary)] transition-colors">Home</a>
           <a href="/humans" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-[var(--color-background)] hover:text-[var(--color-primary)] transition-colors">Humans</a>
           <a href="/about" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-[var(--color-background)] hover:text-[var(--color-primary)] transition-colors">Our Story</a>
           
           <button
-            id="theme-toggle"
             type="button"
-            class="p-2 rounded-md hover:bg-[var(--color-background)] text-[var(--color-text)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+            class="theme-toggle-btn p-2 rounded-md hover:bg-[var(--color-background)] text-[var(--color-text)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
             aria-label="Toggle Dark Mode"
           >
-            <svg id="svg-light-mode" class="w-5 h-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="svg-light-mode w-5 h-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
-             <svg id="svg-dark-mode" class="w-5 h-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+             <svg class="svg-dark-mode w-5 h-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
             </svg>
           </button>
@@ -61,7 +60,21 @@
       <a href="/" class="block px-3 py-2 rounded-md text-base font-medium text-[var(--color-text)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background)]">Home</a>
       <a href="/humans" class="block px-3 py-2 rounded-md text-base font-medium text-[var(--color-text)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background)]">Humans</a>
       <a href="/about" class="block px-3 py-2 rounded-md text-base font-medium text-[var(--color-text)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background)]">Our Story</a>
+       <!-- Mobile Theme Toggle -->
+       <button
+        type="button"
+        class="theme-toggle-btn w-full text-left px-3 py-2 rounded-md text-base font-medium text-[var(--color-text)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background)] flex items-center gap-2"
+        aria-label="Toggle Dark Mode"
+      >
+        <span class="flex-grow">Theme</span>
+        <svg class="svg-light-mode w-5 h-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+            <svg class="svg-dark-mode w-5 h-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      </button>
     </div>
   </div>
-  <script src="/header.js"></script>
+  <script src="/header.js?v=2"></script>
 </header>

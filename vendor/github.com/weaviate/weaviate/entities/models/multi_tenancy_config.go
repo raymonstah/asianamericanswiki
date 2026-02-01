@@ -4,7 +4,7 @@
 //  \ V  V /  __/ (_| |\ V /| | (_| | ||  __/
 //   \_/\_/ \___|\__,_| \_/ |_|\__,_|\__\___|
 //
-//  Copyright © 2016 - 2024 Weaviate B.V. All rights reserved.
+//  Copyright © 2016 - 2025 Weaviate B.V. All rights reserved.
 //
 //  CONTACT: hello@weaviate.io
 //
@@ -28,13 +28,13 @@ import (
 // swagger:model MultiTenancyConfig
 type MultiTenancyConfig struct {
 
-	// Existing tenants should (not) be turned HOT implicitly when they are accessed and in another activity status
+	// Existing tenants should (not) be turned HOT implicitly when they are accessed and in another activity status (default: false).
 	AutoTenantActivation bool `json:"autoTenantActivation"`
 
-	// Nonexistent tenants should (not) be created implicitly
+	// Nonexistent tenants should (not) be created implicitly (default: false).
 	AutoTenantCreation bool `json:"autoTenantCreation"`
 
-	// Whether or not multi-tenancy is enabled for this class
+	// Whether or not multi-tenancy is enabled for this class (default: false).
 	Enabled bool `json:"enabled"`
 }
 

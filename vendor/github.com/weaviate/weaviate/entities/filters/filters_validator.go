@@ -4,7 +4,7 @@
 //  \ V  V /  __/ (_| |\ V /| | (_| | ||  __/
 //   \_/\_/ \___|\__,_| \_/ |_|\__,_|\__\___|
 //
-//  Copyright © 2016 - 2024 Weaviate B.V. All rights reserved.
+//  Copyright © 2016 - 2025 Weaviate B.V. All rights reserved.
 //
 //  CONTACT: hello@weaviate.io
 //
@@ -28,25 +28,25 @@ var deprecatedDataTypeAliases map[schema.DataType]schema.DataType = map[schema.D
 	schema.DataTypeStringArray: schema.DataTypeTextArray,
 }
 
-func ValidateFilters(fn func(string) *models.Class, filters *LocalFilter) error {
+func ValidateFilters(authorizedGetClass func(string) (*models.Class, error), filters *LocalFilter) error {
 	if filters == nil {
 		return errors.New("empty where")
 	}
 	cw := newClauseWrapper(filters.Root)
-	if err := validateClause(fn, cw); err != nil {
+	if err := validateClause(authorizedGetClass, cw); err != nil {
 		return err
 	}
 	cw.updateClause()
 	return nil
 }
 
-func validateClause(fn func(string) *models.Class, cw *clauseWrapper) error {
+func validateClause(authorizedGetClass func(string) (*models.Class, error), cw *clauseWrapper) error {
 	// check if nested
 	if cw.getOperands() != nil {
 		var errs []error
 
 		for i, child := range cw.getOperands() {
-			if err := validateClause(fn, child); err != nil {
+			if err := validateClause(authorizedGetClass, child); err != nil {
 				errs = append(errs, errors.Wrapf(err, "child operand at position %d", i))
 			}
 		}
@@ -66,7 +66,10 @@ func validateClause(fn func(string) *models.Class, cw *clauseWrapper) error {
 		return validateInternalPropertyClause(propName, cw)
 	}
 
-	class := fn(className.String())
+	class, err := authorizedGetClass(className.String())
+	if err != nil {
+		return err
+	}
 	if class == nil {
 		return errors.Errorf("class %q does not exist in schema",
 			className)
@@ -205,8 +208,10 @@ func validateUUIDOperators(propName schema.PropertyName, cw *clauseWrapper) erro
 	op := cw.getOperator()
 
 	switch op {
-	case OperatorEqual, OperatorNotEqual, OperatorLessThan, OperatorLessThanEqual,
-		OperatorGreaterThan, OperatorGreaterThanEqual, ContainsAll, ContainsAny:
+	case OperatorEqual, OperatorNotEqual,
+		OperatorLessThan, OperatorLessThanEqual,
+		OperatorGreaterThan, OperatorGreaterThanEqual,
+		ContainsAll, ContainsAny, ContainsNone:
 		return nil
 	default:
 		return fmt.Errorf("operator %q cannot be used on uuid/uuid[] props", op.Name())

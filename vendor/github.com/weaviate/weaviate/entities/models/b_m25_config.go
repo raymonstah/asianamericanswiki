@@ -4,7 +4,7 @@
 //  \ V  V /  __/ (_| |\ V /| | (_| | ||  __/
 //   \_/\_/ \___|\__,_| \_/ |_|\__,_|\__\___|
 //
-//  Copyright © 2016 - 2024 Weaviate B.V. All rights reserved.
+//  Copyright © 2016 - 2025 Weaviate B.V. All rights reserved.
 //
 //  CONTACT: hello@weaviate.io
 //
@@ -28,10 +28,10 @@ import (
 // swagger:model BM25Config
 type BM25Config struct {
 
-	// calibrates term-weight scaling based on the document length
+	// Calibrates term-weight scaling based on the document length (default: 0.75).
 	B float32 `json:"b,omitempty"`
 
-	// calibrates term-weight scaling based on the term frequency within a document
+	// Calibrates term-weight scaling based on the term frequency within a document (default: 1.2).
 	K1 float32 `json:"k1,omitempty"`
 }
 

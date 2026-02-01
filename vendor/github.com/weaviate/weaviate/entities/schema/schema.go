@@ -4,7 +4,7 @@
 //  \ V  V /  __/ (_| |\ V /| | (_| | ||  __/
 //   \_/\_/ \___|\__,_| \_/ |_|\__,_|\__\___|
 //
-//  Copyright © 2016 - 2024 Weaviate B.V. All rights reserved.
+//  Copyright © 2016 - 2025 Weaviate B.V. All rights reserved.
 //
 //  CONTACT: hello@weaviate.io
 //
@@ -49,6 +49,11 @@ func Empty() Schema {
 	}
 }
 
+type SchemaWithAliases struct {
+	Schema
+	Aliases map[string]string
+}
+
 // Return one of the semantic schema's
 func (s *Schema) SemanticSchemaFor() *models.Schema {
 	return s.Objects
@@ -64,6 +69,14 @@ func UppercaseClassName(name string) string {
 	}
 
 	return strings.ToUpper(string(name[0])) + name[1:]
+}
+
+func UppercaseClassesNames(names ...string) []string {
+	for idx := range names {
+		names[idx] = UppercaseClassName(names[idx])
+	}
+
+	return names
 }
 
 func LowercaseAllPropertyNames(props []*models.Property) []*models.Property {

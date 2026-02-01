@@ -4,7 +4,7 @@
 //  \ V  V /  __/ (_| |\ V /| | (_| | ||  __/
 //   \_/\_/ \___|\__,_| \_/ |_|\__,_|\__\___|
 //
-//  Copyright © 2016 - 2024 Weaviate B.V. All rights reserved.
+//  Copyright © 2016 - 2025 Weaviate B.V. All rights reserved.
 //
 //  CONTACT: hello@weaviate.io
 //
@@ -31,7 +31,7 @@ type NodeStats struct {
 	// The total number of objects in DB.
 	ObjectCount int64 `json:"objectCount"`
 
-	// The count of Weaviate's shards.
+	// The count of Weaviate's shards. To see this value, set `output` to `verbose`.
 	ShardCount int64 `json:"shardCount"`
 }
 
