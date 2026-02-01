@@ -51,18 +51,18 @@ jobs:
 
       - name: Install protoc-gen-go and protoc-gen-go-grpc
         run: |
-          go install \
-                github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.27.7 \
-                github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.27.7 \
-                google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11 \
-                google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.6.0
+          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
+          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
+          go install google.golang.org/protobuf/cmd/protoc-gen-go
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
       - name: Generate protobuf files
         run: |
-          protoc -I functions/api/server --go_out ./functions/api/server --go_opt paths=source_relative \
-            --go-grpc_out ./functions/api/server --go-grpc_opt paths=source_relative \
-            --grpc-gateway_out ./functions/api/server --grpc-gateway_opt paths=source_relative \
-            ./functions/api/server/api.proto
+          cd functions/api/server && protoc -I . \
+            --go_out . --go_opt paths=source_relative \
+            --go-grpc_out . --go-grpc_opt paths=source_relative \
+            --grpc-gateway_out . --grpc-gateway_opt paths=source_relative \
+            api.proto
 
       - name: Check for diffs
         run: |
