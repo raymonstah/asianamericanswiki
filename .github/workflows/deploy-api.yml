@@ -34,6 +34,12 @@ jobs:
         with:
           go-version-file: "go.mod"
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
       - name: Install libvips
         run: |
           sudo apt-get update
