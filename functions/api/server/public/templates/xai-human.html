@@ -9,15 +9,22 @@
     <script src="/1.9.10.htmx.min.js"></script>
     {{ template "dark-mode.html" . }}
     <style>
-        .htmx-indicator { display: none; }
-        .htmx-request .htmx-indicator { display: block; }
-        .htmx-request.htmx-indicator { display: block; }
+        .skeleton-placeholder { display: none; }
+        .htmx-request .skeleton-placeholder { display: block; }
+        
+        @keyframes custom-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .5; transform: scale(0.98); }
+        }
+        .animate-custom-pulse {
+            animation: custom-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
     </style>
 </head>
 <body class="flex flex-col min-h-screen bg-[var(--color-background)] text-[var(--color-text)] font-body">
     {{template "header.html" .}}
 
-    <main class="flex-grow container mx-auto px-4 py-8">
+    <main class="flex-grow container mx-auto px-4 py-12">
         <div class="mb-8">
             <a href="/admin/xai" class="text-[var(--color-primary)] hover:underline">&larr; Back to Humans</a>
         </div>
@@ -26,8 +33,8 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Control Panel -->
-            <div class="bg-[var(--color-card-bg)] p-6 rounded-xl border border-[var(--color-border)] shadow-sm">
-                <form hx-post="/admin/xai/generate" hx-target="#generatedImagesContainer" hx-swap="afterbegin" hx-indicator="#loading">
+            <div class="bg-[var(--color-card-bg)] p-6 rounded-xl border border-[var(--color-border)] shadow-sm self-start">
+                <form id="gen-form" hx-post="/admin/xai/generate" hx-target="#generatedImagesContainer" hx-swap="afterbegin">
                     <input type="hidden" name="human_id" value="{{.Human.ID}}">
                     
                     <div class="mb-4">
@@ -43,12 +50,12 @@
 
                     <div class="mb-4">
                         <label class="block text-[var(--color-text)] font-bold mb-2">Prompt</label>
-                        <textarea name="prompt" class="w-full p-2 border border-[var(--color-border)] rounded-lg bg-[var(--color-background)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none" rows="4">A cinematic portrait of {{.Human.Name}}, high quality, 8k, highly detailed, professional lighting.</textarea>
+                        <textarea name="prompt" class="w-full p-2 border border-[var(--color-border)] rounded-lg bg-[var(--color-background)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none" rows="4">A cinematic portrait of {{.Human.Name}}, black background, high quality, 8k, highly detailed, professional lighting.</textarea>
                     </div>
 
                     <div class="mb-4">
                         <label class="block text-[var(--color-text)] font-bold mb-2">Number of Images</label>
-                        <select name="num_images" class="w-full p-2 border border-[var(--color-border)] rounded-lg bg-[var(--color-background)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none">
+                        <select id="num_images" name="num_images" class="w-full p-2 border border-[var(--color-border)] rounded-lg bg-[var(--color-background)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none">
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -56,7 +63,7 @@
                         </select>
                     </div>
 
-                    <button type="submit" class="w-full bg-[var(--color-primary)] text-white font-bold py-3 px-4 rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors shadow-lg shadow-[var(--color-primary)]/20">
+                    <button type="submit" class="w-full bg-[var(--color-primary)] text-white font-bold py-3 px-4 rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors shadow-lg shadow-[var(--color-primary)]/20 cursor-pointer">
                         Generate
                     </button>
                 </form>
@@ -64,13 +71,6 @@
 
             <!-- Preview Panel -->
             <div class="bg-[var(--color-card-bg)] p-6 rounded-xl border border-[var(--color-border)] shadow-sm min-h-[400px] relative">
-                <!-- HTMX Indicator -->
-                <div id="loading" class="htmx-indicator absolute inset-0 bg-[var(--color-card-bg)]/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-xl">
-                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-t-[var(--color-primary)] border-[var(--color-border)] mb-4"></div>
-                    <p class="text-[var(--color-text)] font-semibold">Generating images with xAI...</p>
-                    <p class="text-[var(--color-text-secondary)] text-sm mt-1">This usually takes 10-20 seconds</p>
-                </div>
-
                 <div id="generatedImagesContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {{$humanID := .Human.ID}}
                     {{range .ExistingImages}}
@@ -100,15 +100,51 @@
         </div>
     </main>
 
+    <template id="skeleton-template">
+        <div class="generating-skeleton animate-custom-pulse group relative bg-gray-200 dark:bg-gray-800 p-2 rounded-xl border-2 border-dashed border-[var(--color-primary)]/30 transition-all">
+            <div class="w-full aspect-square bg-gray-300 dark:bg-gray-700 rounded-lg flex flex-col items-center justify-center">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-t-[var(--color-primary)] border-gray-400 dark:border-gray-600 mb-2"></div>
+                <p class="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest">Generating...</p>
+            </div>
+        </div>
+    </template>
+
     {{template "footer.html" .}}
     <script>
-        document.body.addEventListener('htmx:afterOnLoad', function(evt) {
-            if (evt.detail.target.id === 'generatedImagesContainer') {
-                const emptyState = document.getElementById('empty-state');
-                if (emptyState) {
-                    emptyState.style.display = 'none';
+        const form = document.getElementById('gen-form');
+        const container = document.getElementById('generatedImagesContainer');
+        const skeletonTemplate = document.getElementById('skeleton-template');
+        const numImagesSelect = document.getElementById('num_images');
+        const emptyState = document.getElementById('empty-state');
+
+        document.body.addEventListener('htmx:beforeRequest', function(evt) {
+            if (evt.detail.elt.id === 'gen-form') {
+                if (emptyState) emptyState.style.display = 'none';
+                
+                const count = parseInt(numImagesSelect.value);
+                for (let i = 0; i < count; i++) {
+                    const clone = skeletonTemplate.content.cloneNode(true);
+                    container.prepend(clone);
                 }
             }
+        });
+
+        document.body.addEventListener('htmx:afterOnLoad', function(evt) {
+            if (evt.detail.target.id === 'generatedImagesContainer') {
+                // Remove all skeletons once real content arrives
+                const skeletons = container.querySelectorAll('.generating-skeleton');
+                skeletons.forEach(s => s.remove());
+            }
+        });
+
+        document.body.addEventListener('htmx:responseError', function(evt) {
+             if (evt.detail.elt.id === 'gen-form') {
+                const skeletons = container.querySelectorAll('.generating-skeleton');
+                skeletons.forEach(s => s.remove());
+                if (container.children.length === 0 && emptyState) {
+                    emptyState.style.display = 'flex';
+                }
+             }
         });
     </script>
 </body>
