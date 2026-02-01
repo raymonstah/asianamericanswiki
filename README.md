@@ -46,6 +46,22 @@ There is a Firestore -> Algolia extension used for the search index.
 
 ## Protobufs
 
+To ensure consistency between local development and CI, please use the following tool versions:
+- `protoc`: [v29.3](https://github.com/protocolbuffers/protobuf/releases/tag/v29.3)
+- `protoc-gen-go`: v1.36.11
+- `protoc-gen-go-grpc`: v1.6.0
+- `protoc-gen-grpc-gateway`: v2.27.7
+- `protoc-gen-openapiv2`: v2.27.7
+
+You can install the Go tools with:
+```shell
+go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.6.0
+go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.27.7
+go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.27.7
+```
+
+Regenerate with:
 ```shell
  protoc -I functions/api/server --go_out ./functions/api/server --go_opt paths=source_relative \
   --go-grpc_out ./functions/api/server --go-grpc_opt paths=source_relative \
