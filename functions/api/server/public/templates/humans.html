@@ -1,24 +1,44 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="h-full antialiased">
   <head>
     <title>Humans | AsianAmericans.wiki</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-    <link href="/output.css" rel="stylesheet" />
+    <link href="/output.css?v=2" rel="stylesheet" />
     <script src="/1.9.10.htmx.min.js"></script>
 
     {{ template "dark-mode.html" . }}
   </head>
   <body
-    class="h-full w-full flex flex-col align-middle min-h-screen bg-[var(--color-background)] text-[var(--color-text)] font-sans"
+    class="flex flex-col min-h-screen bg-[var(--color-background)] text-[var(--color-text)] font-body"
   >
     {{ template "header.html" . }}
 
-    <div class="flex flex-col items-center align-middle gap-y-4 mx-2 mb-4">
-      {{ template "filter.html" . }} {{ range $human := .Humans }} {{ template
-      "component-card.html" $human }} {{ end }}
-    </div>
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold font-heading text-[var(--color-text)] mb-4">Explore Humans</h1>
+        <!-- Filters (preserved from original, assuming filter.html exists and works) -->
+        <div class="bg-[var(--color-card-bg)] p-4 rounded-xl border border-[var(--color-border)] shadow-sm">
+           {{ template "filter.html" . }}
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        {{ range $human := .Humans }}
+          {{ template "component-card.html" $human }}
+        {{ end }}
+      </div>
+      
+      {{ if eq (len .Humans) 0 }}
+        <div class="text-center py-24">
+            <h3 class="text-xl font-medium text-[var(--color-text-secondary)]">No humans found.</h3>
+            <p class="text-[var(--color-text-secondary)] mt-2">Try adjusting your filters.</p>
+        </div>
+      {{ end }}
+
+    </main>
 
     {{ template "footer.html" . }}
   </body>

@@ -1,79 +1,100 @@
-<div class="mt-4 p-2 flex flex-wrap gap-y-2 items-center">
-  <div class="w-full">
-    <label for="ethnicity" class="block text-sm font-medium">Ethnicity:</label>
-    <select
-      id="ethnicity"
-      class="bg-[var(--color-background)] mt-1 p-2 w-full rounded-md shadow-sm border-transparent border-r-8 outline outline-neutral-700"
-    >
-      <option value="">Any</option>
-      {{ range .Ethnicities }}
-      <option value="{{ .Ethnicity }}">{{ .Ethnicity }} {{ .Emoji }}</option>
-      {{ end }}
-    </select>
+<div class="space-y-6">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Ethnicity -->
+    <div>
+      <label for="ethnicity" class="block text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">Ethnicity</label>
+      <select
+        id="ethnicity"
+        class="block w-full px-4 py-2 bg-[var(--color-background)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all"
+      >
+        <option value="">Any Ethnicity</option>
+        {{ range .Ethnicities }}
+        <option value="{{ .Ethnicity }}">{{ .Ethnicity }} {{ .Emoji }}</option>
+        {{ end }}
+      </select>
+    </div>
+
+    <!-- Gender -->
+    <div>
+      <label for="gender" class="block text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">Gender</label>
+      <select
+        id="gender"
+        class="block w-full px-4 py-2 bg-[var(--color-background)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all"
+      >
+        <option value="">Any Gender</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="nonbinary">Nonbinary</option>
+      </select>
+    </div>
+
+    <!-- Tags -->
+    <div>
+      <label for="tags" class="block text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">Tag</label>
+      <select
+        id="tags"
+        class="block w-full px-4 py-2 bg-[var(--color-background)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all"
+      >
+        <option value="">Any Tag</option>
+        {{ range .Tags }}
+        <option value="{{ . }}">{{ . }}</option>
+        {{ end }}
+      </select>
+    </div>
+
+    <!-- Age Range -->
+    <div>
+      <label class="block text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">Age Range</label>
+      <div class="flex items-center gap-2">
+        <input
+          type="number"
+          id="minAge"
+          placeholder="Min"
+          min="0"
+          max="120"
+          class="block w-full px-3 py-2 bg-[var(--color-background)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all"
+        />
+        <span class="text-[var(--color-text-secondary)]">to</span>
+        <input
+          type="number"
+          id="maxAge"
+          placeholder="Max"
+          min="0"
+          max="120"
+          class="block w-full px-3 py-2 bg-[var(--color-background)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all"
+        />
+      </div>
+    </div>
   </div>
 
-  <div class="w-1/3">
-    <label for="minAge" class="block text-sm font-medium">Min Age:</label>
-    <input
-      type="number"
-      id="minAge"
-      min="0"
-      max="120"
-      class="bg-[var(--color-background)] mt-1 p-2 w-2/3 rounded-md shadow-sm border-transparent border-r-8 outline outline-neutral-700"
-    />
-  </div>
-  <div class="w-1/3">
-    <label for="maxAge" class="block text-sm font-medium">Max Age:</label>
-    <input
-      type="number"
-      id="maxAge"
-      min="0"
-      max="120"
-      class="bg-[var(--color-background)] mt-1 p-2 w-2/3 rounded-md shadow-sm border-transparent border-r-8 outline outline-neutral-700"
-    />
-  </div>
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
+    <!-- Search -->
+    <div class="md:col-span-8">
+      <label for="search" class="block text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">Search by Name</label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+           <svg class="h-5 w-5 text-[var(--color-text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+           </svg>
+        </div>
+        <input
+          id="search"
+          type="text"
+          placeholder="Enter name..."
+          class="block w-full pl-16 pr-4 py-2 bg-[var(--color-background)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all"
+        />
+      </div>
+    </div>
 
-  <div class="w-1/3">
-    <label for="gender" class="block text-sm font-medium">Gender:</label>
-    <select
-      id="gender"
-      class="bg-[var(--color-background)] mt-1 p-2 rounded-md shadow-sm border-transparent border-r-8 outline outline-neutral-700"
-    >
-      <option value="">Any</option>
-      <option value="male">Male</option>
-      <option value="female">Female</option>
-      <option value="nonbinary">Nonbinary</option>
-    </select>
-  </div>
-
-  <div class="w-full">
-    <label for="tags" class="block text-sm font-medium">Tags:</label>
-    <select
-      id="tags"
-      class="bg-[var(--color-background)] w-full mt-1 p-2 rounded-md shadow-sm border-transparent border-r-8 outline outline-neutral-700"
-    >
-      <option value="">Any</option>
-      {{ range .Tags }}
-      <option value="{{ . }}">{{ . }}</option>
-      {{ end }}
-    </select>
-  </div>
-
-  <div class="w-full">
-    <label for="search" class="block text-sm font-medium">Search:</label>
-    <input
-      id="search"
-      class="bg-[var(--color-background)] mt-1 p-2 w-full rounded-md shadow-sm outline outline-neutral-700"
-    />
-  </div>
-
-  <div class="w-full">
-    <button
-      class="bg-[var(--color-background)] hover:bg-gray-800 my-4 w-full text-center p-2 rounded-md bg-white border-gray-500 shadow hover:bg-gray-100 border-transparent border-r-8 outline outline-neutral-700"
-      onclick="doSearch()"
-    >
-      Search
-    </button>
+    <!-- Search Button -->
+    <div class="md:col-span-4">
+      <button
+        class="w-full bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white font-bold py-2 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-md shadow-[var(--color-primary)]/20"
+        onclick="doSearch()"
+      >
+        Search Humans
+      </button>
+    </div>
   </div>
 </div>
 
