@@ -23,3 +23,4 @@ go.work
 go.work.sum
 .detected-faces.json
 tmp/*
+.env*
