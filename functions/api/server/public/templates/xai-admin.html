@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+    <title>xAI Admin | AsianAmericans.wiki</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link href="/output.css?v=2" rel="stylesheet" />
+    <script src="/1.9.10.htmx.min.js"></script>
+    {{ template "dark-mode.html" . }}
+</head>
+<body class="flex flex-col min-h-screen bg-[var(--color-background)] text-[var(--color-text)] font-body">
+    {{template "header.html" .}}
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8">xAI Image Generation Admin</h1>
+
+        <div class="mb-8">
+            <input type="text" id="humanSearch" placeholder="Search humans..." class="w-full p-2 border border-[var(--color-border)] rounded bg-[var(--color-card-bg)] text-[var(--color-text)]" onkeyup="filterHumans()">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="humanList">
+            {{range .Humans}}
+            <div class="human-card bg-[var(--color-card-bg)] p-4 rounded-xl border border-[var(--color-border)] shadow-sm hover:shadow-md transition-shadow" data-name="{{.Name}}">
+                <h2 class="text-xl font-semibold mb-2">{{.Name}}</h2>
+                <div class="mb-4 h-48 overflow-hidden rounded-lg bg-[var(--color-background)]">
+                    {{if .Images.Featured}}
+                    <img src="{{.Images.Featured}}" class="w-full h-full object-cover" alt="{{.Name}}">
+                    {{else}}
+                    <div class="w-full h-full flex items-center justify-center text-[var(--color-text-secondary)] italic text-sm">No image</div>
+                    {{end}}
+                </div>
+                <a href="/admin/xai/human/{{.ID}}" class="bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg hover:bg-[var(--color-primary-hover)] inline-block transition-colors w-full text-center font-semibold">Generate Images</a>
+            </div>
+            {{end}}
+        </div>
+    </main>
+
+    <script>
+    function filterHumans() {
+        const input = document.getElementById('humanSearch');
+        const filter = input.value.toLowerCase();
+        const cards = document.getElementsByClassName('human-card');
+
+        for (let i = 0; i < cards.length; i++) {
+            const name = cards[i].getAttribute('data-name').toLowerCase();
+            if (name.includes(filter)) {
+                cards[i].style.display = "";
+            } else {
+                cards[i].style.display = "none";
+            }
+        }
+    }
+    </script>
+
+    {{template "footer.html" .}}
+</body>
+</html>

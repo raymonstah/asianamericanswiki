@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+    <title>Generate Images for {{.Human.Name}} | AsianAmericans.wiki</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link href="/output.css?v=2" rel="stylesheet" />
+    <script src="/1.9.10.htmx.min.js"></script>
+    {{ template "dark-mode.html" . }}
+    <style>
+        .htmx-indicator { display: none; }
+        .htmx-request .htmx-indicator { display: block; }
+        .htmx-request.htmx-indicator { display: block; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen bg-[var(--color-background)] text-[var(--color-text)] font-body">
+    {{template "header.html" .}}
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <a href="/admin/xai" class="text-[var(--color-primary)] hover:underline">&larr; Back to Humans</a>
+        </div>
+
+        <h1 class="text-3xl font-bold mb-4">Generate Images for {{.Human.Name}}</h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Control Panel -->
+            <div class="bg-[var(--color-card-bg)] p-6 rounded-xl border border-[var(--color-border)] shadow-sm">
+                <form hx-post="/admin/xai/generate" hx-target="#generatedImagesContainer" hx-swap="afterbegin" hx-indicator="#loading">
+                    <input type="hidden" name="human_id" value="{{.Human.ID}}">
+                    
+                    <div class="mb-4">
+                        <label class="block text-[var(--color-text)] font-bold mb-2">Source Image (Current)</label>
+                        <div class="flex space-x-2">
+                            {{if .Human.Images.Featured}}
+                            <img src="{{.Human.Images.Featured}}" class="w-24 h-24 object-cover rounded-lg border border-[var(--color-border)]">
+                            {{else}}
+                            <p class="text-[var(--color-text-secondary)] italic text-sm">No featured image.</p>
+                            {{end}}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-[var(--color-text)] font-bold mb-2">Prompt</label>
+                        <textarea name="prompt" class="w-full p-2 border border-[var(--color-border)] rounded-lg bg-[var(--color-background)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none" rows="4">A cinematic portrait of {{.Human.Name}}, high quality, 8k, highly detailed, professional lighting.</textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-[var(--color-text)] font-bold mb-2">Number of Images</label>
+                        <select name="num_images" class="w-full p-2 border border-[var(--color-border)] rounded-lg bg-[var(--color-background)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="w-full bg-[var(--color-primary)] text-white font-bold py-3 px-4 rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors shadow-lg shadow-[var(--color-primary)]/20">
+                        Generate
+                    </button>
+                </form>
+            </div>
+
+            <!-- Preview Panel -->
+            <div class="bg-[var(--color-card-bg)] p-6 rounded-xl border border-[var(--color-border)] shadow-sm min-h-[400px] relative">
+                <!-- HTMX Indicator -->
+                <div id="loading" class="htmx-indicator absolute inset-0 bg-[var(--color-card-bg)]/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-xl">
+                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-t-[var(--color-primary)] border-[var(--color-border)] mb-4"></div>
+                    <p class="text-[var(--color-text)] font-semibold">Generating images with xAI...</p>
+                    <p class="text-[var(--color-text-secondary)] text-sm mt-1">This usually takes 10-20 seconds</p>
+                </div>
+
+                <div id="generatedImagesContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {{$humanID := .Human.ID}}
+                    {{range .ExistingImages}}
+                    <div class="group relative bg-[var(--color-card-bg)] p-2 rounded-xl border border-[var(--color-border)] shadow-sm hover:border-[var(--color-primary)] transition-all cursor-pointer">
+                        <form hx-post="/admin/xai/upload" hx-target="this" hx-swap="outerHTML" hx-confirm="Are you sure you want to overwrite the existing source image for this human with this generated one?">
+                            <input type="hidden" name="image_path" value="{{.}}">
+                            <input type="hidden" name="human_id" value="{{$humanID}}">
+                            <button type="submit" class="w-full h-full p-0 border-none bg-transparent cursor-pointer block">
+                                <img src="{{.}}" class="w-full h-auto rounded-lg shadow-inner block" alt="Generated Image">
+                                <div class="absolute inset-0 rounded-xl bg-[var(--color-primary)]/0 group-hover:bg-[var(--color-primary)]/10 flex items-center justify-center transition-all">
+                                    <div class="bg-[var(--color-primary)] text-white px-4 py-2 rounded-full font-bold text-sm opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all shadow-lg">
+                                        Click to Overwrite
+                                    </div>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+                    {{end}}
+                </div>
+
+                {{if not .ExistingImages}}
+                <div id="empty-state" class="flex items-center justify-center h-64">
+                    <p class="text-[var(--color-text-secondary)] italic">Generated images will appear here.</p>
+                </div>
+                {{end}}
+            </div>
+        </div>
+    </main>
+
+    {{template "footer.html" .}}
+    <script>
+        document.body.addEventListener('htmx:afterOnLoad', function(evt) {
+            if (evt.detail.target.id === 'generatedImagesContainer') {
+                const emptyState = document.getElementById('empty-state');
+                if (emptyState) {
+                    emptyState.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

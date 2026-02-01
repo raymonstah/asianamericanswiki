@@ -19,6 +19,7 @@ import (
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/raymonstah/asianamericanswiki/internal/openai"
 	"github.com/raymonstah/asianamericanswiki/internal/userdao"
+	"github.com/raymonstah/asianamericanswiki/internal/xai"
 )
 
 func main() {
@@ -30,6 +31,7 @@ func main() {
 			&cli.BoolFlag{Name: "no-auth"},
 			&cli.StringFlag{Name: "git-hash", EnvVars: []string{"GIT_HASH"}, Value: "latest"},
 			&cli.StringFlag{Name: "open-ai-token", EnvVars: []string{"OPEN_AI_TOKEN"}},
+			&cli.StringFlag{Name: "xai-api-key", EnvVars: []string{"XAI_API_KEY"}},
 		},
 		Action: run,
 	}
@@ -85,9 +87,11 @@ func run(c *cli.Context) error {
 	humansDAO := humandao.NewDAO(fsClient)
 	userDAO := userdao.NewDAO(fsClient)
 	openAiClient := openai.New(c.String("open-ai-token"))
+	xaiClient := xai.New(c.String("xai-api-key"))
 
 	config := server.Config{
 		OpenAIClient:  openAiClient,
+		XAIClient:     xaiClient,
 		AuthClient:    authClient,
 		HumanDAO:      humansDAO,
 		UserDAO:       userDAO,
