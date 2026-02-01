@@ -1156,10 +1156,6 @@ func (s *ServerHTML) HandlerXAIGenerate(w http.ResponseWriter, r *http.Request) 
 		}
 	}
 
-	if prompt == "" {
-		prompt = fmt.Sprintf("A cinematic portrait of %s, black background, high quality, 8k, highly detailed, professional lighting.", human.Name)
-	}
-
 	imageURLs, err := s.xaiClient.GenerateImage(ctx, xai.GenerateImageInput{
 		Prompt: prompt,
 		N:      numImages,
