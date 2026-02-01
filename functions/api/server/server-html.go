@@ -22,6 +22,7 @@ import (
 	"cloud.google.com/go/storage"
 	"firebase.google.com/go/v4/auth"
 	"github.com/blevesearch/bleve/v2"
+	"github.com/davidbyttow/govips/v2/vips"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
 	"github.com/raymonstah/asianamericanswiki/functions/api"
@@ -1240,6 +1241,24 @@ func (s *ServerHTML) HandlerXAIUpload(w http.ResponseWriter, r *http.Request) er
 		return NewInternalServerError(err)
 	}
 
+	// Generate thumbnail using govips
+	img, err := vips.NewImageFromBuffer(raw)
+	if err != nil {
+		return NewInternalServerError(fmt.Errorf("unable to load image for thumbnail: %w", err))
+	}
+	defer img.Close()
+
+	if err := img.Thumbnail(256, 256, vips.InterestingNone); err != nil {
+		return NewInternalServerError(fmt.Errorf("unable to generate thumbnail: %w", err))
+	}
+
+	thumbParams := vips.NewWebpExportParams()
+	thumbParams.Quality = 90
+	thumbRaw, _, err := img.ExportWebp(thumbParams)
+	if err != nil {
+		return NewInternalServerError(fmt.Errorf("unable to export thumbnail: %w", err))
+	}
+
 	// Upload to GCS - Overwrite original.webp
 	objectID := fmt.Sprintf("%s/original.webp", humanID)
 	obj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(objectID)
@@ -1251,7 +1270,19 @@ func (s *ServerHTML) HandlerXAIUpload(w http.ResponseWriter, r *http.Request) er
 		return NewInternalServerError(err)
 	}
 
+	// Upload Thumbnail to GCS - Overwrite thumbnail.webp
+	thumbObjectID := fmt.Sprintf("%s/thumbnail.webp", humanID)
+	thumbObj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(thumbObjectID)
+	thumbWriter := thumbObj.NewWriter(ctx)
+	if _, err := thumbWriter.Write(thumbRaw); err != nil {
+		return NewInternalServerError(err)
+	}
+	if err := thumbWriter.Close(); err != nil {
+		return NewInternalServerError(err)
+	}
+
 	storageURL := fmt.Sprintf("%v/%v/%s", s.storageURL, api.ImagesStorageBucket, objectID)
+	thumbURL := fmt.Sprintf("%v/%v/%s", s.storageURL, api.ImagesStorageBucket, thumbObjectID)
 
 	// Update human record
 	human, err := s.humanDAO.Human(ctx, humandao.HumanInput{HumanID: humanID})
@@ -1260,6 +1291,7 @@ func (s *ServerHTML) HandlerXAIUpload(w http.ResponseWriter, r *http.Request) er
 	}
 
 	human.Images.Featured = storageURL
+	human.Images.Thumbnail = thumbURL
 	human.AIGenerated = true
 	if err := s.humanDAO.UpdateHuman(ctx, human); err != nil {
 		return NewInternalServerError(err)
