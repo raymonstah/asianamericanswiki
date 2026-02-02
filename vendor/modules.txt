@@ -213,6 +213,9 @@ github.com/davecgh/go-spew/spew
 # github.com/davidbyttow/govips/v2 v2.16.0
 ## explicit; go 1.15
 github.com/davidbyttow/govips/v2/vips
+# github.com/disintegration/imaging v1.6.2
+## explicit
+github.com/disintegration/imaging
 # github.com/envoyproxy/go-control-plane/envoy v1.35.0
 ## explicit; go 1.23.0
 github.com/envoyproxy/go-control-plane/envoy/admin/v3
@@ -649,7 +652,10 @@ golang.org/x/crypto/internal/poly1305
 # golang.org/x/image v0.28.0
 ## explicit; go 1.23.0
 golang.org/x/image/bmp
+golang.org/x/image/ccitt
 golang.org/x/image/riff
+golang.org/x/image/tiff
+golang.org/x/image/tiff/lzw
 golang.org/x/image/vp8
 golang.org/x/image/vp8l
 golang.org/x/image/webp

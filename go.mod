@@ -10,6 +10,7 @@ require (
 	firebase.google.com/go/v4 v4.12.1
 	github.com/blevesearch/bleve/v2 v2.3.10
 	github.com/davidbyttow/govips/v2 v2.16.0
+	github.com/disintegration/imaging v1.6.2
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-chi/cors v1.2.1
 	github.com/go-chi/httplog v0.3.1

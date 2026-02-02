@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"embed"
 	"encoding/base64"
@@ -22,7 +23,7 @@ import (
 	"cloud.google.com/go/storage"
 	"firebase.google.com/go/v4/auth"
 	"github.com/blevesearch/bleve/v2"
-	"github.com/davidbyttow/govips/v2/vips"
+	"github.com/disintegration/imaging"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
 	"github.com/raymonstah/asianamericanswiki/functions/api"
@@ -31,6 +32,7 @@ import (
 	"github.com/raymonstah/asianamericanswiki/internal/openai"
 	"github.com/raymonstah/asianamericanswiki/internal/xai"
 	"github.com/rs/zerolog"
+	"image/jpeg"
 )
 
 //go:embed public/*
@@ -1241,23 +1243,18 @@ func (s *ServerHTML) HandlerXAIUpload(w http.ResponseWriter, r *http.Request) er
 		return NewInternalServerError(err)
 	}
 
-	// Generate thumbnail using govips
-	img, err := vips.NewImageFromBuffer(raw)
+	// Generate thumbnail using pure-Go imaging library
+	src, err := imaging.Decode(bytes.NewReader(raw))
 	if err != nil {
-		return NewInternalServerError(fmt.Errorf("unable to load image for thumbnail: %w", err))
-	}
-	defer img.Close()
-
-	if err := img.Thumbnail(256, 256, vips.InterestingNone); err != nil {
-		return NewInternalServerError(fmt.Errorf("unable to generate thumbnail: %w", err))
+		return NewInternalServerError(fmt.Errorf("unable to decode image for thumbnail: %w", err))
 	}
 
-	thumbParams := vips.NewWebpExportParams()
-	thumbParams.Quality = 90
-	thumbRaw, _, err := img.ExportWebp(thumbParams)
-	if err != nil {
-		return NewInternalServerError(fmt.Errorf("unable to export thumbnail: %w", err))
+	thumb := imaging.Thumbnail(src, 256, 256, imaging.CatmullRom)
+	var thumbBuf bytes.Buffer
+	if err := jpeg.Encode(&thumbBuf, thumb, &jpeg.Options{Quality: 90}); err != nil {
+		return NewInternalServerError(fmt.Errorf("unable to encode thumbnail to jpeg: %w", err))
 	}
+	thumbRaw := thumbBuf.Bytes()
 
 	// Upload to GCS - Overwrite original.webp
 	objectID := fmt.Sprintf("%s/original.webp", humanID)
