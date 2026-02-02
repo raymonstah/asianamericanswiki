@@ -9,7 +9,6 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"cloud.google.com/go/storage"
-	"github.com/davidbyttow/govips/v2/vips"
 	firebase "firebase.google.com/go/v4"
 	"github.com/go-chi/httplog"
 	"github.com/rs/zerolog"
@@ -43,10 +42,6 @@ func main() {
 }
 
 func run(c *cli.Context) error {
-	vips.LoggingSettings(nil, vips.LogLevelError)
-	vips.Startup(nil)
-	defer vips.Shutdown()
-
 	ctx := c.Context
 	local := c.Bool("local")
 	logger := httplog.NewLogger(api.ProjectID, httplog.Options{
