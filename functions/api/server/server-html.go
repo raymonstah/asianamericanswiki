@@ -1146,15 +1146,27 @@ func (s *ServerHTML) HandlerXAIGenerate(w http.ResponseWriter, r *http.Request) 
 	}
 
 	baseImage := human.Images.Featured
-	if baseImage != "" && (strings.Contains(baseImage, "localhost") || strings.Contains(baseImage, "127.0.0.1")) {
-		resp, err := http.Get(baseImage)
-		if err == nil {
-			defer resp.Body.Close()
-			data, err := io.ReadAll(resp.Body)
-			if err == nil {
+	if baseImage != "" && (strings.Contains(baseImage, "localhost") || strings.HasPrefix(baseImage, "http://")) {
+		s.logger.Info().Str("url", baseImage).Msg("local source image detected, converting to base64")
+		// Parse the emulator URL to get the object path
+		// URL format: http://localhost:9199/asianamericanswiki-images/<humanID>/original.webp
+		prefix := fmt.Sprintf("%s/%s/", s.storageURL, api.ImagesStorageBucket)
+		objectPath := strings.TrimPrefix(baseImage, prefix)
+
+		obj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(objectPath)
+		reader, err := obj.NewReader(ctx)
+		if err != nil {
+			s.logger.Error().Err(err).Str("path", objectPath).Msg("failed to create reader for local storage object")
+		} else {
+			defer reader.Close()
+			data, err := io.ReadAll(reader)
+			if err != nil {
+				s.logger.Error().Err(err).Msg("failed to read local storage object")
+			} else {
 				base64Data := base64.StdEncoding.EncodeToString(data)
 				mimeType := http.DetectContentType(data)
 				baseImage = fmt.Sprintf("data:%s;base64,%s", mimeType, base64Data)
+				s.logger.Info().Msg("successfully converted local image to base64 for xAI")
 			}
 		}
 	}
@@ -1249,9 +1261,12 @@ func (s *ServerHTML) HandlerXAIUpload(w http.ResponseWriter, r *http.Request) er
 		return NewInternalServerError(fmt.Errorf("unable to decode image for thumbnail: %w", err))
 	}
 
-	thumb := imaging.Thumbnail(src, 256, 256, imaging.CatmullRom)
+	thumb := imaging.Thumbnail(src, 256, 256, imaging.Lanczos)
+	// Apply a slight sharpen to make it crisp
+	thumb = imaging.Sharpen(thumb, 0.5)
+
 	var thumbBuf bytes.Buffer
-	if err := jpeg.Encode(&thumbBuf, thumb, &jpeg.Options{Quality: 90}); err != nil {
+	if err := jpeg.Encode(&thumbBuf, thumb, &jpeg.Options{Quality: 95}); err != nil {
 		return NewInternalServerError(fmt.Errorf("unable to encode thumbnail to jpeg: %w", err))
 	}
 	thumbRaw := thumbBuf.Bytes()
