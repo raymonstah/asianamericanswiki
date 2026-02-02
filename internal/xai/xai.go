@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strings"
 
 	openai "github.com/sashabaranov/go-openai"
 )
@@ -42,8 +41,9 @@ type imageEditRequest struct {
 
 func (c *Client) GenerateImage(ctx context.Context, input GenerateImageInput) ([]string, error) {
 	var imageVal any = input.Image
-	// If it's a URL and not a base64 data string, wrap it in a struct as expected by xAI
-	if strings.HasPrefix(input.Image, "http") && !strings.HasPrefix(input.Image, "data:") {
+	// xAI API expects a struct with a "url" key for the image field, 
+	// which can be either a public URL or a data:image/... base64 string.
+	if input.Image != "" {
 		imageVal = struct {
 			URL string `json:"url"`
 		}{URL: input.Image}
