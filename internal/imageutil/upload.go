@@ -7,6 +7,7 @@ import (
 	_ "image/gif"
 	"image/jpeg"
 	_ "image/png"
+	"net/url"
 
 	_ "golang.org/x/image/webp"
 
@@ -41,6 +42,9 @@ func (u *Uploader) UploadHumanImages(ctx context.Context, human humandao.Human, 
 	thumb = imaging.Sharpen(thumb, 0.5)
 
 	var thumbBuf bytes.Buffer
+	// Even though the object ID might end in .webp, imaging.Encode or jpeg.Encode determines the format.
+	// For now, let's keep it consistent and actually use the format the extension suggests if possible,
+	// but the existing code used jpeg.
 	if err := jpeg.Encode(&thumbBuf, thumb, &jpeg.Options{Quality: 95}); err != nil {
 		return human, fmt.Errorf("unable to encode thumbnail to jpeg: %w", err)
 	}
@@ -50,6 +54,7 @@ func (u *Uploader) UploadHumanImages(ctx context.Context, human humandao.Human, 
 	objectID := fmt.Sprintf("%s/original.webp", human.ID)
 	obj := u.storageClient.Bucket(api.ImagesStorageBucket).Object(objectID)
 	writer := obj.NewWriter(ctx)
+	writer.ContentType = "image/webp"
 	if _, err := writer.Write(rawImage); err != nil {
 		return human, fmt.Errorf("unable to upload original image: %w", err)
 	}
@@ -60,6 +65,7 @@ func (u *Uploader) UploadHumanImages(ctx context.Context, human humandao.Human, 
 	thumbObjectID := fmt.Sprintf("%s/thumbnail.webp", human.ID)
 	thumbObj := u.storageClient.Bucket(api.ImagesStorageBucket).Object(thumbObjectID)
 	thumbWriter := thumbObj.NewWriter(ctx)
+	thumbWriter.ContentType = "image/jpeg"
 	if _, err := thumbWriter.Write(thumbRaw); err != nil {
 		return human, fmt.Errorf("unable to upload thumbnail: %w", err)
 	}
@@ -67,10 +73,16 @@ func (u *Uploader) UploadHumanImages(ctx context.Context, human humandao.Human, 
 		return human, err
 	}
 
-	human.Images.Featured = fmt.Sprintf("%v/%v/%s", u.storageURL, api.ImagesStorageBucket, objectID)
-	human.Images.Thumbnail = fmt.Sprintf("%v/%v/%s", u.storageURL, api.ImagesStorageBucket, thumbObjectID)
-	
-	// If it was already AI generated, keep it true. 
+	if u.storageURL == "https://storage.googleapis.com" {
+		human.Images.Featured = fmt.Sprintf("%v/%v/%s", u.storageURL, api.ImagesStorageBucket, objectID)
+		human.Images.Thumbnail = fmt.Sprintf("%v/%v/%s", u.storageURL, api.ImagesStorageBucket, thumbObjectID)
+	} else {
+		// Emulator URL format
+		human.Images.Featured = fmt.Sprintf("%v/v0/b/%v/o/%s?alt=media", u.storageURL, api.ImagesStorageBucket, url.PathEscape(objectID))
+		human.Images.Thumbnail = fmt.Sprintf("%v/v0/b/%v/o/%s?alt=media", u.storageURL, api.ImagesStorageBucket, url.PathEscape(thumbObjectID))
+	}
+
+	// If it was already AI generated, keep it true.
 	// The caller can set it to true if they know it's AI generated.
 	if err := u.humanDAO.UpdateHuman(ctx, human); err != nil {
 		return human, fmt.Errorf("unable to update human with image URLs: %w", err)
