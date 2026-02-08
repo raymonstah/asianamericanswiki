@@ -25,13 +25,13 @@
       import { getAuth } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
       const firebaseConfig = {
-        apiKey: "AIzaSyAzAtLQv_j6TFdkKZyuxG4Yibz9V6VtzRA",
-        authDomain: "asianamericans-wiki.firebaseapp.com",
-        projectId: "asianamericans-wiki",
-        storageBucket: "asianamericans-wiki.appspot.com",
-        messagingSenderId: "424340922093",
-        appId: "1:424340922093:web:c7a5b00652170e2c9cb6e4",
-        measurementId: "G-DNWC1SD6ZZ",
+        apiKey: "{{ .FirebaseConfig.APIKey }}",
+        authDomain: "{{ .FirebaseConfig.AuthDomain }}",
+        projectId: "{{ .FirebaseConfig.ProjectID }}",
+        storageBucket: "{{ .FirebaseConfig.StorageBucket }}",
+        messagingSenderId: "{{ .FirebaseConfig.MessagingSenderId }}",
+        appId: "{{ .FirebaseConfig.AppID }}",
+        measurementId: "{{ .FirebaseConfig.MeasurementID }}",
       };
 
       // Initialize Firebase

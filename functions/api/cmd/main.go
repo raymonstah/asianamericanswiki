@@ -30,6 +30,13 @@ func main() {
 			&cli.BoolFlag{Name: "no-auth"},
 			&cli.StringFlag{Name: "git-hash", EnvVars: []string{"GIT_HASH"}, Value: "latest"},
 			&cli.StringFlag{Name: "xai-api-key", EnvVars: []string{"XAI_API_KEY"}},
+			&cli.StringFlag{Name: "firebase-api-key", EnvVars: []string{"FIREBASE_API_KEY"}},
+			&cli.StringFlag{Name: "firebase-auth-domain", EnvVars: []string{"FIREBASE_AUTH_DOMAIN"}},
+			&cli.StringFlag{Name: "firebase-project-id", EnvVars: []string{"FIREBASE_PROJECT_ID"}},
+			&cli.StringFlag{Name: "firebase-storage-bucket", EnvVars: []string{"FIREBASE_STORAGE_BUCKET"}},
+			&cli.StringFlag{Name: "firebase-messaging-sender-id", EnvVars: []string{"FIREBASE_MESSAGING_SENDER_ID"}},
+			&cli.StringFlag{Name: "firebase-app-id", EnvVars: []string{"FIREBASE_APP_ID"}},
+			&cli.StringFlag{Name: "firebase-measurement-id", EnvVars: []string{"FIREBASE_MEASUREMENT_ID"}},
 		},
 		Action: run,
 	}
@@ -95,6 +102,15 @@ func run(c *cli.Context) error {
 		Version:       c.String("git-hash"),
 		StorageClient: storageClient,
 		Local:         local,
+		FirebaseConfig: server.FirebaseConfig{
+			APIKey:            c.String("firebase-api-key"),
+			AuthDomain:        c.String("firebase-auth-domain"),
+			ProjectID:         c.String("firebase-project-id"),
+			StorageBucket:     c.String("firebase-storage-bucket"),
+			MessagingSenderId: c.String("firebase-messaging-sender-id"),
+			AppID:             c.String("firebase-app-id"),
+			MeasurementID:     c.String("firebase-measurement-id"),
+		},
 	}
 
 	mux := server.NewServer(config)

@@ -22,15 +22,26 @@ import (
 	"github.com/raymonstah/asianamericanswiki/internal/xai"
 )
 
+type FirebaseConfig struct {
+	APIKey            string
+	AuthDomain        string
+	ProjectID         string
+	StorageBucket     string
+	MessagingSenderId string
+	AppID             string
+	MeasurementID     string
+}
+
 type Config struct {
-	AuthClient    Authorizer
-	HumanDAO      *humandao.DAO
-	UserDAO       *userdao.DAO
-	Logger        zerolog.Logger
-	Version       string
-	XAIClient     *xai.Client
-	StorageClient *storage.Client
-	Local         bool
+	AuthClient     Authorizer
+	HumanDAO       *humandao.DAO
+	UserDAO        *userdao.DAO
+	Logger         zerolog.Logger
+	Version        string
+	XAIClient      *xai.Client
+	StorageClient  *storage.Client
+	Local          bool
+	FirebaseConfig FirebaseConfig
 }
 
 type Server struct {
@@ -76,12 +87,13 @@ func NewServer(config Config) *Server {
 	}))
 	s.setupRoutes()
 	htmlServer := NewServerHTML(ServerHTMLConfig{
-		Local:         config.Local,
-		HumanDAO:      config.HumanDAO,
-		Logger:        config.Logger,
-		StorageClient: config.StorageClient,
-		AuthClient:    config.AuthClient,
-		XAIClient:     config.XAIClient,
+		Local:          config.Local,
+		HumanDAO:       config.HumanDAO,
+		Logger:         config.Logger,
+		StorageClient:  config.StorageClient,
+		AuthClient:     config.AuthClient,
+		XAIClient:      config.XAIClient,
+		FirebaseConfig: config.FirebaseConfig,
 	})
 	if err := htmlServer.Register(r); err != nil {
 		panic(err)

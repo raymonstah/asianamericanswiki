@@ -34,6 +34,9 @@ func TestHandlerHumanDelete(t *testing.T) {
 	s := NewServerHTML(ServerHTMLConfig{
 		HumanDAO:   dao,
 		AuthClient: NoOpAuthorizer{},
+		FirebaseConfig: FirebaseConfig{
+			APIKey: "fake-api-key",
+		},
 	})
 
 	// Seed a human

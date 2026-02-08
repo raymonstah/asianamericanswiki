@@ -22,6 +22,9 @@ func Test_HTMLServer(t *testing.T) {
 
 	s := NewServer(Config{
 		HumanDAO: humandao.NewDAO(fsClient),
+		FirebaseConfig: FirebaseConfig{
+			APIKey: "fake-api-key",
+		},
 	})
 
 	tcs := map[string]struct {

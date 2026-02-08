@@ -24,6 +24,9 @@ func Test_Server(t *testing.T) {
 	humanCollection := "humans-" + ksuid.New().String()
 	s := NewServer(Config{
 		HumanDAO: humandao.NewDAO(fsClient, humandao.WithHumanCollectionName(humanCollection)),
+		FirebaseConfig: FirebaseConfig{
+			APIKey: "fake-api-key",
+		},
 	})
 	t.Cleanup(func() {
 		ctx := context.Background()

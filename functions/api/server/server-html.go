@@ -51,15 +51,18 @@ type ServerHTML struct {
 	index  bleve.Index
 	humans []humandao.Human
 	lock   sync.Mutex
+
+	firebaseConfig FirebaseConfig
 }
 
 type ServerHTMLConfig struct {
-	Local         bool
-	HumanDAO      *humandao.DAO
-	Logger        zerolog.Logger
-	AuthClient    Authorizer
-	StorageClient *storage.Client
-	XAIClient     *xai.Client
+	Local          bool
+	HumanDAO       *humandao.DAO
+	Logger         zerolog.Logger
+	AuthClient     Authorizer
+	StorageClient  *storage.Client
+	XAIClient      *xai.Client
+	FirebaseConfig FirebaseConfig
 }
 
 func NewServerHTML(conf ServerHTMLConfig) *ServerHTML {
@@ -79,6 +82,7 @@ func NewServerHTML(conf ServerHTMLConfig) *ServerHTML {
 		storageURL:    storageURL,
 		xaiClient:     conf.XAIClient,
 		uploader:      uploader,
+		firebaseConfig: conf.FirebaseConfig,
 	}
 }
 
@@ -826,6 +830,7 @@ func (s *ServerHTML) HandlerHumanDelete(w http.ResponseWriter, r *http.Request) 
 
 type HTMLResponseLogin struct {
 	Base
+	FirebaseConfig FirebaseConfig
 }
 
 func (s *ServerHTML) HandlerLogin(w http.ResponseWriter, r *http.Request) error {
@@ -867,7 +872,10 @@ func (s *ServerHTML) HandlerLogin(w http.ResponseWriter, r *http.Request) error 
 		return nil
 	}
 
-	response := HTMLResponseLogin{Base: getBase(s, false)}
+	response := HTMLResponseLogin{
+		Base:           getBase(s, false),
+		FirebaseConfig: s.firebaseConfig,
+	}
 	if err := s.template.ExecuteTemplate(w, "login.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute login template")
 	}

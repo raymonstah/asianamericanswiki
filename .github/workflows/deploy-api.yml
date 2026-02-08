@@ -67,8 +67,15 @@ jobs:
           image: ${{ env.IMAGE_NAME }}:latest
           env_vars: |
             GIT_HASH=${{ steps.vars.outputs.sha_short }}
+            FIREBASE_AUTH_DOMAIN=asianamericans-wiki.firebaseapp.com
+            FIREBASE_PROJECT_ID=asianamericans-wiki
+            FIREBASE_STORAGE_BUCKET=asianamericans-wiki.appspot.com
+            FIREBASE_MESSAGING_SENDER_ID=424340922093
+            FIREBASE_APP_ID=1:424340922093:web:c7a5b00652170e2c9cb6e4
+            FIREBASE_MEASUREMENT_ID=G-DNWC1SD6ZZ
           secrets: |-
             XAI_API_KEY=projects/424340922093/secrets/asianamericanswiki-xai-api-key:latest
+            FIREBASE_API_KEY=projects/424340922093/secrets/asianamericanswiki-firebase-api-key:latest
 
       - name: "Use output"
         run: 'curl "${{ steps.deploy.outputs.url }}"/api/v1/version'
