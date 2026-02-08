@@ -14,12 +14,6 @@ jobs:
         with:
           go-version-file: "go.mod"
 
-      - name: Install libvips
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libvips-dev
-
-
       - name: Check go.mod and go.sum tidiness
         run: |
           go mod tidy && go mod vendor
@@ -32,6 +26,22 @@ jobs:
         uses: golang/govulncheck-action@v1
         with:
           go-version-file: go.mod
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: "go.mod"
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.8.0
 
   validate-proto:
     runs-on: ubuntu-latest

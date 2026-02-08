@@ -65,6 +65,25 @@ Regenerate with:
   api.proto
 ```
 
+## Linting
+
+This project uses `golangci-lint` for linting.
+
+To install:
+```shell
+brew install golangci-lint
+```
+
+To run:
+```shell
+golangci-lint run
+```
+
+There is a pre-commit hook that runs the linter automatically. To set it up:
+```shell
+ln -s ../../scripts/pre-commit .git/hooks/pre-commit
+```
+
 ## Test GitHub actions workflows locally
 
 ```shell

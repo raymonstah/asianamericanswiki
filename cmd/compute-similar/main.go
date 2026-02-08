@@ -254,23 +254,23 @@ func (h *Handler) findSimilar(ctx context.Context, human humandao.Human, count i
 
 	data, ok := response.Data["Get"]
 	if !ok {
-		return SimilarResults{}, fmt.Errorf("Get key not found in result")
+		return SimilarResults{}, fmt.Errorf("get key not found in result")
 	}
 	doc, ok := data.(map[string]any)
 	if !ok {
-		return SimilarResults{}, fmt.Errorf("Get key unexpected type")
+		return SimilarResults{}, fmt.Errorf("get key unexpected type")
 	}
 
 	humanResponse, ok := doc["Human"].([]any)
 	if !ok {
-		return SimilarResults{}, fmt.Errorf("Human is not a list of results")
+		return SimilarResults{}, fmt.Errorf("human is not a list of results")
 	}
 
 	var similarHumans []humandao.Human
 	for _, human := range humanResponse {
 		m, ok := human.(map[string]any)
 		if !ok {
-			return SimilarResults{}, fmt.Errorf("Human is not a map")
+			return SimilarResults{}, fmt.Errorf("human is not a map")
 		}
 		similarHumanID := m["ksuid"].(string)
 		human, ok := h.allHumansByID[similarHumanID]

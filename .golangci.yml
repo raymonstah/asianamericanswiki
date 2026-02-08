@@ -1,0 +1,32 @@
+version: "2"
+
+run:
+  timeout: 5m
+  modules-download-mode: vendor
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - bodyclose
+    - misspell
+    - unparam
+  exclusions:
+    rules:
+      - path: \.pb\.go
+        linters:
+          - unused
+          - staticcheck
+      - path: \.pb\.gw\.go
+        linters:
+          - unused
+          - staticcheck
+      - text: "ST1005:"
+        linters:
+          - staticcheck
+      - text: "ineffectual assignment to path"
+        linters:
+          - ineffassign
