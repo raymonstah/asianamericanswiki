@@ -4,7 +4,11 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	_ "image/gif"
 	"image/jpeg"
+	_ "image/png"
+
+	_ "golang.org/x/image/webp"
 
 	"cloud.google.com/go/storage"
 	"github.com/disintegration/imaging"

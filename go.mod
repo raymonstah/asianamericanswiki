@@ -21,6 +21,7 @@ require (
 	github.com/urfave/cli/v2 v2.27.5
 	github.com/weaviate/weaviate v1.33.6
 	github.com/weaviate/weaviate-go-client/v5 v5.6.0
+	golang.org/x/image v0.28.0
 	golang.org/x/sync v0.19.0
 	google.golang.org/api v0.245.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20260128011058-8636f8732409
@@ -76,7 +77,6 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.38.0 // indirect
 	go.opentelemetry.io/otel/trace v1.38.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/image v0.28.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 

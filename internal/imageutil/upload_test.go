@@ -87,3 +87,21 @@ func TestUploader_UploadHumanImages(t *testing.T) {
 	assert.Equal(t, updatedHuman.Images.Featured, gotHuman.Images.Featured)
 	assert.Equal(t, updatedHuman.Images.Thumbnail, gotHuman.Images.Thumbnail)
 }
+
+func TestDecodeFormatsRegistered(t *testing.T) {
+	formats := []struct {
+		name   string
+		header []byte
+	}{
+		{"jpeg", []byte("\xff\xd8\xff")},
+		{"png", []byte("\x89PNG\r\n\x1a\n")},
+		{"gif", []byte("GIF87a")},
+		{"webp", []byte("RIFF\x00\x00\x00\x00WEBPVP8")},
+	}
+	for _, f := range formats {
+		t.Run(f.name, func(t *testing.T) {
+			_, _, err := image.DecodeConfig(bytes.NewReader(f.header))
+			assert.NotEqual(t, image.ErrFormat, err, "format %s should be registered", f.name)
+		})
+	}
+}
