@@ -10,8 +10,10 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/firestore"
+	"github.com/chromedp/chromedp"
 	"github.com/raymonstah/asianamericanswiki/functions/api"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/raymonstah/asianamericanswiki/internal/imageutil"
@@ -113,10 +115,10 @@ func newDiscoverer(ctx context.Context) (*Discoverer, error) {
 	}
 
 	storageURL := "https://storage.googleapis.com"
-        if !opts.UseProd {
-                storageURL = "http://127.0.0.1:9199"
-        }
-        uploader := imageutil.NewUploader(storageClient, dao, storageURL)
+	if !opts.UseProd {
+		storageURL = "http://127.0.0.1:9199"
+	}
+	uploader := imageutil.NewUploader(storageClient, dao, storageURL)
 
 	return &Discoverer{
 		dao:           dao,
@@ -127,7 +129,7 @@ func newDiscoverer(ctx context.Context) (*Discoverer, error) {
 	}, nil
 }
 
-func (d *Discoverer) FindImageURL(_ context.Context, name string) (string, error) {
+func (d *Discoverer) FindImageURL(ctx context.Context, name string) (string, error) {
 	// 1. Try Wikipedia
 	baseURL := "https://en.wikipedia.org/w/api.php"
 	params := url.Values{}
@@ -138,7 +140,7 @@ func (d *Discoverer) FindImageURL(_ context.Context, name string) (string, error
 	params.Set("format", "json")
 
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", baseURL+"?"+params.Encode(), nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", baseURL+"?"+params.Encode(), nil)
 	if err != nil {
 		return "", err
 	}
@@ -168,11 +170,80 @@ func (d *Discoverer) FindImageURL(_ context.Context, name string) (string, error
 		}
 	}
 
-	// 2. If no Wikipedia image, just return empty and let GenerateAndUploadImage handle it
-	// In a more advanced version, we could use a Search API here.
-	return "", nil
+	// 2. Fallback to Google Image Search using chromedp
+	fmt.Printf("No Wikipedia image for %s, trying Google Image Search via headless browser...\n", name)
+	return d.findGoogleImageURL(ctx, name)
 }
 
+func (d *Discoverer) findGoogleImageURL(ctx context.Context, name string) (string, error) {
+	opts := append(chromedp.DefaultExecAllocatorOptions[:],
+		chromedp.Flag("headless", true),
+		chromedp.Flag("disable-gpu", true),
+		chromedp.Flag("no-sandbox", true),
+		chromedp.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"),
+	)
+
+	allocCtx, cancel := chromedp.NewExecAllocator(ctx, opts...)
+	defer cancel()
+
+	taskCtx, cancel := chromedp.NewContext(allocCtx)
+	defer cancel()
+
+	// Set a total timeout for the discovery
+	taskCtx, cancel = context.WithTimeout(taskCtx, 45*time.Second)
+	defer cancel()
+
+	searchURL := fmt.Sprintf("https://www.google.com/search?q=%s&tbm=isch", url.QueryEscape(name))
+
+	var imageURL string
+	err := chromedp.Run(taskCtx,
+		chromedp.Navigate(searchURL),
+		// Try to handle potential consent page
+		chromedp.ActionFunc(func(ctx context.Context) error {
+			// Check if we are on a consent page
+			var title string
+			if err := chromedp.Title(&title).Do(ctx); err != nil {
+				return err
+			}
+			if strings.Contains(title, "Before you continue") {
+				// Try to click "Accept all"
+				// The button often has a specific text or role.
+				// This is a bit of a cat-and-mouse game with Google.
+				// We'll try a common selector for the accept button.
+				fmt.Println("Handling Google consent page...")
+				selector := `button:last-child` // Often the "Accept all" is the last button
+				return chromedp.Click(selector, chromedp.ByQuery).Do(ctx)
+			}
+			return nil
+		}),
+		// Wait for any image that looks like a search result
+		// Common selectors for Google Images results
+		chromedp.WaitReady(`img`, chromedp.ByQuery),
+		chromedp.ActionFunc(func(ctx context.Context) error {
+			// Try a few common selectors for the first image
+			selectors := []string{
+				`div[data-ri="0"] img`,
+				`[data-attrid="images universal"] img`,
+				`img.rg_i`,
+				`div.islrc img`,
+			}
+			var err error
+			for _, sel := range selectors {
+				var ok bool
+				if err = chromedp.Evaluate(fmt.Sprintf(`document.querySelector('%s') != null`, sel), &ok).Do(ctx); err == nil && ok {
+					return chromedp.AttributeValue(sel, "src", &imageURL, nil, chromedp.ByQuery).Do(ctx)
+				}
+			}
+			return fmt.Errorf("could not find image with any known selectors")
+		}),
+	)
+
+	if err != nil {
+		return "", fmt.Errorf("failed to find image on Google: %w", err)
+	}
+
+	return imageURL, nil
+}
 func (d *Discoverer) GenerateAndUploadImage(ctx context.Context, human humandao.Human) error {
 	if d.xaiClient == nil {
 		return fmt.Errorf("XAI client is required for image generation")
@@ -308,35 +379,37 @@ func discoverWikipedia(c *cli.Context) error {
 				}
 			}
 
-			if opts.Dry {
-				count++
-				continue
-			}
-
-			fmt.Printf("Saving %s as draft...\n", input.Name)
-			human, err := d.dao.AddHuman(ctx, input)
-			if err != nil {
-				fmt.Printf("Error adding human %s: %v\n", name, err)
-				continue
-			}
-
-			// update existing map to prevent duplicates in the same run
-			d.existing[strings.ToLower(human.Name)] = struct{}{}
-			d.existing[strings.ToLower(human.Path)] = struct{}{}
-
-			if opts.GenImage {
-				err := d.GenerateAndUploadImage(ctx, human)
-				if err != nil {
-					fmt.Printf("Error generating image for %s: %v\n", name, err)
+						var human humandao.Human
+						if opts.Dry {
+							fmt.Printf("DRY RUN: Would save %s as draft\n", input.Name)
+							human = humandao.Human{
+								Name: input.Name,
+							}
+						} else {
+							fmt.Printf("Saving %s as draft...\n", input.Name)
+							var err error
+							human, err = d.dao.AddHuman(ctx, input)
+							if err != nil {
+								fmt.Printf("Error adding human %s: %v\n", name, err)
+								continue
+							}
+							// update existing map to prevent duplicates in the same run
+							d.existing[strings.ToLower(human.Name)] = struct{}{}
+							d.existing[strings.ToLower(human.Path)] = struct{}{}
+						}
+			
+						if opts.GenImage {
+							err := d.GenerateAndUploadImage(ctx, human)
+							if err != nil {
+								fmt.Printf("Error generating image for %s: %v\n", name, err)
+							}
+						}
+						count++
+					}
 				}
+			
+				return nil
 			}
-			count++
-		}
-	}
-
-	return nil
-}
-
 func (d *Discoverer) fetchWikipediaCategoryMembers(category string) ([]string, error) {
 	baseURL := "https://en.wikipedia.org/w/api.php"
 	params := url.Values{}
@@ -467,26 +540,30 @@ func brainstorm(c *cli.Context) error {
 			}
 		}
 
-		if opts.Dry {
-			count++
-			continue
-		}
-
-		fmt.Printf("Saving %s as draft...\n", input.Name)
-		human, err := d.dao.AddHuman(ctx, input)
-		if err != nil {
-			fmt.Printf("Error adding human %s: %v\n", name, err)
-			continue
-		}
-
-		if opts.GenImage {
-			err := d.GenerateAndUploadImage(ctx, human)
-			if err != nil {
-				fmt.Printf("Error generating image for %s: %v\n", name, err)
+				var human humandao.Human
+				if opts.Dry {
+					fmt.Printf("DRY RUN: Would save %s as draft\n", input.Name)
+					human = humandao.Human{
+						Name: input.Name,
+					}
+				} else {
+					fmt.Printf("Saving %s as draft...\n", input.Name)
+					var err error
+					human, err = d.dao.AddHuman(ctx, input)
+					if err != nil {
+						fmt.Printf("Error adding human %s: %v\n", name, err)
+						continue
+					}
+				}
+		
+				if opts.GenImage {
+					err := d.GenerateAndUploadImage(ctx, human)
+					if err != nil {
+						fmt.Printf("Error generating image for %s: %v\n", name, err)
+					}
+				}
+				count++
 			}
+		
+			return nil
 		}
-		count++
-	}
-
-	return nil
-}
