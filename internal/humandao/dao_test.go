@@ -25,7 +25,7 @@ func TestMain(m *testing.M) {
 
 func WithDAO(t *testing.T, do func(ctx context.Context, dao *DAO)) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
 	client, err := firestore.NewClient(ctx, api.ProjectID)

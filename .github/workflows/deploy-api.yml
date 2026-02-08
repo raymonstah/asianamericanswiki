@@ -12,7 +12,14 @@
 
 name: Deploy API to cloud run
 jobs:
+  go-checks:
+    uses: ./.github/workflows/go-checks.yml
+
+  tests:
+    uses: ./.github/workflows/tests.yml
+
   deploy-api:
+    needs: [go-checks, tests]
     permissions:
       contents: "read"
       id-token: "write"
@@ -21,37 +28,6 @@ jobs:
       IMAGE_NAME: us-central1-docker.pkg.dev/asianamericans-wiki/asianamericanswiki-api/api
     steps:
       - uses: actions/checkout@v4
-
-      - name: Cache firebase emulators
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/firebase/emulators
-          key: ${{ runner.os }}-firebase-emulators-${{
-            hashFiles('~/.cache/firebase/emulators/**') }}
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: "go.mod"
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "21"
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Install emulators and Test
-        run: |
-          npx firebase emulators:exec --only "auth,firestore,storage" 'go test ./...'
 
       - id: "auth"
         name: "Authenticate to Google Cloud"

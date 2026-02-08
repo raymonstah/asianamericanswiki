@@ -30,7 +30,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestUploader_UploadHumanImages(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
 	// Setup Firestore

@@ -1,0 +1,42 @@
+name: Tests
+on:
+  push:
+  pull_request:
+  workflow_call:
+
+jobs:
+  run-tests:
+    name: Run Go tests with emulators
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Cache firebase emulators
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/firebase/emulators
+          key: ${{ runner.os }}-firebase-emulators-${{ hashFiles('~/.cache/firebase/emulators/**') }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: "go.mod"
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install emulators and Test
+        run: |
+          npx firebase emulators:exec --only "auth,firestore,storage" 'go test ./...'
