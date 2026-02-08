@@ -14,20 +14,19 @@ linters:
     - bodyclose
     - misspell
     - unparam
-
-issues:
-  exclude-rules:
-    - path: \.pb\.go
-      linters:
-        - unused
-        - staticcheck
-    - path: \.pb\.gw\.go
-      linters:
-        - unused
-        - staticcheck
-    - text: "ST1005:"
-      linters:
-        - staticcheck
-    - text: "ineffectual assignment to path"
-      linters:
-        - ineffassign
+  exclusions:
+    rules:
+      - path: \.pb\.go
+        linters:
+          - unused
+          - staticcheck
+      - path: \.pb\.gw\.go
+        linters:
+          - unused
+          - staticcheck
+      - text: "ST1005:"
+        linters:
+          - staticcheck
+      - text: "ineffectual assignment to path"
+        linters:
+          - ineffassign
