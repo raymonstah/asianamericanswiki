@@ -623,12 +623,20 @@ func (s *ServerHTML) HandlerHumanEdit(w http.ResponseWriter, r *http.Request) er
 		return err
 	}
 
+	humans, err := s.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
+		Limit:         1000,
+		IncludeDrafts: true,
+	})
+	if err != nil {
+		return NewInternalServerError(fmt.Errorf("unable to list humans: %w", err))
+	}
+
 	response := HTMLResponseHuman{
 		Human: human,
 		Base:  getBase(s, admin),
 		HumanFormFields: HumanFormFields{
 			Ethnicities: ethnicity.All,
-			Tags:        getTags(s.humans),
+			Tags:        getTags(humans),
 		},
 	}
 	if err := s.template.ExecuteTemplate(w, "humans-id-edit.html", response); err != nil {
@@ -844,8 +852,16 @@ func (s *ServerHTML) HandlerAdmin(w http.ResponseWriter, r *http.Request) error 
 		return NewForbiddenError(fmt.Errorf("user is not an admin"))
 	}
 
+	humans, err := s.humanDAO.ListHumans(r.Context(), humandao.ListHumansInput{
+		Limit:         1000,
+		IncludeDrafts: true,
+	})
+	if err != nil {
+		return NewInternalServerError(fmt.Errorf("unable to list humans: %w", err))
+	}
+
 	var drafts []humandao.Human
-	for _, human := range s.humans {
+	for _, human := range humans {
 		if human.Draft {
 			drafts = append(drafts, human)
 		}
@@ -856,7 +872,7 @@ func (s *ServerHTML) HandlerAdmin(w http.ResponseWriter, r *http.Request) error 
 		AdminName: token.Claims["name"].(string),
 		HumanFormFields: HumanFormFields{
 			Ethnicities: ethnicity.All,
-			Tags:        getTags(s.humans),
+			Tags:        getTags(humans),
 		},
 		Drafts: drafts,
 	}
@@ -902,11 +918,19 @@ func (s *ServerHTML) HandlerGenerate(w http.ResponseWriter, r *http.Request) err
 		Description: addHumanRequest.Description,
 	}
 
+	humans, err := s.humanDAO.ListHumans(ctx, humandao.ListHumansInput{
+		Limit:         1000,
+		IncludeDrafts: true,
+	})
+	if err != nil {
+		return NewInternalServerError(fmt.Errorf("unable to list humans: %w", err))
+	}
+
 	response := HTMLResponseAdmin{
 		HumanFormFields: HumanFormFields{
 			Source:      source,
 			Ethnicities: ethnicity.All,
-			Tags:        getTags(s.humans),
+			Tags:        getTags(humans),
 		},
 		Human: human,
 	}
@@ -1002,9 +1026,17 @@ func (s *ServerHTML) HandlerXAIAdmin(w http.ResponseWriter, r *http.Request) err
 		return NewForbiddenError(fmt.Errorf("user is not an admin"))
 	}
 
+	humans, err := s.humanDAO.ListHumans(r.Context(), humandao.ListHumansInput{
+		Limit:         1000,
+		IncludeDrafts: true,
+	})
+	if err != nil {
+		return NewInternalServerError(fmt.Errorf("unable to list humans: %w", err))
+	}
+
 	response := HTMLResponseXAIAdmin{
 		Base:   getBase(s, admin),
-		Humans: s.humans,
+		Humans: humans,
 	}
 	if err := s.template.ExecuteTemplate(w, "xai-admin.html", response); err != nil {
 		s.logger.Error().Err(err).Msg("unable to execute xai-admin template")
