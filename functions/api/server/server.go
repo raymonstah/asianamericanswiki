@@ -17,7 +17,6 @@ import (
 	"github.com/rs/zerolog"
 
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
-	"github.com/raymonstah/asianamericanswiki/internal/openai"
 	"github.com/raymonstah/asianamericanswiki/internal/ratelimiter"
 	"github.com/raymonstah/asianamericanswiki/internal/userdao"
 	"github.com/raymonstah/asianamericanswiki/internal/xai"
@@ -29,7 +28,6 @@ type Config struct {
 	UserDAO       *userdao.DAO
 	Logger        zerolog.Logger
 	Version       string
-	OpenAIClient  *openai.Client
 	XAIClient     *xai.Client
 	StorageClient *storage.Client
 	Local         bool
@@ -44,7 +42,6 @@ type Server struct {
 	humanDAO      *humandao.DAO
 	userDAO       *userdao.DAO
 	version       string
-	openAIClient  *openai.Client
 	xaiClient     *xai.Client
 	storageClient *storage.Client
 }
@@ -65,7 +62,6 @@ func NewServer(config Config) *Server {
 		humanDAO:      config.HumanDAO,
 		userDAO:       config.UserDAO,
 		version:       config.Version,
-		openAIClient:  config.OpenAIClient,
 		xaiClient:     config.XAIClient,
 		storageClient: config.StorageClient,
 	}
@@ -85,7 +81,6 @@ func NewServer(config Config) *Server {
 		Logger:        config.Logger,
 		StorageClient: config.StorageClient,
 		AuthClient:    config.AuthClient,
-		OpenaiClient:  config.OpenAIClient,
 		XAIClient:     config.XAIClient,
 	})
 	if err := htmlServer.Register(r); err != nil {
@@ -112,7 +107,7 @@ func (s *Server) setupRoutes() {
 	s.router.Group(func(r chi.Router) {
 		r.Use(httplog.RequestLogger(s.logger))
 		r.HandleFunc("/api/*", func(w http.ResponseWriter, r *http.Request) {
-			r.URL.Path = strings.Replace(r.URL.Path, "/api", "", -1)
+			r.URL.Path = strings.ReplaceAll(r.URL.Path, "/api", "")
 			gwmux.ServeHTTP(w, r)
 		})
 	})

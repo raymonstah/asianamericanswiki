@@ -28,13 +28,14 @@ import (
 	"github.com/raymonstah/asianamericanswiki/internal/ethnicity"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/raymonstah/asianamericanswiki/internal/imageutil"
-	"github.com/raymonstah/asianamericanswiki/internal/openai"
 	"github.com/raymonstah/asianamericanswiki/internal/xai"
 	"github.com/rs/zerolog"
 )
 
 //go:embed public/*
 var publicFS embed.FS
+
+const webpExt = ".webp"
 
 type ServerHTML struct {
 	local         bool
@@ -44,7 +45,6 @@ type ServerHTML struct {
 	template      *template.Template
 	storageClient *storage.Client
 	storageURL    string
-	openaiClient  *openai.Client
 	xaiClient     *xai.Client
 	uploader      *imageutil.Uploader
 
@@ -59,7 +59,6 @@ type ServerHTMLConfig struct {
 	Logger        zerolog.Logger
 	AuthClient    Authorizer
 	StorageClient *storage.Client
-	OpenaiClient  *openai.Client
 	XAIClient     *xai.Client
 }
 
@@ -78,7 +77,6 @@ func NewServerHTML(conf ServerHTMLConfig) *ServerHTML {
 		logger:        conf.Logger,
 		storageClient: conf.StorageClient,
 		storageURL:    storageURL,
-		openaiClient:  conf.OpenaiClient,
 		xaiClient:     conf.XAIClient,
 		uploader:      uploader,
 	}
@@ -449,7 +447,8 @@ func (s *ServerHTML) HandlerHuman(w http.ResponseWriter, r *http.Request) error 
 		path  = chi.URLParamFromCtx(r.Context(), "id")
 	)
 
-	path, err := url.PathUnescape(path)
+	var err error
+	path, err = url.PathUnescape(path)
 	if err != nil {
 		return err
 	}
@@ -494,7 +493,6 @@ func (s *ServerHTML) HandlerHumanAdd(w http.ResponseWriter, r *http.Request) err
 	var (
 		token = s.parseOptionalToken(r)
 		admin = IsAdmin(token)
-		path  = chi.URLParamFromCtx(r.Context(), "id")
 		ctx   = r.Context()
 	)
 
@@ -502,10 +500,6 @@ func (s *ServerHTML) HandlerHumanAdd(w http.ResponseWriter, r *http.Request) err
 		return NewForbiddenError(fmt.Errorf("you are not an admin"))
 	}
 
-	path, err := url.PathUnescape(path)
-	if err != nil {
-		return err
-	}
 	if err := r.ParseMultipartForm(maxMemoryMB); err != nil {
 		return err
 	}
@@ -538,7 +532,7 @@ func (s *ServerHTML) HandlerHumanAdd(w http.ResponseWriter, r *http.Request) err
 		}
 		rawFeaturedImage = raw
 		imageExtension := filepath.Ext(header.Filename)
-		if imageExtension != ".webp" {
+		if imageExtension != webpExt {
 			return NewBadRequestError(fmt.Errorf("featured image should be in webp format"))
 		}
 	}
@@ -555,7 +549,7 @@ func (s *ServerHTML) HandlerHumanAdd(w http.ResponseWriter, r *http.Request) err
 		}
 		rawThumbnail = raw
 		imageExtension := filepath.Ext(header.Filename)
-		if imageExtension != ".webp" {
+		if imageExtension != webpExt {
 			return NewBadRequestError(fmt.Errorf("thumbnail image should be in webp format"))
 		}
 	}
@@ -605,11 +599,8 @@ func (s *ServerHTML) HandlerHumanAdd(w http.ResponseWriter, r *http.Request) err
 }
 
 func (s *ServerHTML) HandlerHumanEdit(w http.ResponseWriter, r *http.Request) error {
-	var (
-		path = chi.URLParamFromCtx(r.Context(), "id")
-		ctx  = r.Context()
-	)
-	path, err := url.PathUnescape(path)
+	ctx := r.Context()
+	path, err := url.PathUnescape(chi.URLParamFromCtx(r.Context(), "id"))
 	if err != nil {
 		return err
 	}
@@ -698,7 +689,7 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		}
 		rawFeaturedImage = raw
 		imageExtension := filepath.Ext(header.Filename)
-		if imageExtension != ".webp" {
+		if imageExtension != webpExt {
 			return NewBadRequestError(fmt.Errorf("featured image should be in webp format"))
 		}
 	}
@@ -715,7 +706,7 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		}
 		rawThumbnail = raw
 		imageExtension := filepath.Ext(header.Filename)
-		if imageExtension != ".webp" {
+		if imageExtension != webpExt {
 			return NewBadRequestError(fmt.Errorf("thumbnail image should be in webp format"))
 		}
 	}
@@ -896,11 +887,11 @@ func (s *ServerHTML) HandlerGenerate(w http.ResponseWriter, r *http.Request) err
 
 	source := r.FormValue("source")
 
-	addHumanRequest, err := s.openaiClient.FromText(ctx, openai.FromTextInput{Data: source})
+	addHumanRequest, err := s.xaiClient.FromText(ctx, xai.FromTextInput{Data: source})
 	if err != nil {
 		return NewInternalServerError(err)
 	}
-	logger.Info().Str("source", source).Any("addHumanRequest", addHumanRequest).Msg("generated response from openai")
+	logger.Info().Str("source", source).Any("addHumanRequest", addHumanRequest).Msg("generated response from xAI")
 
 	human := humandao.Human{
 		Name:        addHumanRequest.Name,
@@ -1100,7 +1091,9 @@ func (s *ServerHTML) HandlerXAIGenerate(w http.ResponseWriter, r *http.Request) 
 	prompt := r.FormValue("prompt")
 	numImagesStr := r.FormValue("num_images")
 	numImages := 1
-	fmt.Sscanf(numImagesStr, "%d", &numImages)
+	if _, err := fmt.Sscanf(numImagesStr, "%d", &numImages); err != nil {
+		s.logger.Warn().Err(err).Str("num_images", numImagesStr).Msg("invalid num_images value, defaulting to 1")
+	}
 
 	// Fetch human to get source images
 	var human humandao.Human
@@ -1124,7 +1117,9 @@ func (s *ServerHTML) HandlerXAIGenerate(w http.ResponseWriter, r *http.Request) 
 		if err != nil {
 			s.logger.Error().Err(err).Str("path", objectPath).Msg("failed to create reader for local storage object")
 		} else {
-			defer reader.Close()
+			defer func() {
+				_ = reader.Close()
+			}()
 			data, err := io.ReadAll(reader)
 			if err != nil {
 				s.logger.Error().Err(err).Msg("failed to read local storage object")
@@ -1145,7 +1140,7 @@ func (s *ServerHTML) HandlerXAIGenerate(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		if strings.Contains(err.Error(), "(status 429)") {
 			w.WriteHeader(http.StatusTooManyRequests)
-			w.Write([]byte(`<div class="col-span-full p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-800">
+			_, _ = w.Write([]byte(`<div class="col-span-full p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-800">
                 <p class="font-bold">xAI is currently overloaded</p>
                 <p class="text-sm">The model is experiencing high demand. Please wait a few minutes and try again.</p>
             </div>`))
@@ -1166,7 +1161,9 @@ func (s *ServerHTML) HandlerXAIGenerate(w http.ResponseWriter, r *http.Request) 
 		if err != nil {
 			continue
 		}
-		defer resp.Body.Close()
+		defer func() {
+			_ = resp.Body.Close()
+		}()
 
 		filename := fmt.Sprintf("%d_%d.webp", time.Now().Unix(), i)
 		localPath := filepath.Join(localDir, filename)
@@ -1174,8 +1171,10 @@ func (s *ServerHTML) HandlerXAIGenerate(w http.ResponseWriter, r *http.Request) 
 		if err != nil {
 			continue
 		}
-		defer out.Close()
-		io.Copy(out, resp.Body)
+		defer func() {
+			_ = out.Close()
+		}()
+		_, _ = io.Copy(out, resp.Body)
 		localPaths = append(localPaths, "/xai-generations/"+humanID+"/"+filename)
 	}
 

@@ -107,7 +107,7 @@ func parseDateString(date string) (time.Time, error) {
 	return res, nil
 }
 
-func diff(a, b time.Time) (year, month, day, hour, min, sec int) {
+func diff(a, b time.Time) (year, month, day, hour, min, sec int) { //nolint:unparam
 	if a.Location() != b.Location() {
 		b = b.In(a.Location())
 	}
