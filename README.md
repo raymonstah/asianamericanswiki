@@ -71,7 +71,7 @@ This project uses `golangci-lint` for linting.
 
 To install:
 ```shell
-go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+brew install golangci-lint
 ```
 
 To run:
