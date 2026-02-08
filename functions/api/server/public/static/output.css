@@ -245,6 +245,9 @@
     white-space: nowrap;
     border-width: 0;
   }
+  .\!fixed {
+    position: fixed !important;
+  }
   .absolute {
     position: absolute;
   }
@@ -386,6 +389,9 @@
   .\!block {
     display: block !important;
   }
+  .\!inline {
+    display: inline !important;
+  }
   .block {
     display: block;
   }
@@ -409,6 +415,9 @@
   }
   .inline-flex {
     display: inline-flex;
+  }
+  .inline-table {
+    display: inline-table;
   }
   .table {
     display: table;
@@ -658,6 +667,11 @@
   }
   .self-start {
     align-self: flex-start;
+  }
+  .\!truncate {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
   }
   .truncate {
     overflow: hidden;
@@ -1112,6 +1126,10 @@
   .outline {
     outline-style: var(--tw-outline-style);
     outline-width: 1px;
+  }
+  .blur {
+    --tw-blur: blur(8px);
+    filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
   }
   .grayscale {
     --tw-grayscale: grayscale(100%);

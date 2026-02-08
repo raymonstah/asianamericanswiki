@@ -123,7 +123,7 @@ func newDiscoverer(ctx context.Context) (*Discoverer, error) {
 	}, nil
 }
 
-func (d *Discoverer) FindImageURL(ctx context.Context, name string) (string, error) {
+func (d *Discoverer) FindImageURL(_ context.Context, name string) (string, error) {
 	// 1. Try Wikipedia
 	baseURL := "https://en.wikipedia.org/w/api.php"
 	params := url.Values{}
@@ -144,7 +144,7 @@ func (d *Discoverer) FindImageURL(ctx context.Context, name string) (string, err
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	var wikiResp struct {
 		Query struct {
@@ -200,7 +200,7 @@ func (d *Discoverer) GenerateAndUploadImage(ctx context.Context, human humandao.
 	if err != nil {
 		return fmt.Errorf("unable to download generated image: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	raw, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -289,7 +289,7 @@ func discoverWikipedia(c *cli.Context) error {
 					}
 
 					// Double check if name changed and if it's already in database
-					if strings.ToLower(input.Name) != strings.ToLower(name) {
+					if !strings.EqualFold(input.Name, name) {
 						if _, ok := d.existing[strings.ToLower(input.Name)]; ok {
 							fmt.Printf("Skipping %s (renamed from %s) as it already exists in database\n", input.Name, name)
 							continue
@@ -353,7 +353,7 @@ func (d *Discoverer) fetchWikipediaCategoryMembers(category string) ([]string, e
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -392,7 +392,7 @@ func brainstorm(c *cli.Context) error {
 	}
 
 	if d.xaiClient == nil {
-		return fmt.Errorf("XAI client is required for brainstorming. Provide --xai-token or set XAI_API_KEY.")
+		return fmt.Errorf("xAI client is required for brainstorming; provide --xai-token or set XAI_API_KEY")
 	}
 
 	query := c.String("query")
@@ -448,7 +448,7 @@ func brainstorm(c *cli.Context) error {
 				}
 
 				// Check if renamed person already exists
-				if strings.ToLower(input.Name) != strings.ToLower(name) {
+				if !strings.EqualFold(input.Name, name) {
 					if _, ok := d.existing[strings.ToLower(input.Name)]; ok {
 						fmt.Printf("Skipping %s (renamed from %s) as it already exists in database\n", input.Name, name)
 						continue

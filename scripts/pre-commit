@@ -1,0 +1,19 @@
+#!/bin/bash
+set -e
+
+echo "Running go mod tidy..."
+go mod tidy
+
+echo "Running go mod vendor..."
+go mod vendor
+
+echo "Running golangci-lint..."
+if command -v golangci-lint >/dev/null 2>&1; then
+    golangci-lint run
+else
+    echo "golangci-lint not found. Skipping lint check."
+    echo "To install, run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest"
+fi
+
+# Add changes to git
+git add go.mod go.sum vendor/
