@@ -43,7 +43,7 @@ type imageEditRequest struct {
 
 func (c *Client) GenerateImage(ctx context.Context, input GenerateImageInput) ([]string, error) {
 	var imageVal any
-	// xAI API expects a struct with a "url" key for the image field, 
+	// xAI API expects a struct with a "url" key for the image field,
 	// which can be either a public URL or a data:image/... base64 string.
 	if input.Image != "" {
 		imageVal = struct {
@@ -161,7 +161,7 @@ type GeneratedHumanResponse struct {
 }
 
 var humanPrompt = `
-Your task is to write a few paragraphs about %v.
+Your task is to write a few sentences about %v.
 Here are some tags to help you identify this person: "%v".
 Your tone should neutral, like a biographer or how a Wikipedia article is written.
 Focus on providing factual information based on reliable sources. You do not need to site your sources at the end.
@@ -172,7 +172,7 @@ Try to limit your response to two to four paragraphs. In your paragraphs you sho
 4. What is their impact on Asian Americans?
 
 IMPORTANT: 
-- ALWAYS provide the individual's full legal name (e.g., "Nora Lum" instead of "Awkwafina", "Ryan Higa" instead of "Nigahiga"). 
+- ALWAYS provide the individual's name (e.g., "Nora Lum" instead of "Awkwafina", "Ryan Higa" instead of "Nigahiga"). 
 - If the subject is a group or company instead of an individual human, respond with "error: subject is not an individual human".
 
 Save your paragraphs as the JSON key "description", replacing new lines with double line breaks: "\n\n".
@@ -338,10 +338,8 @@ type BrainstormInput struct {
 
 func (c *Client) Brainstorm(ctx context.Context, input BrainstormInput) ([]string, error) {
 	prompt := fmt.Sprintf("Your task is to provide a list of notable Asian Americans for the following query: %v. "+
-		"Bias your results towards people who are of full Asian descent. "+
-		"IMPORTANT: Return ONLY the full legal names of individual people, one per line. "+
-		"NEVER use artistic aliases, stage names, or nicknames if the legal name is known. "+
-		"For example, use 'Nora Lum' instead of 'Awkwafina', 'Brian Imanuel' instead of 'Rich Brian', and 'Naufal Abshar' instead of aliases. "+
+		"IMPORTANT: Return ONLY the full names of individual people, one per line. "+
+		"For example, use 'Nora Lum' instead of 'Awkwafina', 'Brian Imanuel' instead of 'Rich Brian'."+
 		"Do not include groups, companies, or any other text.", input.Query)
 
 	resp, err := c.client.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
@@ -365,3 +363,4 @@ func (c *Client) Brainstorm(ctx context.Context, input BrainstormInput) ([]strin
 
 	return names, nil
 }
+

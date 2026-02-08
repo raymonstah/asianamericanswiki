@@ -159,6 +159,7 @@ func (s *ServerHTML) Register(router chi.Router) error {
 	router.Post("/humans/{id}", HttpHandler(s.HandlerHumanUpdate).Serve(s.HandlerError))
 	router.Get("/humans/{id}/edit", HttpHandler(s.HandlerHumanEdit).Serve(s.HandlerError))
 	router.Post("/humans/{id}/publish", HttpHandler(s.HandlerPublish).Serve(s.HandlerError))
+	router.Delete("/humans/{id}", HttpHandler(s.HandlerHumanDelete).Serve(s.HandlerError))
 	router.Get("/login", HttpHandler(s.HandlerLogin).Serve(s.HandlerError))
 	router.Post("/login", HttpHandler(s.HandlerLogin).Serve(s.HandlerError))
 	router.Get("/admin", HttpHandler(s.HandlerAdmin).Serve(s.HandlerError))
@@ -771,6 +772,55 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 
 	s.logger.Info().Str("id", human.ID).Str("name", human.Name).Msg("successfully updated human")
 	http.Redirect(w, r, fmt.Sprintf("/humans/%s", human.Path), http.StatusSeeOther)
+	return nil
+}
+
+func (s *ServerHTML) HandlerHumanDelete(w http.ResponseWriter, r *http.Request) error {
+	ctx := r.Context()
+	token, err := s.parseToken(r)
+	if err != nil {
+		return NewUnauthorizedError(err)
+	}
+
+	admin := IsAdmin(token)
+	if !admin {
+		return NewForbiddenError(fmt.Errorf("user is not an admin"))
+	}
+
+	humanPathOrID := chi.URLParamFromCtx(r.Context(), "id")
+	humanPathOrID, err = url.PathUnescape(humanPathOrID)
+	if err != nil {
+		return err
+	}
+
+	var human humandao.Human
+	// Try looking up by ID first, then Path
+	human, err = s.humanDAO.Human(ctx, humandao.HumanInput{HumanID: humanPathOrID})
+	if err != nil {
+		human, err = s.humanDAO.Human(ctx, humandao.HumanInput{Path: humanPathOrID})
+		if err != nil {
+			if errors.Is(err, humandao.ErrHumanNotFound) {
+				return NewNotFoundError(err)
+			}
+			return err
+		}
+	}
+
+	if err := s.humanDAO.Delete(ctx, humandao.DeleteInput{HumanID: human.ID}); err != nil {
+		return err
+	}
+
+	_ = s.initializeIndex(ctx)
+
+	s.logger.Info().Str("id", human.ID).Str("name", human.Name).Msg("successfully deleted human")
+
+	// If it's an HTMX request, we might want to redirect or just return empty
+	if r.Header.Get("HX-Request") != "" {
+		w.Header().Add("HX-Redirect", "/admin")
+		return nil
+	}
+
+	http.Redirect(w, r, "/admin", http.StatusSeeOther)
 	return nil
 }
 

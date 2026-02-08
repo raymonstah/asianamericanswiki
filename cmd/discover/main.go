@@ -53,8 +53,8 @@ func main() {
 				Action: discoverWikipedia,
 			},
 			{
-				Name:   "brainstorm",
-				Usage:  "Brainstorm new humans using XAI based on a query",
+				Name:  "brainstorm",
+				Usage: "Brainstorm new humans using XAI based on a query",
 				Flags: []cli.Flag{
 					&cli.StringFlag{Name: "query", Required: true, Usage: "The query to brainstorm for (e.g. 'Asian American tech founders')"},
 				},
@@ -618,3 +618,4 @@ func brainstorm(c *cli.Context) error {
 
 	return nil
 }
+
