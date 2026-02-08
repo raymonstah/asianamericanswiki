@@ -74,14 +74,14 @@ func NewServerHTML(conf ServerHTMLConfig) *ServerHTML {
 	uploader := imageutil.NewUploader(conf.StorageClient, conf.HumanDAO, storageURL)
 
 	return &ServerHTML{
-		local:         conf.Local,
-		authClient:    conf.AuthClient,
-		humanDAO:      conf.HumanDAO,
-		logger:        conf.Logger,
-		storageClient: conf.StorageClient,
-		storageURL:    storageURL,
-		xaiClient:     conf.XAIClient,
-		uploader:      uploader,
+		local:          conf.Local,
+		authClient:     conf.AuthClient,
+		humanDAO:       conf.HumanDAO,
+		logger:         conf.Logger,
+		storageClient:  conf.StorageClient,
+		storageURL:     storageURL,
+		xaiClient:      conf.XAIClient,
+		uploader:       uploader,
 		firebaseConfig: conf.FirebaseConfig,
 	}
 }
@@ -124,6 +124,51 @@ func (s *ServerHTML) initializeIndex(ctx context.Context) error {
 	defer s.lock.Unlock()
 	s.index = index
 	s.humans = humans
+	return nil
+}
+
+func (s *ServerHTML) updateIndex(human humandao.Human) error {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	if s.index != nil {
+		if err := s.index.Index(human.ID, human); err != nil {
+			return err
+		}
+	}
+
+	found := false
+	for i, h := range s.humans {
+		if h.ID == human.ID {
+			s.humans[i] = human
+			found = true
+			break
+		}
+	}
+	if !found {
+		s.humans = append(s.humans, human)
+	}
+
+	return nil
+}
+
+func (s *ServerHTML) deleteFromIndex(id string) error {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	if s.index != nil {
+		if err := s.index.Delete(id); err != nil {
+			return err
+		}
+	}
+
+	for i, h := range s.humans {
+		if h.ID == id {
+			s.humans = append(s.humans[:i], s.humans[i+1:]...)
+			break
+		}
+	}
+
 	return nil
 }
 
@@ -597,7 +642,9 @@ func (s *ServerHTML) HandlerHumanAdd(w http.ResponseWriter, r *http.Request) err
 		}
 	}
 
-	_ = s.initializeIndex(ctx)
+	if err := s.updateIndex(human); err != nil {
+		s.logger.Error().Err(err).Str("id", human.ID).Msg("unable to update index")
+	}
 	http.Redirect(w, r, fmt.Sprintf("/humans/%s", human.Path), http.StatusSeeOther)
 
 	return nil
@@ -772,7 +819,9 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		}
 	}
 
-	_ = s.initializeIndex(ctx)
+	if err := s.updateIndex(human); err != nil {
+		s.logger.Error().Err(err).Str("id", human.ID).Msg("unable to update index")
+	}
 
 	s.logger.Info().Str("id", human.ID).Str("name", human.Name).Msg("successfully updated human")
 	http.Redirect(w, r, fmt.Sprintf("/humans/%s", human.Path), http.StatusSeeOther)
@@ -814,7 +863,9 @@ func (s *ServerHTML) HandlerHumanDelete(w http.ResponseWriter, r *http.Request) 
 		return err
 	}
 
-	_ = s.initializeIndex(ctx)
+	if err := s.deleteFromIndex(human.ID); err != nil {
+		s.logger.Error().Err(err).Str("id", human.ID).Msg("unable to delete from index")
+	}
 
 	s.logger.Info().Str("id", human.ID).Str("name", human.Name).Msg("successfully deleted human")
 
@@ -1027,7 +1078,9 @@ func (s *ServerHTML) HandlerPublish(w http.ResponseWriter, r *http.Request) erro
 		return err
 	}
 
-	_ = s.initializeIndex(ctx)
+	if err := s.updateIndex(human); err != nil {
+		s.logger.Error().Err(err).Str("id", human.ID).Msg("unable to update index")
+	}
 
 	url := fmt.Sprintf("/humans/%s", human.Path)
 	w.Header().Add("HX-Redirect", url)
@@ -1321,7 +1374,9 @@ func (s *ServerHTML) HandlerXAIUpload(w http.ResponseWriter, r *http.Request) er
 		return NewInternalServerError(err)
 	}
 
-	_ = s.initializeIndex(ctx)
+	if err := s.updateIndex(human); err != nil {
+		s.logger.Error().Err(err).Str("id", human.ID).Msg("unable to update index")
+	}
 
 	s.logger.Info().Str("id", human.ID).Str("name", human.Name).Msg("successfully updated human with AI image")
 	w.Header().Add("HX-Redirect", fmt.Sprintf("/humans/%s", human.Path))
