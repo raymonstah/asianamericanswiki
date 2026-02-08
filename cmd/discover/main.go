@@ -510,6 +510,10 @@ func brainstorm(c *cli.Context) error {
 		return fmt.Errorf("xAI client is required for brainstorming; provide --xai-token or set XAI_API_KEY")
 	}
 
+	if opts.FullOnly && !opts.Enrich {
+		return fmt.Errorf("--enrich is required when using --full-only to accurately verify heritage and real names")
+	}
+
 	query := c.String("query")
 	fmt.Printf("Brainstorming for: %s\n", query)
 

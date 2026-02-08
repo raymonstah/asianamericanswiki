@@ -172,7 +172,7 @@ Try to limit your response to two to four paragraphs. In your paragraphs you sho
 4. What is their impact on Asian Americans?
 
 IMPORTANT: 
-- Provide the individual's full legal name if known (e.g., "Ryan Higa" instead of "Nigahiga"). 
+- ALWAYS provide the individual's full legal name (e.g., "Nora Lum" instead of "Awkwafina", "Ryan Higa" instead of "Nigahiga"). 
 - If the subject is a group or company instead of an individual human, respond with "error: subject is not an individual human".
 
 Save your paragraphs as the JSON key "description", replacing new lines with double line breaks: "\n\n".
@@ -339,7 +339,10 @@ type BrainstormInput struct {
 func (c *Client) Brainstorm(ctx context.Context, input BrainstormInput) ([]string, error) {
 	prompt := fmt.Sprintf("Your task is to provide a list of notable Asian Americans for the following query: %v. "+
 		"Bias your results towards people who are of full Asian descent. "+
-		"Return only the full names of individual people, one per line. Do not include groups, companies, or artistic aliases if the full name is known. Do not include any other text.", input.Query)
+		"IMPORTANT: Return ONLY the full legal names of individual people, one per line. "+
+		"NEVER use artistic aliases, stage names, or nicknames if the legal name is known. "+
+		"For example, use 'Nora Lum' instead of 'Awkwafina', 'Brian Imanuel' instead of 'Rich Brian', and 'Naufal Abshar' instead of aliases. "+
+		"Do not include groups, companies, or any other text.", input.Query)
 
 	resp, err := c.client.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
 		Model: "grok-3",
