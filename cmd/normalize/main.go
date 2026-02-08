@@ -160,19 +160,29 @@ func (h *Handler) Tags(ctx context.Context) error {
 				"technologist":      "technology",
 				"tech":              "technology",
 				"software engineer": "technology",
-				"youTuber":          "youtuber",
+				"youTuber":          "content creator",
+				"youtube":           "content creator",
+				"youtuber":          "content creator",
+				"podcaster":         "content creator",
 				"olympics":          "olympian",
 				"photography":       "photographer",
 				"music":             "musician",
 				"activism":          "activist",
 				"actress":           "actor",
+				"voice actor":       "actor",
 				"comedy":            "comedian",
-				"youtube":           "youtuber",
 				"entertainment":     "entertainer",
 				"lgbt":              "lgbtq",
+				"physician":         "doctor",
+				"author":            "writer",
+				"social media":      "influencer",
+				"illustrator":       "artist",
+				"animator":          "artist",
+				"stylist":           "designer",
+				"business":          "executive",
 			}
 
-			normalizedTag, ok := normalizeValues[tag]
+			normalizedTag, ok := normalizeValues[human.Tags[i]]
 			if ok {
 				needUpdate = true
 				human.Tags[i] = normalizedTag
@@ -180,6 +190,19 @@ func (h *Handler) Tags(ctx context.Context) error {
 		}
 
 		if needUpdate {
+			// deduplicate tags after normalization
+			uniqueTags := make(map[string]struct{})
+			var deduplicated []string
+			for _, t := range human.Tags {
+				if _, ok := uniqueTags[t]; !ok {
+					uniqueTags[t] = struct{}{}
+					deduplicated = append(deduplicated, t)
+				}
+			}
+			if len(deduplicated) != len(human.Tags) {
+				human.Tags = deduplicated
+			}
+
 			log.Printf("would update %v's tags", human.Name)
 			log.Printf("\tbefore: %v", previousTags)
 			log.Printf("\tafter: %v", human.Tags)

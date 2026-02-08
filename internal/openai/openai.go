@@ -198,3 +198,34 @@ func (c *Client) FromText(ctx context.Context, input FromTextInput) (AddHumanReq
 
 	return addHumanRequest, nil
 }
+
+type BrainstormInput struct {
+	Query string
+}
+
+func (c *Client) Brainstorm(ctx context.Context, input BrainstormInput) ([]string, error) {
+	prompt := fmt.Sprintf("Your task is to provide a list of notable Asian Americans for the following query: %v. "+
+		"Return only the names, one per line. Do not include any other text.", input.Query)
+
+	resp, err := c.openAiClient.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
+		Model:     openai.GPT3Dot5Turbo,
+		MaxTokens: 500,
+		Messages: []openai.ChatCompletionMessage{
+			{Role: openai.ChatMessageRoleUser, Content: prompt},
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("unable to create chat completion: %w", err)
+	}
+
+	lines := strings.Split(resp.Choices[0].Message.Content, "\n")
+	var names []string
+	for _, line := range lines {
+		name := strings.TrimSpace(line)
+		if name != "" {
+			names = append(names, name)
+		}
+	}
+
+	return names, nil
+}
