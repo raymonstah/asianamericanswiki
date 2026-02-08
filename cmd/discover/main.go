@@ -29,6 +29,7 @@ var opts struct {
 	MaxDiscovery int
 	UseProd      bool
 	GenImage     bool
+	FullOnly     bool
 }
 
 func main() {
@@ -42,6 +43,7 @@ func main() {
 			&cli.IntFlag{Name: "max", Value: 10, Usage: "Maximum number of new humans to add per run", Destination: &opts.MaxDiscovery},
 			&cli.BoolFlag{Name: "use-prod", Value: false, Usage: "Use production Firestore", Destination: &opts.UseProd},
 			&cli.BoolFlag{Name: "gen-image", Value: false, Usage: "Generate images for discovered humans", Destination: &opts.GenImage},
+			&cli.BoolFlag{Name: "full-only", Value: false, Usage: "Only add people of full Asian descent", Destination: &opts.FullOnly},
 		},
 		Commands: []*cli.Command{
 			{
@@ -244,7 +246,11 @@ func (d *Discoverer) GenerateAndUploadImage(ctx context.Context, human humandao.
 
 	prompt := xai.DefaultImagePrompt(human.Name)
 
-	fmt.Printf("Generating image for %s using source: %s...\n", human.Name, sourceImageURL)
+	logURL := sourceImageURL
+	if strings.HasPrefix(logURL, "data:") && len(logURL) > 100 {
+		logURL = logURL[:100] + "..."
+	}
+	fmt.Printf("Generating image for %s using source: %s...\n", human.Name, logURL)
 	imageURLs, err := d.xaiClient.GenerateImage(ctx, xai.GenerateImageInput{
 		Prompt: prompt,
 		N:      1,
@@ -329,6 +335,7 @@ func discoverWikipedia(c *cli.Context) error {
 				Gender: humandao.GenderNonBinary,
 			}
 
+			var fullAsian = true
 			if opts.Enrich && d.xaiClient != nil {
 				fmt.Printf("Enriching %s with XAI...\n", name)
 				enriched, err := d.xaiClient.GenerateHuman(ctx, xai.GenerateHumanRequest{
@@ -355,6 +362,7 @@ func discoverWikipedia(c *cli.Context) error {
 							input.Tags = append(input.Tags, t)
 						}
 					}
+					fullAsian = enriched.FullAsian
 
 					// Double check if name changed and if it's already in database
 					if !strings.EqualFold(input.Name, name) {
@@ -370,6 +378,11 @@ func discoverWikipedia(c *cli.Context) error {
 					}
 					fmt.Printf("Error enriching %s: %v\n", name, err)
 				}
+			}
+
+			if opts.FullOnly && !fullAsian {
+				fmt.Printf("Skipping %s as they are not of full Asian descent\n", input.Name)
+				continue
 			}
 
 			var human humandao.Human
@@ -493,6 +506,7 @@ func brainstorm(c *cli.Context) error {
 			Gender: humandao.GenderNonBinary,
 		}
 
+		var fullAsian = true
 		if opts.Enrich {
 			fmt.Printf("Enriching %s with XAI...\n", name)
 			enriched, err := d.xaiClient.GenerateHuman(ctx, xai.GenerateHumanRequest{
@@ -519,6 +533,7 @@ func brainstorm(c *cli.Context) error {
 						input.Tags = append(input.Tags, t)
 					}
 				}
+				fullAsian = enriched.FullAsian
 
 				// Check if renamed person already exists
 				if !strings.EqualFold(input.Name, name) {
@@ -534,6 +549,11 @@ func brainstorm(c *cli.Context) error {
 				}
 				fmt.Printf("Error enriching %s: %v\n", name, err)
 			}
+		}
+
+		if opts.FullOnly && !fullAsian {
+			fmt.Printf("Skipping %s as they are not of full Asian descent\n", input.Name)
+			continue
 		}
 
 		var human humandao.Human

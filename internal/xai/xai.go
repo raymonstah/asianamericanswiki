@@ -148,15 +148,16 @@ type GenerateHumanRequest struct {
 
 type GeneratedHumanResponse struct {
 	Name        string   `json:"name"`
+	Gender      string   `json:"gender"`
 	DOB         string   `json:"dob"`
 	DOD         string   `json:"dod"`
 	Ethnicity   []string `json:"ethnicity"`
+	FullAsian   bool     `json:"full_asian"`
 	Description string   `json:"description"`
 	Location    []string `json:"location"`
 	Website     string   `json:"website"`
 	Twitter     string   `json:"twitter"`
 	Tags        []string `json:"tags"`
-	Gender      string   `json:"gender"`
 }
 
 var humanPrompt = `
@@ -165,7 +166,7 @@ Here are some tags to help you identify this person: "%v".
 Your tone should neutral, like a biographer or how a Wikipedia article is written.
 Focus on providing factual information based on reliable sources. You do not need to site your sources at the end.
 Try to limit your response to two to four paragraphs. In your paragraphs you should include:
-1. What is their ethnicity and background?
+1. What is their ethnicity and background? Clearly identify if they are of full Asian descent.
 2. Where are they from?
 3. What are they known for?
 4. What is their impact on Asian Americans?
@@ -182,6 +183,7 @@ Along with the "description" key, Provide a JSON response with the following key
 * dob: the date of birth of the person in the format "YYYY-MM-DD". If you know only the year, use "YYYY". If you know only the year and month, use "YYYY-MM".
 * dod: the date of death of the person, if they died.
 * ethnicity: an array containing the ethnicity of the person. Provide multiple if they are mixed. Examples include: ["Chinese", "Korean", "Vietnamese"].
+* full_asian: a boolean indicating if the person is of full Asian descent (both parents).
 * location: an array of cities where the person was born, lived or is based out of.
 * tags: an array of relevant tags to help identify the person, such as "actor", "activist", "politician", etc.
 * website: the website of the person, if they have one.
@@ -195,6 +197,7 @@ Your output should follow the following JSON template between the triple dashes:
 	"dob": "",
 	"dod": "",
 	"ethnicity": [],
+	"full_asian": true,
 	"description": "",
 	"location": [],
 	"website": "",
@@ -335,6 +338,7 @@ type BrainstormInput struct {
 
 func (c *Client) Brainstorm(ctx context.Context, input BrainstormInput) ([]string, error) {
 	prompt := fmt.Sprintf("Your task is to provide a list of notable Asian Americans for the following query: %v. "+
+		"Bias your results towards people who are of full Asian descent. "+
 		"Return only the full names of individual people, one per line. Do not include groups, companies, or artistic aliases if the full name is known. Do not include any other text.", input.Query)
 
 	resp, err := c.client.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
