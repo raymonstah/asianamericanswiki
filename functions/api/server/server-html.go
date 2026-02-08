@@ -1,7 +1,6 @@
 package server
 
 import (
-	"bytes"
 	"context"
 	"embed"
 	"encoding/base64"
@@ -23,16 +22,15 @@ import (
 	"cloud.google.com/go/storage"
 	"firebase.google.com/go/v4/auth"
 	"github.com/blevesearch/bleve/v2"
-	"github.com/disintegration/imaging"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
 	"github.com/raymonstah/asianamericanswiki/functions/api"
 	"github.com/raymonstah/asianamericanswiki/internal/ethnicity"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
+	"github.com/raymonstah/asianamericanswiki/internal/imageutil"
 	"github.com/raymonstah/asianamericanswiki/internal/openai"
 	"github.com/raymonstah/asianamericanswiki/internal/xai"
 	"github.com/rs/zerolog"
-	"image/jpeg"
 )
 
 //go:embed public/*
@@ -48,6 +46,7 @@ type ServerHTML struct {
 	storageURL    string
 	openaiClient  *openai.Client
 	xaiClient     *xai.Client
+	uploader      *imageutil.Uploader
 
 	index  bleve.Index
 	humans []humandao.Human
@@ -70,6 +69,8 @@ func NewServerHTML(conf ServerHTMLConfig) *ServerHTML {
 		storageURL = "http://localhost:9199"
 	}
 
+	uploader := imageutil.NewUploader(conf.StorageClient, conf.HumanDAO)
+
 	return &ServerHTML{
 		local:         conf.Local,
 		authClient:    conf.AuthClient,
@@ -79,6 +80,7 @@ func NewServerHTML(conf ServerHTMLConfig) *ServerHTML {
 		storageURL:    storageURL,
 		openaiClient:  conf.OpenaiClient,
 		xaiClient:     conf.XAIClient,
+		uploader:      uploader,
 	}
 }
 
@@ -142,6 +144,7 @@ func (s *ServerHTML) Register(router chi.Router) error {
 		Funcs(template.FuncMap{
 			"slicesContains": slicesContain,
 			"year":           time.Now().Year,
+			"imagePrompt":    xai.DefaultImagePrompt,
 		}).
 		ParseFS(templatesFS, "*.html")
 	if err != nil {
@@ -583,34 +586,15 @@ func (s *ServerHTML) HandlerHumanAdd(w http.ResponseWriter, r *http.Request) err
 	}
 
 	if len(rawThumbnail) > 0 || len(rawFeaturedImage) > 0 {
-		if len(rawThumbnail) > 0 {
-			objectID := fmt.Sprintf("%s/thumbnail.webp", human.ID)
-			obj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(objectID)
-			writer := obj.NewWriter(ctx)
-			if _, err := writer.Write(rawThumbnail); err != nil {
-				return err
-			}
-
-			if err := writer.Close(); err != nil {
-				return err
-			}
-			human.Images.Thumbnail = fmt.Sprintf("%v/%v/%s", s.storageURL, api.ImagesStorageBucket, objectID)
-		}
 		if len(rawFeaturedImage) > 0 {
-			objectID := fmt.Sprintf("%s/original.webp", human.ID)
-			obj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(objectID)
-			writer := obj.NewWriter(ctx)
-			if _, err := writer.Write(rawFeaturedImage); err != nil {
+			if _, err := s.uploader.UploadHumanImages(ctx, human, rawFeaturedImage); err != nil {
 				return err
 			}
-
-			if err := writer.Close(); err != nil {
+		} else if len(rawThumbnail) > 0 {
+			// This case is unlikely given the form, but let's handle it by using thumbnail as featured
+			if _, err := s.uploader.UploadHumanImages(ctx, human, rawThumbnail); err != nil {
 				return err
 			}
-			human.Images.Featured = fmt.Sprintf("%v/%v/%s", s.storageURL, api.ImagesStorageBucket, objectID)
-		}
-		if err := s.humanDAO.UpdateHuman(ctx, human); err != nil {
-			return err
 		}
 	}
 
@@ -770,36 +754,18 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		human.Name = name
 	}
 
-	if len(rawThumbnail) > 0 || len(rawFeaturedImage) > 0 {
-		if len(rawThumbnail) > 0 {
-			objectID := fmt.Sprintf("%s/thumbnail.webp", human.ID)
-			obj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(objectID)
-			writer := obj.NewWriter(ctx)
-			if _, err := writer.Write(rawThumbnail); err != nil {
-				return err
-			}
-
-			if err := writer.Close(); err != nil {
-				return err
-			}
-			human.Images.Thumbnail = fmt.Sprintf("%v/%v/%s", s.storageURL, api.ImagesStorageBucket, objectID)
+	if len(rawFeaturedImage) > 0 {
+		if _, err := s.uploader.UploadHumanImages(ctx, human, rawFeaturedImage); err != nil {
+			return err
 		}
-		if len(rawFeaturedImage) > 0 {
-			objectID := fmt.Sprintf("%s/original.webp", human.ID)
-			obj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(objectID)
-			writer := obj.NewWriter(ctx)
-			if _, err := writer.Write(rawFeaturedImage); err != nil {
-				return err
-			}
-
-			if err := writer.Close(); err != nil {
-				return err
-			}
-			human.Images.Featured = fmt.Sprintf("%v/%v/%s", s.storageURL, api.ImagesStorageBucket, objectID)
+	} else if len(rawThumbnail) > 0 {
+		if _, err := s.uploader.UploadHumanImages(ctx, human, rawThumbnail); err != nil {
+			return err
 		}
-	}
-	if err := s.humanDAO.UpdateHuman(ctx, human); err != nil {
-		return err
+	} else {
+		if err := s.humanDAO.UpdateHuman(ctx, human); err != nil {
+			return err
+		}
 	}
 
 	_ = s.initializeIndex(ctx)
@@ -1255,57 +1221,14 @@ func (s *ServerHTML) HandlerXAIUpload(w http.ResponseWriter, r *http.Request) er
 		return NewInternalServerError(err)
 	}
 
-	// Generate thumbnail using pure-Go imaging library
-	src, err := imaging.Decode(bytes.NewReader(raw))
-	if err != nil {
-		return NewInternalServerError(fmt.Errorf("unable to decode image for thumbnail: %w", err))
-	}
-
-	thumb := imaging.Thumbnail(src, 256, 256, imaging.Lanczos)
-	// Apply a slight sharpen to make it crisp
-	thumb = imaging.Sharpen(thumb, 0.5)
-
-	var thumbBuf bytes.Buffer
-	if err := jpeg.Encode(&thumbBuf, thumb, &jpeg.Options{Quality: 95}); err != nil {
-		return NewInternalServerError(fmt.Errorf("unable to encode thumbnail to jpeg: %w", err))
-	}
-	thumbRaw := thumbBuf.Bytes()
-
-	// Upload to GCS - Overwrite original.webp
-	objectID := fmt.Sprintf("%s/original.webp", humanID)
-	obj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(objectID)
-	writer := obj.NewWriter(ctx)
-	if _, err := writer.Write(raw); err != nil {
-		return NewInternalServerError(err)
-	}
-	if err := writer.Close(); err != nil {
-		return NewInternalServerError(err)
-	}
-
-	// Upload Thumbnail to GCS - Overwrite thumbnail.webp
-	thumbObjectID := fmt.Sprintf("%s/thumbnail.webp", humanID)
-	thumbObj := s.storageClient.Bucket(api.ImagesStorageBucket).Object(thumbObjectID)
-	thumbWriter := thumbObj.NewWriter(ctx)
-	if _, err := thumbWriter.Write(thumbRaw); err != nil {
-		return NewInternalServerError(err)
-	}
-	if err := thumbWriter.Close(); err != nil {
-		return NewInternalServerError(err)
-	}
-
-	storageURL := fmt.Sprintf("%v/%v/%s", s.storageURL, api.ImagesStorageBucket, objectID)
-	thumbURL := fmt.Sprintf("%v/%v/%s", s.storageURL, api.ImagesStorageBucket, thumbObjectID)
-
 	// Update human record
 	human, err := s.humanDAO.Human(ctx, humandao.HumanInput{HumanID: humanID})
 	if err != nil {
 		return NewInternalServerError(err)
 	}
 
-	human.Images.Featured = storageURL
-	human.Images.Thumbnail = thumbURL
 	human.AIGenerated = true
-	if err := s.humanDAO.UpdateHuman(ctx, human); err != nil {
+	if _, err := s.uploader.UploadHumanImages(ctx, human, raw); err != nil {
 		return NewInternalServerError(err)
 	}
 
