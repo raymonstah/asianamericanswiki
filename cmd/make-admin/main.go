@@ -41,7 +41,7 @@ type Handler struct {
 func run(c *cli.Context) error {
 	ctx := c.Context
 	if opts.LocalAuth {
-		if err := os.Setenv("FIREBASE_AUTH_EMULATOR_HOST", "localhost:8081"); err != nil {
+		if err := os.Setenv("FIREBASE_AUTH_EMULATOR_HOST", "127.0.0.1:8081"); err != nil {
 			return err
 		}
 	}

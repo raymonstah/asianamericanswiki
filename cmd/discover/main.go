@@ -74,7 +74,7 @@ type Discoverer struct {
 
 func newDiscoverer(ctx context.Context) (*Discoverer, error) {
 	if !opts.UseProd {
-		if err := os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080"); err != nil {
+		if err := os.Setenv("FIRESTORE_EMULATOR_HOST", "127.0.0.1:8080"); err != nil {
 			return nil, err
 		}
 	} else {
@@ -112,7 +112,11 @@ func newDiscoverer(ctx context.Context) (*Discoverer, error) {
 		return nil, err
 	}
 
-	uploader := imageutil.NewUploader(storageClient, dao)
+	storageURL := "https://storage.googleapis.com"
+        if !opts.UseProd {
+                storageURL = "http://127.0.0.1:9199"
+        }
+        uploader := imageutil.NewUploader(storageClient, dao, storageURL)
 
 	return &Discoverer{
 		dao:           dao,

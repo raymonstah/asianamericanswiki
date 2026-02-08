@@ -20,10 +20,10 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	if err := os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080"); err != nil {
+	if err := os.Setenv("FIRESTORE_EMULATOR_HOST", "127.0.0.1:8080"); err != nil {
 		panic(err)
 	}
-	if err := os.Setenv("STORAGE_EMULATOR_HOST", "localhost:9199"); err != nil {
+	if err := os.Setenv("STORAGE_EMULATOR_HOST", "127.0.0.1:9199"); err != nil {
 		panic(err)
 	}
 	m.Run()
@@ -43,7 +43,7 @@ func TestUploader_UploadHumanImages(t *testing.T) {
 	storageClient, err := storage.NewClient(ctx)
 	assert.NoError(t, err)
 
-	uploader := NewUploader(storageClient, dao)
+	uploader := NewUploader(storageClient, dao, "http://127.0.0.1:9199")
 
 	// Create a test human
 	human, err := dao.AddHuman(ctx, humandao.AddHumanInput{
@@ -69,6 +69,8 @@ func TestUploader_UploadHumanImages(t *testing.T) {
 	assert.NotEmpty(t, updatedHuman.Images.Thumbnail)
 	assert.Contains(t, updatedHuman.Images.Featured, human.ID)
 	assert.Contains(t, updatedHuman.Images.Thumbnail, human.ID)
+	assert.Contains(t, updatedHuman.Images.Featured, "127.0.0.1:9199")
+	assert.Contains(t, updatedHuman.Images.Thumbnail, "127.0.0.1:9199")
 
 	// Verify storage objects exist
 	bucket := storageClient.Bucket(api.ImagesStorageBucket)

@@ -51,7 +51,7 @@ func run(c *cli.Context) error {
 		return fmt.Errorf("failed to create firebase app: %w", err)
 	}
 
-	if err := os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080"); err != nil {
+	if err := os.Setenv("FIRESTORE_EMULATOR_HOST", "127.0.0.1:8080"); err != nil {
 		return err
 	}
 

@@ -19,12 +19,14 @@ import (
 type Uploader struct {
 	storageClient *storage.Client
 	humanDAO      *humandao.DAO
+	storageURL    string
 }
 
-func NewUploader(storageClient *storage.Client, humanDAO *humandao.DAO) *Uploader {
+func NewUploader(storageClient *storage.Client, humanDAO *humandao.DAO, storageURL string) *Uploader {
 	return &Uploader{
 		storageClient: storageClient,
 		humanDAO:      humanDAO,
+		storageURL:    storageURL,
 	}
 }
 
@@ -65,9 +67,8 @@ func (u *Uploader) UploadHumanImages(ctx context.Context, human humandao.Human, 
 		return human, err
 	}
 
-	storageURL := "https://storage.googleapis.com"
-	human.Images.Featured = fmt.Sprintf("%v/%v/%s", storageURL, api.ImagesStorageBucket, objectID)
-	human.Images.Thumbnail = fmt.Sprintf("%v/%v/%s", storageURL, api.ImagesStorageBucket, thumbObjectID)
+	human.Images.Featured = fmt.Sprintf("%v/%v/%s", u.storageURL, api.ImagesStorageBucket, objectID)
+	human.Images.Thumbnail = fmt.Sprintf("%v/%v/%s", u.storageURL, api.ImagesStorageBucket, thumbObjectID)
 	
 	// If it was already AI generated, keep it true. 
 	// The caller can set it to true if they know it's AI generated.

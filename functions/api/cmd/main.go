@@ -118,13 +118,13 @@ func setupEmulatorEnvironmentVariables(logger zerolog.Logger) error {
 		fmt.Println("set up emulator env vars..")
 	}(time.Now())
 
-	if err := os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080"); err != nil {
+	if err := os.Setenv("FIRESTORE_EMULATOR_HOST", "127.0.0.1:8080"); err != nil {
 		return err
 	}
-	//	if err := os.Setenv("FIREBASE_AUTH_EMULATOR_HOST", "localhost:8081"); err != nil {
+	//	if err := os.Setenv("FIREBASE_AUTH_EMULATOR_HOST", "127.0.0.1:8081"); err != nil {
 	//		return err
 	//	}
-	if err := os.Setenv("STORAGE_EMULATOR_HOST", "localhost:9199"); err != nil {
+	if err := os.Setenv("STORAGE_EMULATOR_HOST", "127.0.0.1:9199"); err != nil {
 		return err
 	}
 	return nil

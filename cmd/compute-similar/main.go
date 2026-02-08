@@ -112,7 +112,7 @@ func action(ctx context.Context, cmd *cli.Command) error {
 
 func initWeaviate(ctx context.Context) (*weaviate.Client, error) {
 	weaviateClient, err := weaviate.NewClient(weaviate.Config{
-		Host:   "localhost:9035",
+		Host:   "127.0.0.1:9035",
 		Scheme: "http",
 	})
 	if err != nil {

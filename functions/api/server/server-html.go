@@ -65,10 +65,10 @@ type ServerHTMLConfig struct {
 func NewServerHTML(conf ServerHTMLConfig) *ServerHTML {
 	storageURL := "https://storage.googleapis.com"
 	if conf.Local {
-		storageURL = "http://localhost:9199"
+		storageURL = "http://127.0.0.1:9199"
 	}
 
-	uploader := imageutil.NewUploader(conf.StorageClient, conf.HumanDAO)
+	uploader := imageutil.NewUploader(conf.StorageClient, conf.HumanDAO, storageURL)
 
 	return &ServerHTML{
 		local:         conf.Local,
@@ -1105,10 +1105,10 @@ func (s *ServerHTML) HandlerXAIGenerate(w http.ResponseWriter, r *http.Request) 
 	}
 
 	baseImage := human.Images.Featured
-	if baseImage != "" && (strings.Contains(baseImage, "localhost") || strings.HasPrefix(baseImage, "http://")) {
+	if baseImage != "" && (strings.Contains(baseImage, "127.0.0.1") || strings.HasPrefix(baseImage, "http://")) {
 		s.logger.Info().Str("url", baseImage).Msg("local source image detected, converting to base64")
 		// Parse the emulator URL to get the object path
-		// URL format: http://localhost:9199/asianamericanswiki-images/<humanID>/original.webp
+		// URL format: http://127.0.0.1:9199/asianamericanswiki-images/<humanID>/original.webp
 		prefix := fmt.Sprintf("%s/%s/", s.storageURL, api.ImagesStorageBucket)
 		objectPath := strings.TrimPrefix(baseImage, prefix)
 

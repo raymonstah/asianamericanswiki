@@ -15,7 +15,7 @@ npx @tailwindcss/cli -i functions/api/server/public/static/input.css -o ./functi
 To run the emulators:
 
 ```shell
-firebase emulators:start --only "auth,firestore"
+firebase emulators:start --only "auth,firestore,storage"
 ```
 
 To run the backend locally (emulators required):
