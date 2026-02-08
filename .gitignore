@@ -26,3 +26,6 @@ tmp/*
 .env*
 /discover
 /main
+/mcp/main
+/mcp/mcp-client
+/mcp/mcp-server
