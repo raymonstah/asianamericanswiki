@@ -3,12 +3,15 @@
     branches:
       - main
     paths:
-      # only run when the source code changes or this file changes
-      - "functions/api/**"
-      - "go.*"
-      - ".github/workflows/deploy-api.yml"
-      - "internal/**"
+      - "**/*.go"
+      - "go.mod"
+      - "go.sum"
       - "Dockerfile"
+      - ".github/workflows/*.yml"
+      - "internal/**"
+      - "functions/api/**"
+      - "cmd/**"
+      - "mcp/**"
 
 name: Deploy API to cloud run
 jobs:
