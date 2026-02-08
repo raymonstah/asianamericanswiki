@@ -40,11 +40,6 @@ jobs:
           distribution: "temurin"
           java-version: "21"
 
-      - name: Install libvips
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libvips-dev
-
       - name: Install emulators and Test
         run: |
           npm install -g firebase-tools
