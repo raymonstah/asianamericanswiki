@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"unicode"
 
 	"cloud.google.com/go/firestore"
 	"cloud.google.com/go/storage"
@@ -109,6 +110,7 @@ func newDiscoverer(ctx context.Context) (*Discoverer, error) {
 	for _, h := range humans {
 		existing[strings.ToLower(h.Name)] = struct{}{}
 		existing[strings.ToLower(h.Path)] = struct{}{}
+		existing[NormalizePath(h.Name)] = struct{}{}
 	}
 
 	var xClient *xai.Client
@@ -180,6 +182,33 @@ func (d *Discoverer) FindImageURL(ctx context.Context, name string) (string, err
 	// 2. Fallback to Google Image Search using chromedp
 	fmt.Printf("No Wikipedia image for %s, trying Google Image Search via headless browser...\n", name)
 	return d.findGoogleImageURL(ctx, name)
+}
+
+func NormalizePath(name string) string {
+	var b strings.Builder
+	for _, r := range strings.ToLower(name) {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) {
+			b.WriteRune(r)
+		} else if unicode.IsSpace(r) || r == '-' {
+			b.WriteRune('-')
+		}
+	}
+	res := b.String()
+	// replace multiple dashes with single dash
+	for strings.Contains(res, "--") {
+		res = strings.ReplaceAll(res, "--", "-")
+	}
+	return strings.Trim(res, "-")
+}
+
+func (d *Discoverer) Exists(name string) bool {
+	if _, ok := d.existing[strings.ToLower(name)]; ok {
+		return true
+	}
+	if _, ok := d.existing[NormalizePath(name)]; ok {
+		return true
+	}
+	return false
 }
 
 func (d *Discoverer) findGoogleImageURL(ctx context.Context, name string) (string, error) {
@@ -323,7 +352,7 @@ func discoverWikipedia(c *cli.Context) error {
 				break
 			}
 			name := member
-			if _, ok := d.existing[strings.ToLower(name)]; ok {
+			if d.Exists(name) {
 				continue
 			}
 
@@ -366,7 +395,7 @@ func discoverWikipedia(c *cli.Context) error {
 
 					// Double check if name changed and if it's already in database
 					if !strings.EqualFold(input.Name, name) {
-						if _, ok := d.existing[strings.ToLower(input.Name)]; ok {
+						if d.Exists(input.Name) {
 							fmt.Printf("Skipping %s (renamed from %s) as it already exists in database\n", input.Name, name)
 							continue
 						}
@@ -494,7 +523,7 @@ func brainstorm(c *cli.Context) error {
 		if count >= opts.MaxDiscovery {
 			break
 		}
-		if _, ok := d.existing[strings.ToLower(name)]; ok {
+		if d.Exists(name) {
 			continue
 		}
 
@@ -537,7 +566,7 @@ func brainstorm(c *cli.Context) error {
 
 				// Check if renamed person already exists
 				if !strings.EqualFold(input.Name, name) {
-					if _, ok := d.existing[strings.ToLower(input.Name)]; ok {
+					if d.Exists(input.Name) {
 						fmt.Printf("Skipping %s (renamed from %s) as it already exists in database\n", input.Name, name)
 						continue
 					}
