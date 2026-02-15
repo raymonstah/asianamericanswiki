@@ -1,0 +1,47 @@
+{{ define "search-suggestions.html" }}
+<div class="absolute top-full left-0 right-0 mt-2 bg-[var(--color-card-bg)] border border-[var(--color-border)] rounded-2xl shadow-xl overflow-hidden z-50 backdrop-blur-md">
+    {{ if . }}
+        <ul class="divide-y divide-[var(--color-border)] max-h-96 overflow-y-auto">
+            {{ range . }}
+            <li>
+                <a href="/humans/{{ .Path }}" class="flex items-center gap-4 p-3 hover:bg-[var(--color-background)] transition-colors group">
+                    <div class="h-12 w-12 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-800 border border-[var(--color-border)]">
+                        {{ if .Images.Thumbnail }}
+                        <img src="{{ .Images.Thumbnail }}" alt="{{ .Name }}" class="h-full w-full object-cover">
+                        {{ else }}
+                        <div class="h-full w-full flex items-center justify-center text-[var(--color-text-secondary)] opacity-30">?</div>
+                        {{ end }}
+                    </div>
+                    <div class="flex-grow min-w-0 flex flex-col justify-center">
+                        <div class="flex items-center gap-2 overflow-hidden">
+                            <span class="text-sm font-bold text-[var(--color-text)] truncate group-hover:text-[var(--color-primary)] transition-colors">
+                                {{ .Name }}
+                            </span>
+                            {{ if .Ethnicity }}
+                            <span class="text-[10px] text-[var(--color-text-secondary)] truncate flex-shrink-0 mt-[1px]">
+                                • {{ range $i, $e := .Ethnicity }}{{ if $i }}, {{ end }}{{ $e }}{{ end }}
+                            </span>
+                            {{ end }}
+                        </div>
+                    </div>
+                    <div class="text-[var(--color-text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </a>
+            </li>
+            {{ end }}
+            <li class="p-2 bg-[var(--color-background)]/50">
+                <button type="submit" class="w-full text-center py-2 text-xs font-medium text-[var(--color-primary)] hover:underline">
+                    View all results
+                </button>
+            </li>
+        </ul>
+    {{ else }}
+        <div class="p-8 text-center">
+            <p class="text-sm text-[var(--color-text-secondary)]">No matches found</p>
+        </div>
+    {{ end }}
+</div>
+{{ end }}
