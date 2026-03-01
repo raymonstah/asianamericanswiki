@@ -1,6 +1,6 @@
 module github.com/raymonstah/asianamericanswiki
 
-go 1.25.6
+go 1.25.7
 
 require (
 	cloud.google.com/go/firestore v1.18.0
