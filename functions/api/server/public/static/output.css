@@ -252,6 +252,9 @@
     white-space: nowrap;
     border-width: 0;
   }
+  .\!fixed {
+    position: fixed !important;
+  }
   .absolute {
     position: absolute;
   }
@@ -429,6 +432,9 @@
   .\!block {
     display: block !important;
   }
+  .\!inline {
+    display: inline !important;
+  }
   .block {
     display: block;
   }
@@ -453,8 +459,14 @@
   .inline-flex {
     display: inline-flex;
   }
+  .inline-table {
+    display: inline-table;
+  }
   .table {
     display: table;
+  }
+  .table-cell {
+    display: table-cell;
   }
   .aspect-\[3\/4\] {
     aspect-ratio: 3/4;
@@ -739,6 +751,11 @@
   }
   .self-start {
     align-self: flex-start;
+  }
+  .\!truncate {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
   }
   .truncate {
     overflow: hidden;
@@ -1181,6 +1198,9 @@
     --tw-ordinal: ordinal;
     font-variant-numeric: var(--tw-ordinal,) var(--tw-slashed-zero,) var(--tw-numeric-figure,) var(--tw-numeric-spacing,) var(--tw-numeric-fraction,);
   }
+  .overline {
+    text-decoration-line: overline;
+  }
   .underline {
     text-decoration-line: underline;
   }
@@ -1298,6 +1318,9 @@
   .outline {
     outline-style: var(--tw-outline-style);
     outline-width: 1px;
+  }
+  .outline-black {
+    outline-color: var(--color-black);
   }
   .blur {
     --tw-blur: blur(8px);
