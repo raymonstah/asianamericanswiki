@@ -18,6 +18,7 @@ import (
 	"github.com/blevesearch/bleve/v2"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
+	"github.com/raymonstah/asianamericanswiki/functions/api"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/raymonstah/asianamericanswiki/internal/imageutil"
 	"github.com/raymonstah/asianamericanswiki/internal/xai"
@@ -299,8 +300,9 @@ func (s *ServerHTML) HandlerError(w http.ResponseWriter, r *http.Request, e Erro
 }
 
 type Base struct {
-	Local bool
-	Admin bool
+	Local     bool
+	Admin     bool
+	ProjectID string
 }
 
 func (s *ServerHTML) HandlerIndex(w http.ResponseWriter, r *http.Request) error {
@@ -380,8 +382,9 @@ func (h HttpHandler) Serve(errorHandler func(w http.ResponseWriter, r *http.Requ
 
 func getBase(s *ServerHTML, admin bool) Base {
 	base := Base{
-		Admin: admin,
-		Local: s.local,
+		Admin:     admin,
+		Local:     s.local,
+		ProjectID: api.ProjectID,
 	}
 	return base
 }

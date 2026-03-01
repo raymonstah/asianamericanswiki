@@ -146,14 +146,20 @@
                  Generate xAI Images
                 </a>
                 <button
-                 hx-post="/admin/humans/{{ .Human.ID }}/refresh-index"
-                 hx-swap="none"
-                 hx-on::after-request="if(event.detail.successful) alert('Index refreshed!'); else alert('Failed to refresh index.');"
-                 class="w-full bg-[var(--color-background)] text-[var(--color-text)] font-medium py-2 rounded-lg border border-[var(--color-border)] text-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  hx-post="/admin/humans/{{ .Human.ID }}/refresh-index"
+                  hx-swap="none"
+                  hx-on::after-request="if(event.detail.successful) alert('Index refreshed!'); else alert('Failed to refresh index.');"
+                  class="w-full bg-[var(--color-background)] text-[var(--color-text)] font-medium py-2 rounded-lg border border-[var(--color-border)] text-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 >
-                 Refresh Index
+                  Refresh Index
                 </button>
-
+                <a
+                  href="{{ if .Local }}http://localhost:4000/firestore/default/data/humans/{{ .Human.ID }}{{ else }}https://console.cloud.google.com/firestore/databases/-default-/data/panel/humans/{{ .Human.ID }}?project={{ .ProjectID }}{{ end }}"
+                  target="_blank"
+                  class="w-full bg-[var(--color-background)] text-[var(--color-text)] font-medium py-2 rounded-lg border border-[var(--color-border)] text-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                >
+                  Firestore
+                </a>
              </div>
             {{ end }}
 
