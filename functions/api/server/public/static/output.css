@@ -348,6 +348,9 @@
   .m-0 {
     margin: calc(var(--spacing) * 0);
   }
+  .m-1 {
+    margin: calc(var(--spacing) * 1);
+  }
   .m-95 {
     margin: calc(var(--spacing) * 95);
   }
@@ -1370,6 +1373,9 @@
   .outline-none {
     --tw-outline-style: none;
     outline-style: none;
+  }
+  .\[m\:\=N\] {
+    m: =N;
   }
   .group-focus-within\:text-\[var\(--color-primary\)\] {
     &:is(:where(.group):focus-within *) {

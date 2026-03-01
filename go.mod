@@ -24,6 +24,7 @@ require (
 	github.com/weaviate/weaviate-go-client/v5 v5.6.0
 	golang.org/x/image v0.28.0
 	golang.org/x/sync v0.19.0
+	golang.org/x/vuln v1.1.4
 	google.golang.org/api v0.245.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20260128011058-8636f8732409
 	google.golang.org/grpc v1.78.0
@@ -84,6 +85,10 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.40.0 // indirect
 	go.opentelemetry.io/otel/trace v1.40.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
+	golang.org/x/mod v0.31.0 // indirect
+	golang.org/x/telemetry v0.0.0-20251203150158-8fff8a5912fc // indirect
+	golang.org/x/tools v0.40.0 // indirect
+	golang.org/x/tools/go/packages/packagestest v0.1.1-deprecated // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
