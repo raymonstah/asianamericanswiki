@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "asian-americans-wiki": {
+      "command": "go",
+      "args": [
+        "run",
+        "/Users/raymond/Documents/asianamericanswiki/cmd/mcp-server/main.go"
+      ],
+      "trust": true
+    }
+  },
+  "tools": {
+    "allowed": [
+      "run_shell_command(go)",
+      "run_shell_command(golangci-lint)"
+    ]
+  }
+}

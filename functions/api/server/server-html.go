@@ -210,6 +210,8 @@ func (s *ServerHTML) Register(router chi.Router) error {
 	router.Post("/admin/xai/generate", HttpHandler(s.HandlerXAIGenerate).Serve(s.HandlerError))
 	router.Post("/admin/xai/upload", HttpHandler(s.HandlerXAIUpload).Serve(s.HandlerError))
 	router.Post("/admin/refresh-index", HttpHandler(s.HandlerRefreshIndex).Serve(s.HandlerError))
+	router.Post("/admin/humans/{id}/refresh-index", HttpHandler(s.HandlerRefreshHumanIndex).Serve(s.HandlerError))
+
 	router.Handle("/xai-generations/*", http.StripPrefix("/xai-generations/", http.FileServer(http.Dir("tmp/xai_generations"))))
 	// redirect the old search route to the new one
 	router.Get("/search", func(w http.ResponseWriter, r *http.Request) {

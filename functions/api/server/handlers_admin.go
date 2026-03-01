@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/raymonstah/asianamericanswiki/internal/ethnicity"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/raymonstah/asianamericanswiki/internal/xai"
@@ -199,5 +200,48 @@ func (s *ServerHTML) HandlerRefreshIndex(w http.ResponseWriter, r *http.Request)
 
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("Index refreshed successfully"))
+	return nil
+}
+
+func (s *ServerHTML) HandlerRefreshHumanIndex(w http.ResponseWriter, r *http.Request) error {
+	ctx := r.Context()
+	token, err := s.parseToken(r)
+	if err != nil {
+		return NewUnauthorizedError(err)
+	}
+
+	admin := IsAdmin(token)
+	if !admin {
+		return NewForbiddenError(fmt.Errorf("user is not an admin"))
+	}
+
+	id := chi.URLParam(r, "id")
+	human, err := s.humanDAO.Human(ctx, humandao.HumanInput{HumanID: id})
+	if err != nil {
+		return NewInternalServerError(fmt.Errorf("unable to get human: %w", err))
+	}
+
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	if err := s.index.Index(human.ID, human); err != nil {
+		return NewInternalServerError(fmt.Errorf("unable to index human: %w", err))
+	}
+
+	// update s.humans if it exists
+	found := false
+	for i, h := range s.humans {
+		if h.ID == human.ID {
+			s.humans[i] = human
+			found = true
+			break
+		}
+	}
+	if !found {
+		s.humans = append(s.humans, human)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("Human index refreshed successfully"))
 	return nil
 }
