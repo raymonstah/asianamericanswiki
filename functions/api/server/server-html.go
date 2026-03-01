@@ -177,6 +177,7 @@ func (s *ServerHTML) Register(router chi.Router) error {
 			"slicesContains": slicesContain,
 			"year":           time.Now().Year,
 			"imagePrompt":    xai.DefaultImagePrompt,
+			"join":           strings.Join,
 			"nl2br": func(text string) template.HTML {
 				return template.HTML(strings.ReplaceAll(template.HTMLEscapeString(text), "\n", "<br>"))
 			},

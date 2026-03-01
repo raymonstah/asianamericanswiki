@@ -15,6 +15,7 @@ import (
 func main() {
 	var opts struct {
 		Name        string
+		Aliases     string
 		DOB         string
 		Ethnicity   string
 		Description string
@@ -30,6 +31,7 @@ func main() {
 		Usage: "Manually add a human to the database",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "name", Required: true, Destination: &opts.Name},
+			&cli.StringFlag{Name: "aliases", Usage: "Comma separated aliases", Destination: &opts.Aliases},
 			&cli.StringFlag{Name: "dob", Usage: "YYYY-MM-DD", Destination: &opts.DOB},
 			&cli.StringFlag{Name: "ethnicity", Usage: "Comma separated ethnicities", Destination: &opts.Ethnicity},
 			&cli.StringFlag{Name: "description", Destination: &opts.Description},
@@ -72,8 +74,17 @@ func main() {
 				tags[i] = strings.TrimSpace(t)
 			}
 
+			var aliases []string
+			if opts.Aliases != "" {
+				aliases = strings.Split(opts.Aliases, ",")
+				for i, a := range aliases {
+					aliases[i] = strings.TrimSpace(a)
+				}
+			}
+
 			input := humandao.AddHumanInput{
 				Name:        opts.Name,
+				Aliases:     aliases,
 				DOB:         opts.DOB,
 				Ethnicity:   ethnicities,
 				Description: opts.Description,

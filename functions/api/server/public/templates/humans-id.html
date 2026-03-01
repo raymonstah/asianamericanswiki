@@ -170,6 +170,11 @@
                     {{ if eq .Human.Gender "male" }} ♂️ {{ else if eq .Human.Gender "female" }} ♀️ {{ end }}
                   </span>
                 </h1>
+                {{ if .Human.Aliases }}
+                <p class="text-lg text-[var(--color-text-secondary)] mb-4 italic">
+                  Also known as: {{ join .Human.Aliases ", " }}
+                </p>
+                {{ end }}
               </header>
 
               <div class="prose prose-lg dark:prose-invert max-w-none text-[var(--color-text-secondary)] leading-relaxed">

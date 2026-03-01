@@ -330,3 +330,28 @@ func TestHumanAge(t *testing.T) {
 		})
 	}
 }
+
+func TestSlug(t *testing.T) {
+	tcs := map[string]struct {
+		Name     string
+		Expected string
+	}{
+		"simple":                  {Name: "Bruce Lee", Expected: "bruce-lee"},
+		"with-alias-double":       {Name: "Jason \"JasonTheWeen\" Nguyen", Expected: "jason-nguyen"},
+		"with-alias-single":       {Name: "Jason 'JasonTheWeen' Nguyen", Expected: "jason-nguyen"},
+		"multiple-aliases":        {Name: "Jason \"A\" 'B' Nguyen", Expected: "jason-nguyen"},
+		"extra-spaces":            {Name: "  Bruce   Lee  ", Expected: "bruce-lee"},
+		"non-alphanumeric":        {Name: "A!@#B", Expected: "a-b"},
+		"multiple-hyphens":        {Name: "A---B", Expected: "a-b"},
+		"leading-trailing-hyphen": {Name: "---A B---", Expected: "a-b"},
+		"only-alias":              {Name: "\"Alias Only\"", Expected: ""},
+		"empty":                   {Name: "", Expected: ""},
+	}
+
+	for name, tc := range tcs {
+		t.Run(name, func(t *testing.T) {
+			got := Slug(tc.Name)
+			assert.Equal(t, tc.Expected, got)
+		})
+	}
+}

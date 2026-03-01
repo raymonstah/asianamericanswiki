@@ -22,7 +22,9 @@ type Server struct {
 type MCPHuman struct {
 	ID          string   `json:"id"`
 	Name        string   `json:"name"`
+	Aliases     []string `json:"aliases,omitempty"`
 	Path        string   `json:"path"`
+	Draft       bool     `json:"draft"`
 	DOB         string   `json:"dob,omitempty"`
 	DOD         string   `json:"dod,omitempty"`
 	Tags        []string `json:"tags,omitempty"`
@@ -39,7 +41,9 @@ func toMCPHuman(h humandao.Human) MCPHuman {
 	return MCPHuman{
 		ID:          h.ID,
 		Name:        h.Name,
+		Aliases:     h.Aliases,
 		Path:        h.Path,
+		Draft:       h.Draft,
 		DOB:         h.DOB,
 		DOD:         h.DOD,
 		Tags:        h.Tags,
@@ -145,6 +149,7 @@ func (s *Server) getHuman(ctx context.Context, req *mcp.CallToolRequest, input G
 
 type AddInput struct {
 	Name        string   `json:"name" jsonschema:"Full name of the person"`
+	Aliases     []string `json:"aliases,omitempty" jsonschema:"Alternative names or nicknames"`
 	DOB         string   `json:"dob,omitempty" jsonschema:"Date of birth (YYYY-MM-DD)"`
 	DOD         string   `json:"dod,omitempty" jsonschema:"Date of death (YYYY-MM-DD)"`
 	Ethnicity   []string `json:"ethnicity" jsonschema:"List of ethnicities"`
@@ -162,6 +167,7 @@ func (s *Server) addHuman(ctx context.Context, req *mcp.CallToolRequest, input A
 	human, err := s.dao.AddHuman(ctx, humandao.AddHumanInput{
 		HumanID:     humanID,
 		Name:        input.Name,
+		Aliases:     input.Aliases,
 		DOB:         input.DOB,
 		DOD:         input.DOD,
 		Ethnicity:   input.Ethnicity,
@@ -184,6 +190,8 @@ func (s *Server) addHuman(ctx context.Context, req *mcp.CallToolRequest, input A
 type UpdateInput struct {
 	ID          string   `json:"id" jsonschema:"The ID of the human to update"`
 	Name        string   `json:"name,omitempty"`
+	Aliases     []string `json:"aliases,omitempty"`
+	Draft       *bool    `json:"draft,omitempty"`
 	DOB         string   `json:"dob,omitempty"`
 	DOD         string   `json:"dod,omitempty"`
 	Ethnicity   []string `json:"ethnicity,omitempty"`
@@ -204,6 +212,12 @@ func (s *Server) updateHuman(ctx context.Context, req *mcp.CallToolRequest, inpu
 
 	if input.Name != "" {
 		human.Name = input.Name
+	}
+	if len(input.Aliases) > 0 {
+		human.Aliases = input.Aliases
+	}
+	if input.Draft != nil {
+		human.Draft = *input.Draft
 	}
 	if input.DOB != "" {
 		human.DOB = input.DOB

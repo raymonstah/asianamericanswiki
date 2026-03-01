@@ -66,6 +66,21 @@
     </div>
     <div>
       <label
+        for="aliases"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
+        >Aliases</label
+      >
+      <input
+        class="border p-2 rounded bg-[var(--color-background)] w-full"
+        type="text"
+        id="aliases"
+        name="aliases"
+        placeholder="Enter nicknames, comma-separated"
+        value="{{ join .Human.Aliases ", " }}"
+      />
+    </div>
+    <div>
+      <label
         for="featured_image"
         class="block mb-2 text-sm font-medium text-gray-900 dark:text-text"
         >Image</label

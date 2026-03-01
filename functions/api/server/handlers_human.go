@@ -286,7 +286,14 @@ func (s *ServerHTML) HandlerHumanAdd(w http.ResponseWriter, r *http.Request) err
 		x           = strings.TrimSpace(r.Form.Get("x"))
 		website     = strings.TrimSpace(r.Form.Get("website"))
 		instagram   = strings.TrimSpace(r.Form.Get("instagram"))
+		aliases     = r.Form.Get("aliases")
 	)
+	var aliasesList []string
+	if aliases != "" {
+		for _, a := range strings.Split(aliases, ",") {
+			aliasesList = append(aliasesList, strings.TrimSpace(a))
+		}
+	}
 	var rawFeaturedImage []byte
 	var rawThumbnail []byte
 
@@ -326,6 +333,7 @@ func (s *ServerHTML) HandlerHumanAdd(w http.ResponseWriter, r *http.Request) err
 
 	human, err := s.humanDAO.AddHuman(ctx, humandao.AddHumanInput{
 		Name:        name,
+		Aliases:     aliasesList,
 		Gender:      humandao.Gender(gender),
 		DOB:         dob,
 		DOD:         dod,
@@ -447,9 +455,17 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 		name        = strings.TrimSpace(r.Form.Get("name"))
 		ethnicityList   = r.Form["ethnicity"]
 		gender      = strings.TrimSpace(r.Form.Get("gender"))
+		aliases     = r.Form.Get("aliases")
 	)
 	if tagsOther != "" {
 		tags = append(tags, strings.Split(tagsOther, ",")...)
+	}
+
+	var aliasesList []string
+	if aliases != "" {
+		for _, a := range strings.Split(aliases, ",") {
+			aliasesList = append(aliasesList, strings.TrimSpace(a))
+		}
 	}
 
 	var rawFeaturedImage []byte
@@ -509,6 +525,7 @@ func (s *ServerHTML) HandlerHumanUpdate(w http.ResponseWriter, r *http.Request) 
 	}
 
 	human.Description = description
+	human.Aliases = aliasesList
 	human.Socials.X = x
 	human.Socials.Instagram = instagram
 	human.Socials.Website = website

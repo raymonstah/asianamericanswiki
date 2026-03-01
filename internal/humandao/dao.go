@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -27,6 +28,7 @@ var (
 type Human struct {
 	ID            string   `firestore:"-"`
 	Name          string   `firestore:"name"`
+	Aliases       []string `firestore:"aliases,omitempty"`
 	Path          string   `firestore:"urn_path"`
 	DOB           string   `firestore:"dob,omitempty"`
 	DOD           string   `firestore:"dod,omitempty"`
@@ -261,7 +263,7 @@ func (d *DAO) HumansByID(ctx context.Context, input HumansByIDInput) ([]Human, e
 
 func (d *DAO) UpdateHuman(ctx context.Context, human Human) error {
 	human.UpdatedAt = time.Now()
-	human.Path = strings.ToLower(strings.ReplaceAll(human.Name, " ", "-"))
+	human.Path = Slug(human.Name)
 	_, err := d.client.Collection(d.humanCollection).
 		Doc(human.ID).
 		Set(ctx, human)
@@ -275,6 +277,7 @@ func (d *DAO) UpdateHuman(ctx context.Context, human Human) error {
 type AddHumanInput struct {
 	HumanID     string
 	Name        string
+	Aliases     []string
 	DOB         string
 	DOD         string
 	Ethnicity   []string
@@ -291,7 +294,7 @@ type AddHumanInput struct {
 }
 
 func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) {
-	path := strings.ToLower(strings.ReplaceAll(input.Name, " ", "-"))
+	path := Slug(input.Name)
 	if input.Name == "" {
 		return Human{}, fmt.Errorf("name must be provided")
 	}
@@ -314,6 +317,7 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 	now := time.Now().In(time.UTC)
 	human := Human{
 		Name:        input.Name,
+		Aliases:     input.Aliases,
 		DOB:         input.DOB,
 		DOD:         input.DOD,
 		Ethnicity:   input.Ethnicity,
@@ -511,4 +515,25 @@ func (d *DAO) View(ctx context.Context, input ViewInput) error {
 	}
 
 	return nil
+}
+
+var (
+	quotedRegex = regexp.MustCompile(`["'].*?["']`)
+	slugRegex   = regexp.MustCompile(`[^a-z0-9-]`)
+)
+
+// Slug generates a url-safe slug from a name, removing content in quotes.
+func Slug(name string) string {
+	// Remove anything in quotes
+	s := quotedRegex.ReplaceAllString(name, "")
+	// Lowercase
+	s = strings.ToLower(s)
+	// Replace non-alphanumeric with hyphens
+	s = slugRegex.ReplaceAllString(s, "-")
+	// Remove multiple consecutive hyphens
+	for strings.Contains(s, "--") {
+		s = strings.ReplaceAll(s, "--", "-")
+	}
+	// Trim hyphens from ends
+	return strings.Trim(s, "-")
 }
