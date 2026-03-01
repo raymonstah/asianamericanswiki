@@ -1,7 +1,5 @@
 on:
   push:
-    branches-ignore:
-      - main
   pull_request:
   workflow_call:
 
@@ -18,6 +16,8 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
+          cache: true
+          cache-dependency-path: "**/*.sum"
 
       - name: Check go.mod and go.sum tidiness
         run: |
@@ -40,6 +40,8 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
+          cache: true
+          cache-dependency-path: "**/*.sum"
 
       - name: golangci-lint
         run: go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint run
@@ -54,6 +56,8 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
+          cache: true
+          cache-dependency-path: "**/*.sum"
 
       - name: Install Protoc
         uses: arduino/setup-protoc@v3

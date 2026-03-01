@@ -1,8 +1,6 @@
 name: Tests
 on:
   push:
-    branches-ignore:
-      - main
   pull_request:
   workflow_call:
 
@@ -23,12 +21,16 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/firebase/emulators
-          key: ${{ runner.os }}-firebase-emulators-${{ hashFiles('~/.cache/firebase/emulators/**') }}
+          key: ${{ runner.os }}-firebase-emulators-${{ hashFiles('package-lock.json', 'firebase.json') }}
+          restore-keys: |
+            ${{ runner.os }}-firebase-emulators-
 
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
+          cache: true
+          cache-dependency-path: "**/*.sum"
 
       - name: Setup Java
         uses: actions/setup-java@v4
