@@ -15,5 +15,13 @@ else
     echo "To install, run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest"
 fi
 
+echo "Running govulncheck..."
+if command -v govulncheck >/dev/null 2>&1; then
+    govulncheck ./...
+else
+    echo "govulncheck not found. Skipping vulnerability check."
+    echo "To install, run: go install golang.org/x/vuln/cmd/govulncheck@latest"
+fi
+
 # Add changes to git
 git add go.mod go.sum vendor/
