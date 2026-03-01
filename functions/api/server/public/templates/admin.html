@@ -21,6 +21,16 @@
         </a>
       </div>
 
+      <div class="w-full max-w-sm px-4">
+        <button 
+          hx-post="/admin/refresh-index" 
+          hx-swap="innerHTML"
+          class="block w-full bg-green-600 text-white text-center font-bold py-3 rounded-xl hover:bg-green-700 transition-all shadow-lg shadow-green-600/20"
+        >
+            Refresh Index
+        </button>
+      </div>
+
       {{ if .Drafts }}
       <h1 class="my-2 text-xl text-center">Drafts</h1>
       <div class="flex flex-col max-w-sm">

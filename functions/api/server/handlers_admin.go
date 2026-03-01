@@ -180,3 +180,24 @@ func (s *ServerHTML) HandlerGenerate(w http.ResponseWriter, r *http.Request) err
 
 	return nil
 }
+
+func (s *ServerHTML) HandlerRefreshIndex(w http.ResponseWriter, r *http.Request) error {
+	ctx := r.Context()
+	token, err := s.parseToken(r)
+	if err != nil {
+		return NewUnauthorizedError(err)
+	}
+
+	admin := IsAdmin(token)
+	if !admin {
+		return NewForbiddenError(fmt.Errorf("user is not an admin"))
+	}
+
+	if err := s.initializeIndex(ctx); err != nil {
+		return NewInternalServerError(fmt.Errorf("unable to initialize index: %w", err))
+	}
+
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("Index refreshed successfully"))
+	return nil
+}
