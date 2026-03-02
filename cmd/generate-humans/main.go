@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go/v4"
@@ -12,6 +13,7 @@ import (
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
 	"github.com/segmentio/ksuid"
 	"github.com/urfave/cli/v2"
+	"google.golang.org/api/iterator"
 	"gopkg.in/loremipsum.v1"
 )
 
@@ -84,21 +86,30 @@ func run(c *cli.Context) error {
 
 func (h *Handler) Do(ctx context.Context) error {
 	if opts.UseProd {
-		if !opts.Force {
+		if opts.Force {
+			log.Default().Println("purging local data...")
+			if err := h.purgeLocal(ctx); err != nil {
+				return fmt.Errorf("unable to purge local data: %w", err)
+			}
+		} else {
 			localSnapshots, err := h.localFirestore.Collection("humans").Documents(ctx).GetAll()
 			if err != nil {
 				return fmt.Errorf("unable to get local documents: %w", err)
 			}
 
 			if len(localSnapshots) > 0 {
-				return fmt.Errorf("local firestore is not empty")
+				return fmt.Errorf("local firestore is not empty (use --force to overwrite)")
 			}
 		}
 
+		log.Default().Println("fetching production data...")
 		snapshots, err := h.prodFirestore.Collection("humans").Documents(ctx).GetAll()
 		if err != nil {
 			return fmt.Errorf("unable to get production documents: %w", err)
 		}
+
+		log.Default().Printf("copying %d humans to local firestore...\n", len(snapshots))
+		bw := h.localFirestore.BulkWriter(ctx)
 		for i, snapshot := range snapshots {
 			data := snapshot.Data()
 			if opts.Dry {
@@ -106,11 +117,16 @@ func (h *Handler) Do(ctx context.Context) error {
 				continue
 			}
 
-			_, err := h.localFirestore.Collection("humans").Doc(snapshot.Ref.ID).Set(ctx, data)
-			if err != nil {
+			if _, err := bw.Set(h.localFirestore.Collection("humans").Doc(snapshot.Ref.ID), data); err != nil {
 				return fmt.Errorf("unable to set document: %w", err)
 			}
-			log.Default().Println("added", data["name"])
+			if (i+1)%500 == 0 {
+				log.Default().Printf("writing %d humans...\n", i+1)
+			}
+		}
+
+		if !opts.Dry {
+			bw.End()
 		}
 	} else {
 		return h.generateNew(ctx)
@@ -120,25 +136,76 @@ func (h *Handler) Do(ctx context.Context) error {
 	return nil
 }
 
+func (h *Handler) purgeLocal(ctx context.Context) error {
+	iter := h.localFirestore.Collection("humans").Documents(ctx)
+	bw := h.localFirestore.BulkWriter(ctx)
+	count := 0
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if _, err := bw.Delete(doc.Ref); err != nil {
+			return err
+		}
+		count++
+		if count%500 == 0 {
+			log.Default().Printf("purging %d humans...\n", count)
+		}
+	}
+
+	bw.End()
+	log.Default().Printf("purged %d documents\n", count)
+	return nil
+}
+
 func (h *Handler) generateNew(ctx context.Context) error {
-	dao := humandao.NewDAO(h.localFirestore)
+	log.Default().Printf("generating %d new humans...\n", opts.N)
 	generator := loremipsum.New()
+	bw := h.localFirestore.BulkWriter(ctx)
 	for i := 0; i < opts.N; i++ {
-		_, err := dao.AddHuman(ctx, humandao.AddHumanInput{
-			Name:        fmt.Sprintf("Human %v", ksuid.New().String()),
-			Gender:      humandao.GenderNonBinary,
-			Ethnicity:   []string{"Chinese"},
-			Website:     "https://example.com",
-			Twitter:     "https://twitter.com",
-			Location:    []string{"San Francisco", "CA"},
-			Tags:        []string{"tag1", "tag2"},
+		name := fmt.Sprintf("Human %v", ksuid.New().String())
+		path := humandao.Slug(name)
+		humanID := ksuid.New().String()
+		human := humandao.Human{
+			ID:     humanID,
+			Name:   name,
+			Gender: humandao.GenderNonBinary,
+			Ethnicity: []string{
+				"Chinese",
+			},
+			Socials: humandao.Socials{
+				Website: "https://example.com",
+				X:       "https://twitter.com",
+			},
+			Location: []string{
+				"San Francisco",
+				"CA",
+			},
+			Tags: []string{
+				"tag1",
+				"tag2",
+			},
 			Draft:       false,
 			DOB:         "1990-01-01",
 			Description: generator.Paragraphs(5),
-		})
-		if err != nil {
-			return fmt.Errorf("unable to create human: %w", err)
+			Path:        path,
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+		}
+
+		if _, err := bw.Set(h.localFirestore.Collection("humans").Doc(humanID), human); err != nil {
+			return err
+		}
+		if (i+1)%500 == 0 {
+			log.Default().Printf("generated %d humans...\n", i+1)
 		}
 	}
+
+	bw.End()
 	return nil
 }
