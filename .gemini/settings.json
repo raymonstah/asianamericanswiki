@@ -8,11 +8,5 @@
       ],
       "trust": true
     }
-  },
-  "tools": {
-    "allowed": [
-      "run_shell_command(go)",
-      "run_shell_command(golangci-lint)"
-    ]
   }
 }

@@ -1,0 +1,16 @@
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = "go"
+decision = "allow"
+priority = 100
+
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = "golangci-lint"
+decision = "allow"
+priority = 100
+
+[[rule]]
+mcpName = "asian-americans-wiki"
+decision = "allow"
+priority = 100
