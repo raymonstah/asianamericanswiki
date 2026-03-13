@@ -13,18 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: "npm"
-
-      - name: Cache firebase emulators
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/firebase/emulators
-          key: ${{ runner.os }}-firebase-emulators-${{ hashFiles('firebase.json') }}
-
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
@@ -37,11 +25,28 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: Install Firebase Tools
+      - name: Cache Firebase CLI
+        id: cache-firebase
+        uses: actions/cache@v4
+        with:
+          path: ~/bin/firebase
+          key: ${{ runner.os }}-firebase-cli-standalone
+
+      - name: Install Firebase CLI
+        if: steps.cache-firebase.outputs.cache-hit != 'true'
         run: |
-          if ! command -v firebase &> /dev/null; then
-            npm install -g firebase-tools@13.31.2
-          fi
+          mkdir -p ~/bin
+          curl -sL https://firebase.tools/bin/linux/latest -o ~/bin/firebase
+          chmod +x ~/bin/firebase
+
+      - name: Add Firebase to PATH
+        run: echo "$HOME/bin" >> $GITHUB_PATH
+
+      - name: Cache firebase emulators
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: ${{ runner.os }}-firebase-emulators-${{ hashFiles('firebase.json') }}
 
       - name: Test
         run: |
