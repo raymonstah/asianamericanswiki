@@ -28,7 +28,7 @@ jobs:
           fi
 
       - name: Run govulncheck
-        uses: google/govulncheck-action@v1
+        uses: golang/govulncheck-action@v1
         with:
           go-package: ./...
 
@@ -45,7 +45,7 @@ jobs:
           cache: false
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v7
         with:
           version: v2.10.1
           args: --timeout 5m
