@@ -126,6 +126,7 @@ func main() {
 
 			log.Println("Downloading image...")
 			resp, err = http.Get(imageURL)
+
 			if err != nil {
 				return fmt.Errorf("unable to download image: %w", err)
 			}
