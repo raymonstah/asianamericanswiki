@@ -32,7 +32,7 @@ func main() {
 			&cli.StringFlag{Name: "id", Required: true, Destination: &opts.HumanID, Usage: "The ID of the human"},
 			&cli.BoolFlag{Name: "use-prod", Value: false, Destination: &opts.UseProd},
 			&cli.StringFlag{Name: "xai-api-key", EnvVars: []string{"XAI_API_KEY"}, Destination: &opts.XAIToken, Required: true},
-			&cli.StringFlag{Name: "source-url", Destination: &opts.SourceURL, Usage: "URL of a source image to base the generation on"},
+			&cli.StringFlag{Name: "source-url", Destination: &opts.SourceURL, Usage: "URL of a source image to base the generation on", Required: true},
 		},
 		Action: func(c *cli.Context) error {
 			ctx := c.Context
@@ -81,36 +81,33 @@ func main() {
 			prompt := xai.DefaultImagePrompt(human.Name)
 			log.Printf("Using prompt: %q", prompt)
 
-			var baseImage string
-			if opts.SourceURL != "" {
-				log.Printf("Downloading source image from %s", opts.SourceURL)
-				req, err := http.NewRequestWithContext(ctx, http.MethodGet, opts.SourceURL, nil)
-				if err != nil {
-					return fmt.Errorf("unable to create request for source image: %w", err)
-				}
-				// Set a user agent to avoid being blocked by simple scrapers
-				req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
-				
-				resp, err := http.DefaultClient.Do(req)
-				if err != nil {
-					return fmt.Errorf("unable to download source image: %w", err)
-				}
-				defer func() {
-					_ = resp.Body.Close()
-				}()
-				if resp.StatusCode != http.StatusOK {
-					return fmt.Errorf("unexpected status code downloading source image: %d", resp.StatusCode)
-				}
-				data, err := io.ReadAll(resp.Body)
-				if err != nil {
-					return fmt.Errorf("failed to read source image: %w", err)
-				}
-				
-				base64Data := base64.StdEncoding.EncodeToString(data)
-				mimeType := http.DetectContentType(data)
-				baseImage = fmt.Sprintf("data:%s;base64,%s", mimeType, base64Data)
-				log.Printf("Successfully prepared source image base64 (type: %s)", mimeType)
+			log.Printf("Downloading source image from %s", opts.SourceURL)
+			req, err := http.NewRequestWithContext(ctx, http.MethodGet, opts.SourceURL, nil)
+			if err != nil {
+				return fmt.Errorf("unable to create request for source image: %w", err)
 			}
+			// Set a user agent to avoid being blocked by simple scrapers
+			req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+
+			resp, err := http.DefaultClient.Do(req)
+			if err != nil {
+				return fmt.Errorf("unable to download source image: %w", err)
+			}
+			defer func() {
+				_ = resp.Body.Close()
+			}()
+			if resp.StatusCode != http.StatusOK {
+				return fmt.Errorf("unexpected status code downloading source image: %d", resp.StatusCode)
+			}
+			data, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return fmt.Errorf("failed to read source image: %w", err)
+			}
+
+			base64Data := base64.StdEncoding.EncodeToString(data)
+			mimeType := http.DetectContentType(data)
+			baseImage := fmt.Sprintf("data:%s;base64,%s", mimeType, base64Data)
+			log.Printf("Successfully prepared source image base64 (type: %s)", mimeType)
 
 			imageURLs, err := xClient.GenerateImage(ctx, xai.GenerateImageInput{
 				Prompt: prompt,
@@ -128,7 +125,7 @@ func main() {
 			log.Printf("Image generated at: %s", imageURL)
 
 			log.Println("Downloading image...")
-			resp, err := http.Get(imageURL)
+			resp, err = http.Get(imageURL)
 			if err != nil {
 				return fmt.Errorf("unable to download image: %w", err)
 			}

@@ -2,21 +2,29 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"strings"
 
 	"cloud.google.com/go/firestore"
+	"cloud.google.com/go/storage"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/raymonstah/asianamericanswiki/functions/api"
 	"github.com/raymonstah/asianamericanswiki/internal/humandao"
+	"github.com/raymonstah/asianamericanswiki/internal/imageutil"
+	"github.com/raymonstah/asianamericanswiki/internal/xai"
 	"github.com/rs/zerolog"
 	"github.com/segmentio/ksuid"
 )
 
 type Server struct {
-	dao    *humandao.DAO
-	logger zerolog.Logger
+	dao       *humandao.DAO
+	logger    zerolog.Logger
+	xaiClient *xai.Client
+	uploader  *imageutil.Uploader
 }
 
 type MCPHuman struct {
@@ -160,6 +168,7 @@ type AddInput struct {
 	Twitter     string   `json:"twitter,omitempty" jsonschema:"Twitter profile URL"`
 	Website     string   `json:"website,omitempty" jsonschema:"Personal website"`
 	IMDB        string   `json:"imdb,omitempty" jsonschema:"IMDB profile URL"`
+	SourceImage string   `json:"source_image,omitempty" jsonschema:"Direct URL to a high-quality portrait image to be used as a source for xAI cinematic portrait generation"`
 }
 
 func (s *Server) addHuman(ctx context.Context, req *mcp.CallToolRequest, input AddInput) (*mcp.CallToolResult, MessageResponse, error) {
@@ -187,6 +196,15 @@ func (s *Server) addHuman(ctx context.Context, req *mcp.CallToolRequest, input A
 	if err != nil {
 		return nil, MessageResponse{}, fmt.Errorf("failed to add human: %w", err)
 	}
+
+	if input.SourceImage != "" {
+		human, err = s.generateAndUploadImage(ctx, human, input.SourceImage)
+		if err != nil {
+			s.logger.Error().Err(err).Str("id", human.ID).Msg("Failed to generate image during addHuman")
+			return nil, MessageResponse{Message: fmt.Sprintf("Successfully added human %s (ID: %s) as a draft, but failed to generate image: %v", human.Name, human.ID, err)}, nil
+		}
+	}
+
 	return nil, MessageResponse{Message: fmt.Sprintf("Successfully added human %s (ID: %s) as a draft.", human.Name, human.ID)}, nil
 }
 
@@ -205,6 +223,7 @@ type UpdateInput struct {
 	Twitter     string   `json:"twitter,omitempty" jsonschema:"Twitter profile URL"`
 	Website     string   `json:"website,omitempty"`
 	IMDB        string   `json:"imdb,omitempty"`
+	SourceImage string   `json:"source_image,omitempty" jsonschema:"Direct URL to a high-quality portrait image to be used as a source for xAI cinematic portrait generation"`
 }
 
 func (s *Server) updateHuman(ctx context.Context, req *mcp.CallToolRequest, input UpdateInput) (*mcp.CallToolResult, MessageResponse, error) {
@@ -261,7 +280,76 @@ func (s *Server) updateHuman(ctx context.Context, req *mcp.CallToolRequest, inpu
 	if err != nil {
 		return nil, MessageResponse{}, fmt.Errorf("failed to update human: %w", err)
 	}
+
+	if input.SourceImage != "" {
+		human, err = s.generateAndUploadImage(ctx, human, input.SourceImage)
+		if err != nil {
+			s.logger.Error().Err(err).Str("id", human.ID).Msg("Failed to generate image during updateHuman")
+			return nil, MessageResponse{Message: fmt.Sprintf("Successfully updated human %s (ID: %s), but failed to generate image: %v", human.Name, human.ID, err)}, nil
+		}
+	}
+
 	return nil, MessageResponse{Message: fmt.Sprintf("Successfully updated human %s (ID: %s).", human.Name, human.ID)}, nil
+}
+
+func (s *Server) generateAndUploadImage(ctx context.Context, human humandao.Human, sourceURL string) (humandao.Human, error) {
+	if s.xaiClient == nil || s.uploader == nil {
+		return human, fmt.Errorf("xAI client or image uploader not configured")
+	}
+
+	prompt := xai.DefaultImagePrompt(human.Name)
+
+	s.logger.Info().Str("source_url", sourceURL).Msg("Downloading source image")
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, sourceURL, nil)
+	if err != nil {
+		return human, fmt.Errorf("unable to create request for source image: %w", err)
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+	
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return human, fmt.Errorf("unable to download source image: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+	if resp.StatusCode != http.StatusOK {
+		return human, fmt.Errorf("unexpected status code downloading source image: %d", resp.StatusCode)
+	}
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return human, fmt.Errorf("failed to read source image: %w", err)
+	}
+	
+	base64Data := base64.StdEncoding.EncodeToString(data)
+	mimeType := http.DetectContentType(data)
+	baseImage := fmt.Sprintf("data:%s;base64,%s", mimeType, base64Data)
+
+	s.logger.Info().Msg("Requesting image generation from xAI")
+	imageURLs, err := s.xaiClient.GenerateImage(ctx, xai.GenerateImageInput{
+		Prompt: prompt,
+		N:      1,
+		Image:  baseImage,
+	})
+	if err != nil {
+		return human, fmt.Errorf("unable to generate image: %w", err)
+	}
+	if len(imageURLs) == 0 {
+		return human, fmt.Errorf("no image URLs returned from xAI")
+	}
+
+	s.logger.Info().Str("url", imageURLs[0]).Msg("Downloading generated image")
+	resp, err = http.Get(imageURLs[0])
+	if err != nil {
+		return human, fmt.Errorf("unable to download generated image: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	rawImage, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return human, fmt.Errorf("unable to read generated image: %w", err)
+	}
+
+	s.logger.Info().Msg("Uploading image to storage")
+	return s.uploader.UploadHumanImages(ctx, human, rawImage)
 }
 
 func validateSocials(instagram, twitter, website, imdb string) error {
@@ -322,9 +410,29 @@ func main() {
 	defer func() { _ = fsClient.Close() }()
 
 	dao := humandao.NewDAO(fsClient)
+	
+	var xClient *xai.Client
+	xaiToken := os.Getenv("XAI_API_KEY")
+	if xaiToken != "" {
+		xClient = xai.New(xaiToken)
+	}
+
+	storageClient, err := storage.NewClient(ctx)
+	if err != nil {
+		logger.Fatal().Err(err).Msg("failed to create storage client")
+	}
+	
+	storageURL := "https://storage.googleapis.com"
+	if os.Getenv("STORAGE_EMULATOR_HOST") != "" {
+		storageURL = "http://" + os.Getenv("STORAGE_EMULATOR_HOST")
+	}
+	uploader := imageutil.NewUploader(storageClient, dao, storageURL)
+
 	mcpServer := &Server{
-		dao:    dao,
-		logger: logger,
+		dao:       dao,
+		logger:    logger,
+		xaiClient: xClient,
+		uploader:  uploader,
 	}
 
 	implementation := &mcp.Implementation{
