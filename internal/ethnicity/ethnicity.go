@@ -1,5 +1,7 @@
 package ethnicity
 
+import "fmt"
+
 type Ethnicity struct {
 	Ethnicity string
 	Country   string
@@ -150,6 +152,34 @@ var SriLankan = Ethnicity{
 	Emoji:     "🇱🇰",
 }
 
+var Canadian = Ethnicity{
+	Ethnicity: "canadian",
+}
+
+var Dutch = Ethnicity{
+	Ethnicity: "dutch",
+}
+
+var Hawaiian = Ethnicity{
+	Ethnicity: "hawaiian",
+}
+
+var Jewish = Ethnicity{
+	Ethnicity: "jewish",
+}
+
+var Russian = Ethnicity{
+	Ethnicity: "russian",
+}
+
+var White = Ethnicity{
+	Ethnicity: "white",
+}
+
+var Mixed = Ethnicity{
+	Ethnicity: "mixed",
+}
+
 var All = []Ethnicity{
 	Afghan,
 	Bengalis,
@@ -175,4 +205,25 @@ var All = []Ethnicity{
 	Taiwanese,
 	Thai,
 	Vietnamese,
+	Canadian,
+	Dutch,
+	Hawaiian,
+	Jewish,
+	Russian,
+	White,
+	Mixed,
+}
+
+func Validate(ethnicities []string) error {
+	approved := make(map[string]struct{})
+	for _, e := range All {
+		approved[e.Ethnicity] = struct{}{}
+	}
+
+	for _, e := range ethnicities {
+		if _, ok := approved[e]; !ok {
+			return fmt.Errorf("invalid ethnicity: %s", e)
+		}
+	}
+	return nil
 }

@@ -11,6 +11,7 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"github.com/go-chi/httplog"
+	"github.com/raymonstah/asianamericanswiki/internal/ethnicity"
 	"github.com/segmentio/ksuid"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
@@ -23,6 +24,7 @@ var (
 	ErrHumanAlreadyExists = errors.New("human already exists")
 	ErrInvalidOrderBy     = errors.New("orderBy must be one of: created_at, views")
 	ErrInvalidGender      = errors.New("invalid gender")
+	ErrInvalidEthnicity   = errors.New("invalid ethnicity")
 )
 
 type Human struct {
@@ -264,6 +266,12 @@ func (d *DAO) HumansByID(ctx context.Context, input HumansByIDInput) ([]Human, e
 func (d *DAO) UpdateHuman(ctx context.Context, human Human) error {
 	human.UpdatedAt = time.Now()
 	human.Path = Slug(human.Name)
+	for i, eth := range human.Ethnicity {
+		human.Ethnicity[i] = strings.ToLower(eth)
+	}
+	if err := ethnicity.Validate(human.Ethnicity); err != nil {
+		return fmt.Errorf("%w: %v", ErrInvalidEthnicity, err)
+	}
 	_, err := d.client.Collection(d.humanCollection).
 		Doc(human.ID).
 		Set(ctx, human)
@@ -312,6 +320,13 @@ func (d *DAO) AddHuman(ctx context.Context, input AddHumanInput) (Human, error) 
 	_, ok := ValidGenders[input.Gender]
 	if !ok {
 		return Human{}, ErrInvalidGender
+	}
+
+	for i, eth := range input.Ethnicity {
+		input.Ethnicity[i] = strings.ToLower(eth)
+	}
+	if err := ethnicity.Validate(input.Ethnicity); err != nil {
+		return Human{}, fmt.Errorf("%w: %v", ErrInvalidEthnicity, err)
 	}
 
 	now := time.Now().In(time.UTC)
