@@ -180,6 +180,7 @@ func (s *ServerHTML) watchHumans(ctx context.Context) {
 				s.logger.Error().Err(err).Msg("error decoding human from firestore change")
 				continue
 			}
+			human.ID = change.Doc.Ref.ID
 
 			switch change.Kind {
 			case firestore.DocumentAdded, firestore.DocumentModified:
