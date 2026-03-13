@@ -156,14 +156,17 @@ type AddInput struct {
 	Description string   `json:"description" jsonschema:"Short biography or description"`
 	Tags        []string `json:"tags,omitempty" jsonschema:"Relevant tags (e.g. actor, musician)"`
 	Gender      string   `json:"gender" jsonschema:"male, female, or nonbinary"`
-	Instagram   string   `json:"instagram,omitempty" jsonschema:"Instagram handle"`
-	Twitter     string   `json:"twitter,omitempty" jsonschema:"Twitter handle"`
+	Instagram   string   `json:"instagram,omitempty" jsonschema:"Instagram profile URL"`
+	Twitter     string   `json:"twitter,omitempty" jsonschema:"Twitter profile URL"`
 	Website     string   `json:"website,omitempty" jsonschema:"Personal website"`
 	IMDB        string   `json:"imdb,omitempty" jsonschema:"IMDB profile URL"`
 }
 
 func (s *Server) addHuman(ctx context.Context, req *mcp.CallToolRequest, input AddInput) (*mcp.CallToolResult, MessageResponse, error) {
 	humanID := ksuid.New().String()
+	if err := validateSocials(input.Instagram, input.Twitter, input.Website, input.IMDB); err != nil {
+		return nil, MessageResponse{}, err
+	}
 	human, err := s.dao.AddHuman(ctx, humandao.AddHumanInput{
 		HumanID:     humanID,
 		Name:        input.Name,
@@ -198,8 +201,8 @@ type UpdateInput struct {
 	Description string   `json:"description,omitempty"`
 	Tags        []string `json:"tags,omitempty"`
 	Gender      string   `json:"gender,omitempty"`
-	Instagram   string   `json:"instagram,omitempty"`
-	Twitter     string   `json:"twitter,omitempty"`
+	Instagram   string   `json:"instagram,omitempty" jsonschema:"Instagram profile URL"`
+	Twitter     string   `json:"twitter,omitempty" jsonschema:"Twitter profile URL"`
 	Website     string   `json:"website,omitempty"`
 	IMDB        string   `json:"imdb,omitempty"`
 }
@@ -208,6 +211,10 @@ func (s *Server) updateHuman(ctx context.Context, req *mcp.CallToolRequest, inpu
 	human, err := s.dao.Human(ctx, humandao.HumanInput{HumanID: input.ID})
 	if err != nil {
 		return nil, MessageResponse{}, fmt.Errorf("failed to get human for update: %w", err)
+	}
+
+	if err := validateSocials(input.Instagram, input.Twitter, input.Website, input.IMDB); err != nil {
+		return nil, MessageResponse{}, err
 	}
 
 	if input.Name != "" {
@@ -255,6 +262,25 @@ func (s *Server) updateHuman(ctx context.Context, req *mcp.CallToolRequest, inpu
 		return nil, MessageResponse{}, fmt.Errorf("failed to update human: %w", err)
 	}
 	return nil, MessageResponse{Message: fmt.Sprintf("Successfully updated human %s (ID: %s).", human.Name, human.ID)}, nil
+}
+
+func validateSocials(instagram, twitter, website, imdb string) error {
+	fields := []struct {
+		name  string
+		value string
+	}{
+		{"instagram", instagram},
+		{"twitter", twitter},
+		{"website", website},
+		{"imdb", imdb},
+	}
+
+	for _, field := range fields {
+		if field.value != "" && !strings.HasPrefix(field.value, "http") {
+			return fmt.Errorf("%s must be a full URL (starting with http or https)", field.name)
+		}
+	}
+	return nil
 }
 
 type ListInput struct {

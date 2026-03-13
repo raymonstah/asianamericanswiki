@@ -517,6 +517,10 @@ func (d *DAO) View(ctx context.Context, input ViewInput) error {
 	return nil
 }
 
+func (d *DAO) Snapshots(ctx context.Context) *firestore.QuerySnapshotIterator {
+	return d.client.Collection(d.humanCollection).Snapshots(ctx)
+}
+
 var (
 	quotedRegex = regexp.MustCompile(`["'].*?["']`)
 	slugRegex   = regexp.MustCompile(`[^a-z0-9-]`)

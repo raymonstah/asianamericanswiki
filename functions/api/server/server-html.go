@@ -13,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"cloud.google.com/go/firestore"
 	"cloud.google.com/go/storage"
 	"firebase.google.com/go/v4/auth"
 	"github.com/blevesearch/bleve/v2"
@@ -23,6 +24,7 @@ import (
 	"github.com/raymonstah/asianamericanswiki/internal/imageutil"
 	"github.com/raymonstah/asianamericanswiki/internal/xai"
 	"github.com/rs/zerolog"
+	"google.golang.org/api/iterator"
 )
 
 //go:embed public/*
@@ -158,11 +160,48 @@ func (s *ServerHTML) deleteFromIndex(id string) error {
 	return nil
 }
 
+func (s *ServerHTML) watchHumans(ctx context.Context) {
+	it := s.humanDAO.Snapshots(ctx)
+	defer it.Stop()
+
+	for {
+		snap, err := it.Next()
+		if err == iterator.Done {
+			return
+		}
+		if err != nil {
+			s.logger.Error().Err(err).Msg("error watching humans")
+			return
+		}
+
+		for _, change := range snap.Changes {
+			var human humandao.Human
+			if err := change.Doc.DataTo(&human); err != nil {
+				s.logger.Error().Err(err).Msg("error decoding human from firestore change")
+				continue
+			}
+
+			switch change.Kind {
+			case firestore.DocumentAdded, firestore.DocumentModified:
+				if err := s.updateIndex(human); err != nil {
+					s.logger.Error().Err(err).Str("id", human.ID).Msg("error updating index from watch")
+				}
+			case firestore.DocumentRemoved:
+				if err := s.deleteFromIndex(change.Doc.Ref.ID); err != nil {
+					s.logger.Error().Err(err).Str("id", change.Doc.Ref.ID).Msg("error deleting from index from watch")
+				}
+			}
+		}
+	}
+}
+
 func (s *ServerHTML) Register(router chi.Router) error {
 	ctx := context.Background()
 	if err := s.initializeIndex(ctx); err != nil {
 		return err
 	}
+
+	go s.watchHumans(ctx)
 
 	templatesFS, err := fs.Sub(publicFS, "public/templates")
 	if err != nil {
