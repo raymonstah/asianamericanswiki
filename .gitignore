@@ -29,3 +29,6 @@ tmp/*
 /mcp/main
 /mcp/mcp-client
 /mcp/mcp-server
+/mcp-server
+/generate-image
+bin/
