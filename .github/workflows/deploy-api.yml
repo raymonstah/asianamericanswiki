@@ -4,6 +4,7 @@
       - main
     paths:
       - "**/*.go"
+      - ".golangci.yml"
       - "go.mod"
       - "go.sum"
       - "Dockerfile"
