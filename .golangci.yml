@@ -3,8 +3,6 @@ version: "2"
 run:
   timeout: 5m
   modules-download-mode: vendor
-  skip-directories:
-    - vendor
 
 linters:
   enable:
@@ -17,6 +15,8 @@ linters:
     - misspell
     - unparam
   exclusions:
+    paths:
+      - vendor
     rules:
       - path: \.pb\.go
         linters:
