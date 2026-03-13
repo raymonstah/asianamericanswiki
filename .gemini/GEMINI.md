@@ -8,3 +8,4 @@
   1. `go.mod` (e.g., `go mod edit -go 1.26.1`)
   2. `Dockerfile` (`ARG GO_VERSION=...`)
   3. Pre-commit hooks and CI usually follow `go.mod`, but verify if any tools (like `golangci-lint` or `govulncheck`) need a version bump to support the new Go release.
+- **Binary Hygiene:** NEVER commit compiled binaries (e.g., Go executables) to the repository. Always ensure they are listed in `.gitignore`.
