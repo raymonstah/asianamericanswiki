@@ -10,9 +10,9 @@
       - "Dockerfile"
       - ".github/workflows/*.yml"
       - "internal/**"
-      - "functions/api/**"
+      - "functions/**"
       - "cmd/**"
-      - "mcp/**"
+      - "mcp-server/**"
 
 name: Deploy API to cloud run
 jobs:
